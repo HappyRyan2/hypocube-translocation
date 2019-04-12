@@ -2,6 +2,7 @@ package com.happyryan2.objects;
 
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Polygon;
 
 import com.happyryan2.game.Game;
 import com.happyryan2.utilities.MousePos;
@@ -50,6 +51,17 @@ public class Extender extends Thing {
 		raisedRect(g, (float) x, (float) y + (h / 3 * 2), (float) w / 6, (float) h / 3);
 		raisedRect(g, (float) x + (w / 6 * 5), (float) y, (float) w / 6, (float) h / 3);
 		raisedRect(g, (float) x + (w / 6 * 5), (float) y + (h / 3 * 2), (float) w / 6, (float) h / 3);
+		//triangle
+		Polygon triangle = new Polygon();
+		if(this.dir == "up") {
+			triangle.addPoint((int) x + (w / 3), (int) y + (w / 3 * 2));
+			triangle.addPoint((int) x + (w / 3 * 2), (int) y + (w / 3 * 2));
+			triangle.addPoint((int) x + (w / 2), (int) y + (w / 3));
+		}
+		else if(this.dir === "right") {
+			triangle.addPoint(
+		}
+		g.drawPolygon(triangle);
 	}
 	public void raisedRect(Graphics g, float x, float y, float w, float h) {
 		int vX = (int) Math.round(x);
