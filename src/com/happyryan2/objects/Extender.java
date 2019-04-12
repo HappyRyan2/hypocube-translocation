@@ -58,8 +58,20 @@ public class Extender extends Thing {
 			triangle.addPoint((int) x + (w / 3 * 2), (int) y + (w / 3 * 2));
 			triangle.addPoint((int) x + (w / 2), (int) y + (w / 3));
 		}
+		else if(this.dir == "down") {
+			triangle.addPoint((int) x + (w / 3), (int) y + (w / 3));
+			triangle.addPoint((int) x + (w / 3 * 2), (int) y + (w / 3));
+			triangle.addPoint((int) x + (w / 2), (int) y + (w / 3 * 2));
+		}
 		else if(this.dir === "right") {
-			triangle.addPoint(
+			triangle.addPoint((int) x + (w / 3), (int) y + (w / 3));
+			triangle.addPoint((int) x + (w / 3), (int) y + (w / 3 * 2));
+			triangle.addPoint((int) x + (w / 3 * 2), (int) y + (w / 2));
+		}
+		else if(this.dir === "left") {
+			triangle.addPoint((int) x + (w / 3 * 2), (int) y + (w / 3));
+			triangle.addPoint((int) x + (w / 3 * 2), (int) y + (w / 3 * 2));
+			triangle.addPoint((int) x + (w / 3), (int) y + (w / 2));
 		}
 		g.drawPolygon(triangle);
 	}
