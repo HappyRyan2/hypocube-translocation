@@ -17,6 +17,8 @@ public class Thing {
 	public float extension;
 	public boolean canExtend;
 	public boolean moved = false;
+	public String moveDir = "none";
+	public int timeMoving;
 	public void display(Graphics g) { }
 	public void update() { }
 	public boolean canBePushed(String dir) { return false; }

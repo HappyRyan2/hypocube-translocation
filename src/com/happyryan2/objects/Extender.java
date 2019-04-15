@@ -34,7 +34,7 @@ public class Extender extends Thing {
 		int h = (int) Math.round(Game.tileSize);
 		// detect hovering + clicks
 		if(this.cursorHovered() && Game.canClick && super.extension <= 0) {
-			// decide which tiles will be moved when it extends
+			// decide which tiles will be moved when it extends forward
 			switch(super.dir) {
 				case "up":
 					Game.currentLevel.setMoved(super.x, super.y - 1, "up");
@@ -61,7 +61,79 @@ public class Extender extends Thing {
 					break;
 				}
 			}
-			// decide whether it can extend or not (by pushing itself backward)
+			if(!canExtend) {
+				// decide which tiles will be affected by pushing itself backwards
+				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+					Thing thing = (Thing) Game.currentLevel.content.get(i);
+					thing.moved = false;
+				}
+				switch(super.dir) {
+					case "up":
+						Game.currentLevel.setMoved(super.x, super.y + 1, "down");
+						break;
+					case "down":
+						Game.currentLevel.setMoved(super.x, super.y - 1, "up");
+						break;
+					case "left":
+						Game.currentLevel.setMoved(super.x + 1, super.y, "right");
+						break;
+					case "right":
+						Game.currentLevel.setMoved(super.x - 1, super.y, "left");
+						break;
+				}
+				// decide whether it can extend (by pushing itself backwards)
+				canExtend = true;
+				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+					Thing thing = (Thing) Game.currentLevel.content.get(i);
+					if(!thing.moved) {
+						continue;
+					}
+					if((super.dir == "up" && thing.y == Game.levelSize - 1) || (super.dir == "down" && thing.y == 0) || (super.dir == "right" && thing.x == 0) || (super.dir == "left" && super.x == Game.levelSize - 1)) {
+						canExtend = false;
+					}
+				}
+				if(canExtend) {
+					Screen.cursor = "hand";
+					if(super.hoverY < h * super.height) {
+						super.hoverY ++;
+					}
+					if(MouseClick.mouseIsPressed) {
+						Game.canClick = false;
+						super.extending = true;
+						if(super.dir == "up") {
+							super.moveDir = "down";
+						}
+						else if(super.dir == "down") {
+							super.moveDir = "up";
+						}
+						else if(super.dir == "left") {
+							super.moveDir = "right";
+						}
+						else if(super.dir == "right") {
+							super.moveDir = "left";
+						}
+						for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+							Thing thing = (Thing) Game.currentLevel.content.get(i);
+							if(thing.moved) {
+								if(super.dir == "up") {
+									thing.moveDir = "down";
+								}
+								else if(super.dir == "down") {
+									thing.moveDir = "up";
+								}
+								else if(super.dir == "left") {
+									thing.moveDir = "right";
+								}
+								else if(super.dir == "right") {
+									thing.moveDir = "left";
+								}
+								thing.timeMoving = 0;
+							}
+						}
+					}
+				}
+				canExtend = false;
+			}
 			if(canExtend && !((super.x == 0 && super.dir == "left") || (super.y == 0 && super.dir == "up") || (super.x == Game.levelSize - 1 && super.dir == "right") || (super.y == Game.levelSize - 1 && super.dir == "down"))) {
 				Screen.cursor = "hand";
 				if(super.hoverY < h * super.height) {
@@ -70,6 +142,13 @@ public class Extender extends Thing {
 				if(MouseClick.mouseIsPressed) {
 					Game.canClick = false;
 					super.extending = true;
+					for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+						Thing thing = (Thing) Game.currentLevel.content.get(i);
+						if(thing.moved) {
+							thing.moveDir = super.dir;
+							thing.timeMoving = 0;
+						}
+					}
 				}
 			}
 		}
@@ -105,6 +184,28 @@ public class Extender extends Thing {
 		}
 		if((super.extending || super.retracting) && super.hoverY < h * super.height) {
 			super.hoverY ++;
+		}
+		//movement
+		if(super.moveDir == "up") {
+			super.y -= 0.05;
+		}
+		else if(super.moveDir == "down") {
+			super.y += 0.05;
+		}
+		else if(super.moveDir == "left") {
+			super.x -= 0.05;
+		}
+		else if(super.moveDir == "right") {
+			super.x += 0.05;
+		}
+		if(super.moveDir != "none") {
+			super.timeMoving ++;
+			if(super.timeMoving >= 20) {
+				super.x = Math.round(super.x);
+				super.y = Math.round(super.y);
+				super.moveDir = "none";
+				super.timeMoving = 0;
+			}
 		}
 	}
 	public void display(Graphics g) {
