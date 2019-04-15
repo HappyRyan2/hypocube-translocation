@@ -28,9 +28,28 @@ public class Level {
 	}
 	public void display(Graphics g) {
 		// sort by y-value (display top ones first)
-		g.translate(200, 200);
+		List sorted = new ArrayList();
+		List unsorted = new ArrayList();
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
+			unsorted.add(thing);
+		}
+		while(unsorted.size() > 0) {
+			int highestIndex = 0;
+			for(short i = 0; i < unsorted.size(); i ++) {
+				Thing thing = (Thing) unsorted.get(i);
+				Thing highest = (Thing) unsorted.get(highestIndex);
+				if(thing.y < highest.y) {
+					highestIndex = i;
+				}
+			}
+			Thing thing = (Thing) unsorted.get(highestIndex);
+			sorted.add(thing);
+			unsorted.remove(highestIndex);
+		}
+		g.translate(200, 200);
+		for(short i = 0; i < sorted.size(); i ++) {
+			Thing thing = (Thing) sorted.get(i);
 			thing.display(g);
 		}
 	}
