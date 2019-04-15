@@ -13,6 +13,7 @@ public class Level {
 		this.content = new ArrayList();
 	}
 	public void update() {
+		System.out.println("-----------------------------");
 		if(!resized) {
 			resize();
 		}
@@ -26,6 +27,7 @@ public class Level {
 		}
 	}
 	public void display(Graphics g) {
+		// sort by y-value (display top ones first)
 		g.translate(200, 200);
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -63,7 +65,7 @@ public class Level {
 		Game.levelSize = (right - left > bottom - top) ? (right - left + 1) : (bottom - top + 1);
 		Game.tileSize = 400 / Game.levelSize;
 	}
-	public Thing getAtPos(float x, float y) {
+	public Thing getAtPos(float x, float y) { // this function doesn't work!!!
 		// return if there is an extender in that position
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -77,7 +79,7 @@ public class Level {
 			if(thing.extension == 0) {
 				continue;
 			}
-			if((thing.y == y - 1 && thing.dir == "down") || (thing.y == y + 1 && thing.dir == "up") || (thing.x == x - 1 && thing.dir == "right") || (thing.x == x + 1 && thing.dir == "left")) {
+			if((thing.x == x && thing.y == y - 1 && thing.dir == "down") || (thing.x == x && thing.y == y + 1 && thing.dir == "up") || (thing.y == y && thing.x == x - 1 && thing.dir == "right") || (thing.y == y && thing.x == x + 1 && thing.dir == "left")) {
 				return thing;
 			}
 		}
@@ -91,6 +93,7 @@ public class Level {
 			System.out.println("and it's empty! (terminate branch)");
 			return;
 		}
+		System.out.println("it is an extender at coords (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
 		thing.moved = true;
 		thing.checkMovement(dir);
 	}

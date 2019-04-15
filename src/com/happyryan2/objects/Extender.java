@@ -49,7 +49,7 @@ public class Extender extends Thing {
 					Game.currentLevel.setMoved(super.x + 1, super.y, "right");
 					break;
 			}
-			// decide whether it can extend or not
+			// decide whether it can extend or not (by pushing the tiles in front of it)
 			boolean canExtend = true;
 			for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 				Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -61,6 +61,7 @@ public class Extender extends Thing {
 					break;
 				}
 			}
+			// decide whether it can extend or not (by pushing itself backward)
 			if(canExtend && !((super.x == 0 && super.dir == "left") || (super.y == 0 && super.dir == "up") || (super.x == Game.levelSize - 1 && super.dir == "right") || (super.y == Game.levelSize - 1 && super.dir == "down"))) {
 				Screen.cursor = "hand";
 				if(super.hoverY < h * super.height) {
@@ -91,6 +92,7 @@ public class Extender extends Thing {
 			if(super.extension >= 1) {
 				Game.canClick = true;
 				super.extending = false;
+				super.extension = 1;
 			}
 		}
 		else if(super.retracting) {
@@ -98,6 +100,7 @@ public class Extender extends Thing {
 			if(super.extension <= 0) {
 				Game.canClick = true;
 				super.retracting = false;
+				super.extension = 0;
 			}
 		}
 		if((super.extending || super.retracting) && super.hoverY < h * super.height) {
@@ -116,15 +119,15 @@ public class Extender extends Thing {
 		}
 		g.setColor(new Color(100, 100, 100));
 		//horizontal
-		raisedRect(g, (double) x, (double) y - (super.dir == "up" ? super.extension * h : 0), (double) w / 3, (double) h / 6);
+		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y - (super.dir == "up" ? super.extension * h : 0), (double) w / 3, (double) h / 6);
 		raisedRect(g, (double) (x + w - (w / 3) + (super.dir == "right" ? super.extension * w : 0)), (double) y - (super.dir == "up" ? super.extension * Game.tileSize : 0), (double) w / 3, (double) h / 6);
-		raisedRect(g, (double) x, (double) y + (h / 6 * 5), (double) w / 3, (double) h / 6);
-		raisedRect(g, (double) (x + w - (w / 3) + (super.dir == "right" ? super.extension * Game.tileSize : 0)), (double) y + (h / 6 * 5), (double) w / 3, (double) h / 6);
+		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y + (h / 6 * 5) + (super.dir == "down" ? super.extension * h : 0), (double) w / 3, (double) h / 6);
+		raisedRect(g, (double) (x + w - (w / 3) + (super.dir == "right" ? super.extension * Game.tileSize : 0)), (double) y + (h / 6 * 5) + (super.dir == "down" ? super.extension * h : 0), (double) w / 3, (double) h / 6);
 		//vertical
-		raisedRect(g, (double) x, (double) y - (super.dir == "up" ? super.extension * Game.tileSize : 0), (double) w / 6, (double) h / 3);
-		raisedRect(g, (double) x, (double) y + h - (h / 3), (double) w / 6, (double) h / 3);
+		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y - (super.dir == "up" ? super.extension * Game.tileSize : 0), (double) w / 6, (double) h / 3);
+		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y + h - (h / 3) + (super.dir == "down" ? super.extension * h : 0), (double) w / 6, (double) h / 3);
 		raisedRect(g, (double) (x + (w / 6 * 5) + (super.dir == "right" ? super.extension * Game.tileSize : 0)), (double) y - (super.dir == "up" ? super.extension * Game.tileSize : 0), (double) w / 6, (double) h / 3);
-		raisedRect(g, (double) (x + (w / 6 * 5) + (super.dir == "right" ? super.extension * Game.tileSize : 0)), (double) y + h - (h / 3), (double) w / 6, (double) h / 3);
+		raisedRect(g, (double) (x + (w / 6 * 5) + (super.dir == "right" ? super.extension * Game.tileSize : 0)), (double) y + h - (h / 3) + (super.dir == "down" ? super.extension * h : 0), (double) w / 6, (double) h / 3);
 		//triangle
 		Polygon triangle = new Polygon();
 		if(super.dir == "up") {
@@ -141,14 +144,14 @@ public class Extender extends Thing {
 			// side.addPoint((int) x + (w / 3), (int) y + Math.round(y + h / 3) + super.hoverY);
 		}
 		else if(super.dir == "right") {
-			triangle.addPoint((int) x + (w / 3), (int) Math.round(y + (h / 3) + super.hoverY));
-			triangle.addPoint((int) x + (w / 3), (int) Math.round(y + h - (h / 3) + super.hoverY));
-			triangle.addPoint((int) x + w - (w / 3), (int) Math.round(y + (h / 2) + super.hoverY));
+			triangle.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + super.hoverY));
+			triangle.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + h - (h / 3) + super.hoverY));
+			triangle.addPoint((int) (x + w - (w / 3) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY));
 		}
 		else if(super.dir == "left") {
-			triangle.addPoint((int) x + w - (w / 3), (int) Math.round(y + (h / 3) + super.hoverY));
-			triangle.addPoint((int) x + w - (w / 3), (int) Math.round(y + h - (h / 3) + super.hoverY));
-			triangle.addPoint((int) x + (w / 3), (int) Math.round(y + (h / 2) + super.hoverY));
+			triangle.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + super.hoverY));
+			triangle.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + h - (h / 3) + super.hoverY));
+			triangle.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY));
 		}
 		g.fillPolygon(triangle);
 	}
@@ -192,7 +195,7 @@ public class Extender extends Thing {
 		/*
 		This function sets all of the tiles that would be moved to be 'moved' depending on which direction it was pushed.
 		*/
-		System.out.println();
+		System.out.println("deciding which tiles are affected by (" + super.x + ", " + super.y + ")");
 		if(super.extension == 0) {
 			switch(dir) {
 				case "up":
