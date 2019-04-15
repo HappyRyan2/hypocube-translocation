@@ -16,14 +16,18 @@ public class Level {
 		if(!resized) {
 			resize();
 		}
-		for(byte i = 0; i < this.content.size(); i ++) {
+		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+			Thing thing = (Thing) Game.currentLevel.content.get(i);
+			thing.moved = false;
+		}
+		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.update();
 		}
 	}
 	public void display(Graphics g) {
 		g.translate(200, 200);
-		for(byte i = 0; i < this.content.size(); i ++) {
+		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.display(g);
 		}
@@ -34,11 +38,10 @@ public class Level {
 		float right = 0;
 		float top = 0;
 		float bottom = 0;
-		for(byte i = 0; i < this.content.size(); i ++) {
+		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			float x = (float) thing.x;
 			float y = (float) thing.y;
-			System.out.println("is x(" + x + ") greater than right(" + right + ")");
 			if(x < left) {
 				left = x;
 			}
@@ -52,17 +55,43 @@ public class Level {
 				bottom = y;
 			}
 		}
-		for(byte i = 0; i < this.content.size(); i ++) {
+		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.x -= left;
 			thing.y -= top;
 		}
-		System.out.println("left: " + left);
-		System.out.println("right: " + right);
-		System.out.println("top: " + top);
-		System.out.println("bottom: " + bottom);
 		Game.levelSize = (right - left > bottom - top) ? (right - left + 1) : (bottom - top + 1);
 		Game.tileSize = 400 / Game.levelSize;
-		System.out.println(Game.levelSize);
+	}
+	public Thing getAtPos(float x, float y) {
+		// return if there is an extender in that position
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing.x == x && thing.y == y) {
+				return thing;
+			}
+		}
+		// return if there is an extender pushing out into that position
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing.extension == 0) {
+				continue;
+			}
+			if((thing.y == y - 1 && thing.dir == "down") || (thing.y == y + 1 && thing.dir == "up") || (thing.x == x - 1 && thing.dir == "right") || (thing.x == x + 1 && thing.dir == "left")) {
+				return thing;
+			}
+		}
+		// if you haven't found anything by now, there must not be anything there
+		return null;
+	};
+	public void setMoved(float x, float y, String dir) {
+		System.out.println("checking the coords (" + x + ", " + y + ")");
+		Thing thing = this.getAtPos(x, y);
+		if(thing == null || thing.moved) {
+			System.out.println("and it's empty! (terminate branch)");
+			return;
+		}
+		thing.moved = true;
+		thing.checkMovement(dir);
 	}
 }

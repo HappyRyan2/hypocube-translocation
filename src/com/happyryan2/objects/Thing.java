@@ -11,6 +11,14 @@ public class Thing {
 	public float y;
 	public float hoverY;
 	public String dir;
+	public double height;
+	public boolean extending;
+	public boolean retracting;
+	public float extension;
+	public boolean canExtend;
+	public boolean moved = false;
 	public void display(Graphics g) { }
 	public void update() { }
+	public boolean canBePushed(String dir) { return false; }
+	public void checkMovement(String dir) {}
 }
