@@ -84,7 +84,7 @@ public class Level {
 		Game.levelSize = (right - left > bottom - top) ? (right - left + 1) : (bottom - top + 1);
 		Game.tileSize = 400 / Game.levelSize;
 	}
-	public Thing getAtPos(float x, float y) { // this function doesn't work!!!
+	public Thing getAtPos(float x, float y) {
 		// return if there is an extender in that position
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -108,7 +108,7 @@ public class Level {
 	public void setMoved(float x, float y, String dir) {
 		System.out.println("checking the coords (" + x + ", " + y + ")");
 		Thing thing = this.getAtPos(x, y);
-		if(thing == null || thing.moved) {
+		if(thing == null || thing.moved || thing.ignoring) {
 			System.out.println("and it's empty! (terminate branch)");
 			return;
 		}

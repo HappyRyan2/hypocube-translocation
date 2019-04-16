@@ -16,11 +16,12 @@ public class Thing {
 	public boolean retracting;
 	public float extension;
 	public boolean canExtend;
+	public boolean ignoring = false;
 	public boolean moved = false;
 	public String moveDir = "none";
 	public int timeMoving;
 	public void display(Graphics g) { }
 	public void update() { }
-	public boolean canBePushed(String dir) { return false; }
 	public void checkMovement(String dir) {}
+	public boolean canBePushed(String dir) { return false; }
 }

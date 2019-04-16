@@ -85,11 +85,9 @@ public class Extender extends Thing {
 				canExtend = true;
 				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 					Thing thing = (Thing) Game.currentLevel.content.get(i);
-					if(!thing.moved) {
-						continue;
-					}
-					if((super.dir == "up" && thing.y == Game.levelSize - 1) || (super.dir == "down" && thing.y == 0) || (super.dir == "right" && thing.x == 0) || (super.dir == "left" && super.x == Game.levelSize - 1)) {
+					if(thing.moved && !thing.canBePushed(super.dir)) {
 						canExtend = false;
+						break;
 					}
 				}
 				if((super.dir == "up" && super.y == Game.levelSize - 1) || (super.dir == "down" && super.y == 0) || (super.dir == "left" && super.x == Game.levelSize - 1) || (super.dir == "right" && super.x == 0)) {
@@ -362,7 +360,7 @@ public class Extender extends Thing {
 				case "down":
 					switch(super.dir) {
 						case "up":
-							Game.currentLevel.setMoved(super.x, super.y - 1, dir);
+							Game.currentLevel.setMoved(super.x, super.y + 1, dir);
 							break;
 						case "down":
 							Game.currentLevel.setMoved(super.x, super.y + 2, dir);
@@ -384,25 +382,25 @@ public class Extender extends Thing {
 							Game.currentLevel.setMoved(super.x - 1, super.y - 1, dir);
 							break;
 						case "down":
-							Game.currentLevel.setMoved(super.x, super.y + 1, dir);
+							Game.currentLevel.setMoved(super.x - 1, super.y + 1, dir);
 							Game.currentLevel.setMoved(super.x - 1, super.y + 1, dir);
 							break;
 						case "left":
 							Game.currentLevel.setMoved(super.x - 2, super.y, dir);
 							break;
 						case "right":
-							Game.currentLevel.setMoved(super.x + 1, super.y, dir);
+							Game.currentLevel.setMoved(super.x - 1, super.y, dir);
 							break;
 						}
 					break;
 				case "right":
 					switch(super.dir) {
 						case "up":
-							Game.currentLevel.setMoved(super.x, super.y - 1, dir);
+							Game.currentLevel.setMoved(super.x + 1, super.y, dir);
 							Game.currentLevel.setMoved(super.x + 1, super.y - 1, dir);
 							break;
 						case "down":
-							Game.currentLevel.setMoved(super.x, super.y + 1, dir);
+							Game.currentLevel.setMoved(super.x + 1, super.y, dir);
 							Game.currentLevel.setMoved(super.x + 1, super.y + 1, dir);
 							break;
 						case "left":
@@ -415,5 +413,26 @@ public class Extender extends Thing {
 					break;
 				}
 			}
+	}
+	public boolean canBePushed(String dir) {
+		/*
+		Returns whether this can be pushed without colliding with a wall. Assumes no other extenders exist.
+		*/
+		if(super.extension == 0) {
+			return !((dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.tileSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.tileSize - 1));
+		}
+		if(super.dir == "up" && dir == "up" && super.y <= 2) {
+			return false;
+		}
+		if(super.dir == "down" && dir == "down" && super.y >= Game.tileSize - 3) {
+			return false;
+		}
+		if(super.dir == "left" && dir == "left" && super.x <= 2) {
+			return false;
+		}
+		if(super.dir == "right" && dir == "right" && super.x >= Game.tileSize - 3) {
+			return false;
+		}
+		return !((dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.tileSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.tileSize - 1));
 	}
 }
