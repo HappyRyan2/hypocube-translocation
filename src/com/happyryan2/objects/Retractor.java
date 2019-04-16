@@ -14,7 +14,7 @@ import com.happyryan2.utilities.Screen;
 
 public class Retractor extends Thing {
 	private static Color darkGreen = new Color(0, 128, 50);
-	private static Color lightGreen = new Color(100, 128, 150);
+	private static Color lightGreen = new Color(50, 200, 150);
 	public float x;
 	public float y;
 	public String dir;
