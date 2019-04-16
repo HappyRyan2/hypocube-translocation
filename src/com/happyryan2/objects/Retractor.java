@@ -87,7 +87,7 @@ public class Retractor extends Thing {
 					if(!thing.moved) {
 						continue;
 					}
-					if((super.dir == "up" && thing.y == Game.levelSize - 1) || (super.dir == "down" && thing.y == 0) || (super.dir == "right" && thing.x == 0) || (super.dir == "left" && super.x == Game.levelSize - 1)) {
+					if((super.dir == "up" && !thing.canBePushed("down")) || (super.dir == "down" && !thing.canBePushed("up")) || (super.dir == "left" && !thing.canBePushed("right")) || (super.dir == "right" && !thing.canBePushed("left"))) {
 						canExtend = false;
 					}
 				}
@@ -482,21 +482,9 @@ public class Retractor extends Thing {
 		/*
 		Returns whether this can be pushed without colliding with a wall. Assumes no other extenders exist.
 		*/
-		if(super.extension == 0) {
-			return !((dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.tileSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.tileSize - 1));
-		}
-		if(super.dir == "up" && dir == "up" && super.y <= 2) {
+		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.tileSize - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.tileSize - 1))) {
 			return false;
 		}
-		if(super.dir == "down" && dir == "down" && super.y >= Game.tileSize - 3) {
-			return false;
-		}
-		if(super.dir == "left" && dir == "left" && super.x <= 2) {
-			return false;
-		}
-		if(super.dir == "right" && dir == "right" && super.x >= Game.tileSize - 3) {
-			return false;
-		}
-		return !((dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.tileSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.tileSize - 1));
+		return true;
 	}
 }
