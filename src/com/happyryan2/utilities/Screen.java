@@ -51,4 +51,8 @@ public class Screen extends JPanel {
 		Game.display(g);
 	}
 
+	public static void resetTransform() {
+
+	}
+
 }

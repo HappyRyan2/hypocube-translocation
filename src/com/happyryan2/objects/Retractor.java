@@ -12,11 +12,13 @@ import com.happyryan2.utilities.MousePos;
 import com.happyryan2.utilities.MouseClick;
 import com.happyryan2.utilities.Screen;
 
-public class Extender extends Thing {
+public class Retractor extends Thing {
+	private static Color darkGreen = new Color(0, 128, 50);
+	private static Color lightGreen = new Color(100, 128, 150);
 	public float x;
 	public float y;
 	public String dir;
-	public Extender(float x, float y, String dir) {
+	public Retractor(float x, float y, String dir) {
 		super.x = x;
 		super.y = y;
 		super.dir = dir;
@@ -221,7 +223,7 @@ public class Extender extends Thing {
 			g.setColor(new Color(255, 0, 0));
 			g.fillRect(x, y, w, h);
 		}
-		g.setColor(new Color(100, 100, 100));
+		g.setColor(darkGreen);
 		//horizontal
 		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y - (super.dir == "up" ? super.extension * h : 0), (double) w / 3, (double) h / 6);
 		raisedRect(g, (double) (x + w - (w / 3) + (super.dir == "right" ? super.extension * w : 0)), (double) y - (super.dir == "up" ? super.extension * Game.tileSize : 0), (double) w / 3, (double) h / 6);
@@ -241,7 +243,7 @@ public class Extender extends Thing {
 			raisedRect(g, (double) x + (w / 3), (double) y + h - (h / 3) - (super.extension * Game.tileSize / 2), (double) w / 3, (double) 1.0);
 		}
 		else if(super.dir == "down") {
-			g.setColor(new Color(150, 150, 150));
+			g.setColor(lightGreen);
 			Polygon side = new Polygon();
 			side.addPoint((int) x + (w / 3), (int) (y + h / 3 + super.hoverY + (super.extension * Game.tileSize / 2)));
 			side.addPoint((int) x + w - (w / 3), (int) (y + (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2)));
@@ -249,33 +251,33 @@ public class Extender extends Thing {
 			side.addPoint((int) (x + (w / 2)), (int) (y + h - (h / 3) + (super.extension * Game.tileSize / 2) + (Game.tileSize * super.height)));
 			side.addPoint((int) x + (w / 3), (int) (y + (h / 3) + (super.extension * Game.tileSize / 2) + (Game.tileSize * super.height)));
 			g.fillPolygon(side);
-			g.setColor(new Color(100, 100, 100));
+			g.setColor(darkGreen);
 			triangle.addPoint((int) x + (w / 3), (int) ((y + (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2))));
 			triangle.addPoint((int) x + w - (w / 3), (int) ((y + (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2))));
 			triangle.addPoint((int) x + (w / 2), (int) ((y + h - (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2))));
 		}
 		else if(super.dir == "right") {
-			g.setColor(new Color(150, 150, 150));
+			g.setColor(lightGreen);
 			Polygon side = new Polygon();
 			side.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY));
 			side.addPoint((int) (x + w - (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY));
 			side.addPoint((int) (x + w - (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + (super.height * Game.tileSize)));
 			side.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + (super.height * Game.tileSize)));
 			g.fillPolygon(side);
-			g.setColor(new Color(100, 100, 100));
+			g.setColor(darkGreen);
 			triangle.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 3) + super.hoverY));
 			triangle.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY));
 			triangle.addPoint((int) (x + w - (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY));
 		}
 		else if(super.dir == "left") {
-			g.setColor(new Color(150, 150, 150));
+			g.setColor(lightGreen);
 			Polygon side = new Polygon();
 			side.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY));
 			side.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY));
 			side.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + (super.height * Game.tileSize)));
 			side.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + (super.height * Game.tileSize)));
 			g.fillPolygon(side);
-			g.setColor(new Color(100, 100, 100));
+			g.setColor(darkGreen);
 			triangle.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 3) + super.hoverY));
 			triangle.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY));
 			triangle.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY));
@@ -312,9 +314,9 @@ public class Extender extends Thing {
 		int vY = (int) (y);
 		int vW = (int) (w);
 		int vH = (int) (h);
-		g.setColor(new Color(150, 150, 150, 255));
+		g.setColor(lightGreen);
 		g.fillRect(vX, (int) (vY + vH + super.hoverY), vW, (int) (Game.tileSize * super.height - super.hoverY));
-		g.setColor(new Color(100, 100, 100, 255));
+		g.setColor(darkGreen);
 		g.fillRect(vX, (int) (vY + super.hoverY), vW, vH);
 	}
 	@Override
