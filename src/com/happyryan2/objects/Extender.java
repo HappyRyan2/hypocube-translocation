@@ -215,7 +215,7 @@ public class Extender extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		//debug
-		if(super.moved && false) {
+		if(super.moved) {
 			g.setColor(new Color(255, 0, 0));
 			g.fillRect(x, y, w, h);
 		}
@@ -300,10 +300,16 @@ public class Extender extends Thing {
 		return true; // (just to appease the compiler)
 	}
 	public void raisedRect(Graphics g, double x, double y, double w, double h) {
-		if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {
+		if(super.dir == "right" && x + w >= (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
+			x = (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - w;
+		}
+		else if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			x = (super.x * Game.tileSize) + Game.tileSize - w;
 		}
-		if(y + h >= (super.y * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {
+		if(super.dir == "down" && y + h >= (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
+			y = (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - h;
+		}
+		else if(y + h >= (super.y * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			y = (super.y * Game.tileSize) + Game.tileSize - h;
 		}
 		int vX = (int) (x);
@@ -382,7 +388,7 @@ public class Extender extends Thing {
 							Game.currentLevel.setMoved(super.x - 1, super.y - 1, dir);
 							break;
 						case "down":
-							Game.currentLevel.setMoved(super.x - 1, super.y + 1, dir);
+							Game.currentLevel.setMoved(super.x - 1, super.y, dir);
 							Game.currentLevel.setMoved(super.x - 1, super.y + 1, dir);
 							break;
 						case "left":

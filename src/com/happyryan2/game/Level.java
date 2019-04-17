@@ -1,6 +1,7 @@
 package com.happyryan2.game;
 
 import java.awt.Graphics;
+import java.awt.Color;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -47,11 +48,19 @@ public class Level {
 			sorted.add(thing);
 			unsorted.remove(highestIndex);
 		}
+		// display objects
 		g.translate(200, 200);
 		for(short i = 0; i < sorted.size(); i ++) {
 			Thing thing = (Thing) sorted.get(i);
 			thing.display(g);
 		}
+		g.translate(-200, -200);
+		// border
+		g.setColor(new Color(125, 125, 125));
+		g.fillRect(0, 0, 800, 200);
+		g.fillRect(0, 0, 200, 800);
+		g.fillRect(600, 0, 200, 800);
+		g.fillRect(0, 600, 800, 200);
 	}
 	public void resize() {
 		resized = true;
