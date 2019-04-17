@@ -280,7 +280,7 @@ public class Retractor extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		//debug
-		if(super.moved) {
+		if(super.moved && false) {
 			g.setColor(new Color(255, 0, 0));
 			g.fillRect(x, y, w, h);
 		}

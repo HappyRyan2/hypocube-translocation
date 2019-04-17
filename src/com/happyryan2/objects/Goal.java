@@ -28,15 +28,16 @@ public class Goal extends Thing {
 		}
 		g.setColor(darkRed);
 		//horizontal
-		rect(g, (int) x, (int) (y + (super.height * Game.tileSize)), (int) w / 3, (int) h / 6);
-		rect(g, (int) (x + w - (w / 3)), (int) (y + (super.height * Game.tileSize)), (int) w / 3, (int) h / 6);
-		rect(g, (int) x, (int) (y + (super.height * Game.tileSize) + (h / 6 * 5)), (int) w / 3, (int) h / 6);
-		rect(g, (int) (x + w - (w / 3)), (int) (y + (super.height * Game.tileSize)) + (h / 6 * 5), (int) w / 3, (int) h / 6);
-		//vertical
-		rect(g, (int) x, (int) (y + (super.height * Game.tileSize)), (int) w / 6, (int) h / 3);
-		rect(g, (int) x, (int) (y + (super.height * Game.tileSize)) + h - (h / 3), (int) w / 6, (int) h / 3);
-		rect(g, (int) (x + (w / 6 * 5)), (int) (y + (super.height * Game.tileSize)), (int) w / 6, (int) h / 3);
-		rect(g, (int) (x + (w / 6 * 5)), (int) (y + (super.height * Game.tileSize)) + h - (h / 3), (int) w / 6, (int) h / 3);
+		// rect(g, (int) x, (int) (y + (super.height * Game.tileSize)), (int) w / 3, (int) h / 6);
+		// rect(g, (int) (x + w - (w / 3)), (int) (y + (super.height * Game.tileSize)), (int) w / 3, (int) h / 6);
+		// rect(g, (int) x, (int) (y + (super.height * Game.tileSize) + (h / 6 * 5)), (int) w / 3, (int) h / 6);
+		// rect(g, (int) (x + w - (w / 3)), (int) (y + (super.height * Game.tileSize)) + (h / 6 * 5), (int) w / 3, (int) h / 6);
+		// vertical
+		// rect(g, (int) x, (int) (y + (super.height * Game.tileSize)), (int) w / 6, (int) h / 3);
+		// rect(g, (int) x, (int) (y + (super.height * Game.tileSize)) + h - (h / 3), (int) w / 6, (int) h / 3);
+		// rect(g, (int) (x + (w / 6 * 5)), (int) (y + (super.height * Game.tileSize)), (int) w / 6, (int) h / 3);
+		// rect(g, (int) (x + (w / 6 * 5)), (int) (y + (super.height * Game.tileSize)) + h - (h / 3), (int) w / 6, (int) h / 3);
+		rect(g, (double) x, (double) y, (double) w, (double) h);
 	}
 	public void rect(Graphics g, double x, double y, double w, double h) {
 		if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {
@@ -49,7 +50,7 @@ public class Goal extends Thing {
 		int vY = (int) (y);
 		int vW = (int) (w);
 		int vH = (int) (h);
-		g.fillRect(vX, (int) (vY + (super.height * Game.tileSize * 0)), vW, (int) (vH));
+		g.fillRect(vX, (int) (vY + (super.height * Game.tileSize)), vW, (int) (vH));
 	}
 	public boolean canBePushed() {
 		return true;
