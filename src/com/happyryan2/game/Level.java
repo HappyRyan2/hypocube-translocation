@@ -40,7 +40,7 @@ public class Level {
 			for(short i = 0; i < unsorted.size(); i ++) {
 				Thing thing = (Thing) unsorted.get(i);
 				Thing highest = (Thing) unsorted.get(highestIndex);
-				if(thing.y < highest.y) {
+				if(thing.y < highest.y && !(highest instanceof Goal)) {
 					highestIndex = i;
 				}
 			}
