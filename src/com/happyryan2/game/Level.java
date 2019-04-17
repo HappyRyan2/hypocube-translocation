@@ -4,7 +4,7 @@ import java.awt.Graphics;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.happyryan2.objects.Thing;
+import com.happyryan2.objects.*;
 
 public class Level {
 	public List content;
@@ -88,6 +88,9 @@ public class Level {
 		// return if there is an extender in that position
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Goal) {
+				continue;
+			}
 			if(thing.x == x && thing.y == y) {
 				return thing;
 			}
@@ -95,7 +98,7 @@ public class Level {
 		// return if there is an extender pushing out into that position
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			if(thing.extension == 0) {
+			if(thing.extension == 0 || thing instanceof Goal) {
 				continue;
 			}
 			if((thing.x == x && thing.y == y - 1 && thing.dir == "down") || (thing.x == x && thing.y == y + 1 && thing.dir == "up") || (thing.y == y && thing.x == x - 1 && thing.dir == "right") || (thing.y == y && thing.x == x + 1 && thing.dir == "left")) {
@@ -108,7 +111,7 @@ public class Level {
 	public void setMoved(float x, float y, String dir) {
 		System.out.println("checking the coords (" + x + ", " + y + ")");
 		Thing thing = this.getAtPos(x, y);
-		if(thing == null || thing.moved || thing.ignoring) {
+		if(thing == null || thing.moved || thing.ignoring || thing instanceof Goal) {
 			System.out.println("and it's empty! (terminate branch)");
 			return;
 		}

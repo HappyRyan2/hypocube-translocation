@@ -14,5 +14,8 @@ public class Tutorial1 extends Level {
 		super.content.add(new Retractor(0, 2, "right"));
 		super.content.add(new Retractor(2, 1, "down"));
 		super.content.add(new Retractor(2, 0, "left"));
+		super.content.add(new Player(2, 2));
+		super.content.add(new Goal(3, 1));
+		super.content.add(new Extender(3, 2, "left"));
 	}
 }

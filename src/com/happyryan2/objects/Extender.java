@@ -215,7 +215,7 @@ public class Extender extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		//debug
-		if(super.moved) {
+		if(super.moved && false) {
 			g.setColor(new Color(255, 0, 0));
 			g.fillRect(x, y, w, h);
 		}
@@ -418,21 +418,23 @@ public class Extender extends Thing {
 		/*
 		Returns whether this can be pushed without colliding with a wall. Assumes no other extenders exist.
 		*/
-		if(super.extension == 0) {
-			return !((dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.tileSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.tileSize - 1));
-		}
-		if(super.dir == "up" && dir == "up" && super.y <= 2) {
+		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.levelSize - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.levelSize - 1))) {
 			return false;
 		}
-		if(super.dir == "down" && dir == "down" && super.y >= Game.tileSize - 3) {
-			return false;
+		if(super.extension != 0) {
+			if(dir == "left" && super.dir == "left" && super.x <= 1) {
+				return false;
+			}
+			if(dir == "right" && super.dir == "right" && super.x >= Game.levelSize - 2) {
+				return false;
+			}
+			if(dir == "up" && super.dir == "up" && super.y <= 1) {
+				return false;
+			}
+			if(dir == "down" && super.dir == "down" && super.y >= Game.levelSize - 2) {
+				return false;
+			}
 		}
-		if(super.dir == "left" && dir == "left" && super.x <= 2) {
-			return false;
-		}
-		if(super.dir == "right" && dir == "right" && super.x >= Game.tileSize - 3) {
-			return false;
-		}
-		return !((dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.tileSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.tileSize - 1));
+		return true;
 	}
 }

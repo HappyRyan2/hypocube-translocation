@@ -15,9 +15,6 @@ import com.happyryan2.utilities.Screen;
 public class Retractor extends Thing {
 	private static Color darkGreen = new Color(0, 128, 50);
 	private static Color lightGreen = new Color(50, 200, 150);
-	public float x;
-	public float y;
-	public String dir;
 	public Retractor(float x, float y, String dir) {
 		super.x = x;
 		super.y = y;
@@ -178,7 +175,8 @@ public class Retractor extends Thing {
 				if(!thing.moved) {
 					continue;
 				}
-				if((thing.x == 0 && super.dir == "right") || (thing.y == 0 && super.dir == "down") || (thing.x == Game.levelSize - 1 && super.dir == "left") || (thing.y == Game.levelSize - 1 && super.dir == "up")) {
+				System.out.println("can (" + thing.x + ", " + thing.y + ") be pushed right? " + thing.canBePushed("right"));
+				if((super.dir == "left" && !thing.canBePushed("right") || (super.dir == "right" && !thing.canBePushed("left")) || super.dir == "up" && !thing.canBePushed("down")) || (super.dir == "down" && !thing.canBePushed("up"))) {
 					canRetract = false;
 					break;
 				}
@@ -187,6 +185,7 @@ public class Retractor extends Thing {
 			boolean pullingSelf = false;
 			if(!canRetract) {
 				pullingSelf = true;
+				System.out.println("just pulling myself along...");
 			}
 			if((super.dir == "up" && super.y == 1) || (super.dir == "down" && super.y == Game.levelSize - 2) || (super.dir == "left" && super.x == 1) || (super.dir == "right" && super.x == Game.levelSize - 2)) {
 				pullingSelf = true;
@@ -204,24 +203,26 @@ public class Retractor extends Thing {
 					super.moveDir = super.dir;
 					super.timeMoving = 0;
 				}
-				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
-					Thing thing = (Thing) Game.currentLevel.content.get(i);
-					if(!thing.moved) {
-						continue;
-					}
-					switch(super.dir) {
-						case "up":
-							thing.moveDir = "down";
-							break;
-						case "down":
-							thing.moveDir = "up";
-							break;
-						case "left":
-							thing.moveDir = "right";
-							break;
-						case "right":
-							thing.moveDir = "left";
-							break;
+				else {
+					for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+						Thing thing = (Thing) Game.currentLevel.content.get(i);
+						if(!thing.moved) {
+							continue;
+						}
+						switch(super.dir) {
+							case "up":
+								thing.moveDir = "down";
+								break;
+							case "down":
+								thing.moveDir = "up";
+								break;
+							case "left":
+								thing.moveDir = "right";
+								break;
+							case "right":
+								thing.moveDir = "left";
+								break;
+						}
 					}
 				}
 			}
@@ -279,7 +280,7 @@ public class Retractor extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		//debug
-		if(super.moved) {
+		if(super.moved && false) {
 			g.setColor(new Color(255, 0, 0));
 			g.fillRect(x, y, w, h);
 		}
@@ -364,10 +365,16 @@ public class Retractor extends Thing {
 		return true; // (just to appease the compiler)
 	}
 	public void raisedRect(Graphics g, double x, double y, double w, double h) {
-		if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {
+		if(super.dir == "right" && x + w >= (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
+			x = (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - w;
+		}
+		else if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			x = (super.x * Game.tileSize) + Game.tileSize - w;
 		}
-		if(y + h >= (super.y * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {
+		if(super.dir == "down" && y + h >= (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
+			y = (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - h;
+		}
+		else if(y + h >= (super.y * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			y = (super.y * Game.tileSize) + Game.tileSize - h;
 		}
 		int vX = (int) (x);
@@ -482,8 +489,22 @@ public class Retractor extends Thing {
 		/*
 		Returns whether this can be pushed without colliding with a wall. Assumes no other extenders exist.
 		*/
-		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.tileSize - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.tileSize - 1))) {
+		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.levelSize - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.levelSize - 1))) {
 			return false;
+		}
+		if(super.extension != 0) {
+			if(dir == "left" && super.dir == "left" && super.x <= 1) {
+				return false;
+			}
+			if(dir == "right" && super.dir == "right" && super.x >= Game.levelSize - 2) {
+				return false;
+			}
+			if(dir == "up" && super.dir == "up" && super.y <= 1) {
+				return false;
+			}
+			if(dir == "down" && super.dir == "down" && super.y >= Game.levelSize - 2) {
+				return false;
+			}
 		}
 		return true;
 	}
