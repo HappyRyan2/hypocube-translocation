@@ -25,6 +25,7 @@ public class Game {
 		if(!initialized) {
 			initialized = true;
 			levelPacks.add(new TutorialPack());
+			levelPacks.add(new MicroPack());
 		}
 		if(state == "home") {
 			// display the home page
