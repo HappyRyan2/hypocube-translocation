@@ -71,6 +71,12 @@ public class Player extends Thing {
 		}
 		g.setColor(darkBlue);
 		g.fillOval(x + (w / 3), y + (h / 3), (w / 3), (h / 3));
+		//win animation
+		if(Game.currentLevel.isComplete()) {
+			if(super.hoverY < h * super.height) {
+				super.hoverY ++;
+			}
+		}
 	}
 	public void raisedRect(Graphics g, double x, double y, double w, double h) {
 		if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {

@@ -21,23 +21,11 @@ public class Goal extends Thing {
 		int y = (int) (super.y * Game.tileSize);
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
-		//debug
-		if(super.moved && false) {
-			g.setColor(new Color(255, 0, 0));
-			g.fillRect(x, y, w, h);
-		}
 		g.setColor(darkRed);
-		//horizontal
-		// rect(g, (int) x, (int) (y + (super.height * Game.tileSize)), (int) w / 3, (int) h / 6);
-		// rect(g, (int) (x + w - (w / 3)), (int) (y + (super.height * Game.tileSize)), (int) w / 3, (int) h / 6);
-		// rect(g, (int) x, (int) (y + (super.height * Game.tileSize) + (h / 6 * 5)), (int) w / 3, (int) h / 6);
-		// rect(g, (int) (x + w - (w / 3)), (int) (y + (super.height * Game.tileSize)) + (h / 6 * 5), (int) w / 3, (int) h / 6);
-		// vertical
-		// rect(g, (int) x, (int) (y + (super.height * Game.tileSize)), (int) w / 6, (int) h / 3);
-		// rect(g, (int) x, (int) (y + (super.height * Game.tileSize)) + h - (h / 3), (int) w / 6, (int) h / 3);
-		// rect(g, (int) (x + (w / 6 * 5)), (int) (y + (super.height * Game.tileSize)), (int) w / 6, (int) h / 3);
-		// rect(g, (int) (x + (w / 6 * 5)), (int) (y + (super.height * Game.tileSize)) + h - (h / 3), (int) w / 6, (int) h / 3);
 		rect(g, (double) x, (double) y, (double) w, (double) h);
+		if(Game.currentLevel.isComplete()) {
+			darkRed = new Color(128 - (super.color / 2), 0, 0);
+		}
 	}
 	public void rect(Graphics g, double x, double y, double w, double h) {
 		if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {

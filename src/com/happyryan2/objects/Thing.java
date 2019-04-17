@@ -20,6 +20,7 @@ public class Thing {
 	public boolean moved = false;
 	public String moveDir = "none";
 	public int timeMoving;
+	public int color;
 	public void display(Graphics g) { }
 	public void update() { }
 	public void checkMovement(String dir) {}

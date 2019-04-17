@@ -9,6 +9,8 @@ import com.happyryan2.objects.*;
 
 public class Level {
 	public List content;
+	public boolean hasBeenCompleted = false;
+	public boolean completeNow = false;
 	private boolean resized = false;
 	public Level() {
 		this.content = new ArrayList();
@@ -25,6 +27,10 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.update();
+		}
+		if(this.isComplete()) {
+			hasBeenCompleted = true;
+			completeNow = true;
 		}
 	}
 	public void display(Graphics g) {
@@ -127,5 +133,26 @@ public class Level {
 		System.out.println("it is an extender at coords (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
 		thing.moved = true;
 		thing.checkMovement(dir);
+	}
+	public boolean isComplete() {
+		boolean complete = true;
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Goal) {
+				boolean occupied = false;
+				for(short j = 0; j < this.content.size(); j ++) {
+					Thing thing2 = this.content.get(j);
+					if(thing2 instanceof Player && thing2.x == thing1.x && thing2.y == thing1.y) {
+						occupied = true;
+						break;
+					}
+				}
+				if(!occupied) {
+					complete = false;
+					break;
+				}
+			}
+		}
+		return complete;
 	}
 }
