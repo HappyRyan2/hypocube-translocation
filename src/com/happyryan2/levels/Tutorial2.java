@@ -9,6 +9,7 @@ import com.happyryan2.game.Level;
 public class Tutorial2 extends Level {
 	List content = new ArrayList();
 	public Tutorial2() {
+		super.infoText = "green retractors can both push and pull\n(grey ones can only push forward)";
 		super.content.add(new Retractor(2, 1, "left"));
 		super.content.add(new Player(0, 1));
 		super.content.add(new Goal(1, 1));

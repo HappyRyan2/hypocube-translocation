@@ -13,5 +13,6 @@ public class TutorialPack extends LevelPack {
 		this.levels.add(new Tutorial2());
 		this.levels.add(new Tutorial3());
 		this.levels.add(new Tutorial4());
+		this.levels.add(new Tutorial5());
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Color;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.Math;
 
 import com.happyryan2.objects.*;
 
@@ -12,6 +13,8 @@ public class Level {
 	public boolean hasBeenCompleted = false;
 	public boolean completeNow = false;
 	private boolean resized = false;
+	public String infoText = "";
+	public int completionY = -500;
 	public Level() {
 		this.content = new ArrayList();
 	}
@@ -70,6 +73,14 @@ public class Level {
 		g.fillRect(0, 0, 200, 800);
 		g.fillRect(600, 0, 200, 800);
 		g.fillRect(0, 600, 800, 200);
+		//gui box for winning
+		if(this.isComplete()) {
+			this.completionY += Math.min(Math.abs(this.completionY, 200) / 10, 1);
+			g.setColor(new Color(100, 100, 100));
+			g.fillRect(200, this.completionY, 400, 400);
+			g.setColor(new Color(0, 0, 255));
+			g.drawString("Level Complete", 400, this.completionY + 100);
+		}
 	}
 	public void resize() {
 		resized = true;
