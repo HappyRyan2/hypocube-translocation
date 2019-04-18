@@ -65,16 +65,26 @@ public class Player extends Thing {
 		raisedRect(g, (double) (x + (w / 6 * 5)), (double) y, (double) w / 6, (double) h / 3);
 		raisedRect(g, (double) (x + (w / 6 * 5)), (double) y + h - (h / 3), (double) w / 6, (double) h / 3);
 		//circle
-		for(short i = 0; i < Game.tileSize * super.height; i ++) {
+		for(short i = (short) Math.round(super.hoverY); i < Game.tileSize * super.height; i ++) {
 			g.setColor(lightBlue);
 			g.fillOval(x + (w / 3), y + (h / 3) + i, (w / 3), (h / 3));
 		}
 		g.setColor(darkBlue);
-		g.fillOval(x + (w / 3), y + (h / 3), (w / 3), (h / 3));
+		g.fillOval(x + (w / 3), (int) (y + (h / 3) + super.hoverY), (w / 3), (h / 3));
 		//win animation
 		if(Game.currentLevel.isComplete()) {
 			if(super.hoverY < h * super.height) {
 				super.hoverY ++;
+			}
+			else {
+				super.color += (super.color < 255) ? 5 : 0;
+				darkBlue = new Color(super.color / 2, 0, 255);
+				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+					Thing thing = (Thing) Game.currentLevel.content.get(i);
+					if(thing instanceof Goal && thing.x == super.x && thing.y == super.y) {
+						thing.winAnimation = true;
+					}
+				}
 			}
 		}
 	}

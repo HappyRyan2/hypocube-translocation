@@ -26,6 +26,7 @@ public class Extender extends Thing {
 		super.extension = 0;
 	}
 	public void update() {
+		System.out.println("can they click? " + Game.canClick);
 		// calculate visual position for hitboxes
 		super.height = Game.sizes[(int) Game.levelSize - 2];
 		int x = (int) (super.x * Game.tileSize);
@@ -33,7 +34,7 @@ public class Extender extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
-		if(this.cursorHovered() && Game.canClick && super.extension <= 0) {
+		if(this.cursorHovered() && Game.canClick && super.extension <= 0 && super.dir != "none") {
 			// decide which tiles will be moved when it extends forward
 			switch(super.dir) {
 				case "up":
@@ -153,7 +154,7 @@ public class Extender extends Thing {
 				}
 			}
 		}
-		else if(this.cursorHovered() && Game.canClick) {
+		else if(this.cursorHovered() && Game.canClick && super.dir != "none") {
 			Screen.cursor = "hand";
 			if(super.hoverY < h * super.height) {
 				super.hoverY ++;
@@ -300,13 +301,13 @@ public class Extender extends Thing {
 		return true; // (just to appease the compiler)
 	}
 	public void raisedRect(Graphics g, double x, double y, double w, double h) {
-		if(super.dir == "right" && x + w >= (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
+		if((super.dir == "right") && x + w >= (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			x = (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - w;
 		}
 		else if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			x = (super.x * Game.tileSize) + Game.tileSize - w;
 		}
-		if(super.dir == "down" && y + h >= (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
+		if((super.dir == "down") && y + h >= (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			y = (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - h;
 		}
 		else if(y + h >= (super.y * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
@@ -316,9 +317,9 @@ public class Extender extends Thing {
 		int vY = (int) (y);
 		int vW = (int) (w);
 		int vH = (int) (h);
-		g.setColor(new Color(150, 150, 150, 255));
+		g.setColor(new Color(150, 150, 150));
 		g.fillRect(vX, (int) (vY + vH + super.hoverY), vW, (int) (Game.tileSize * super.height - super.hoverY));
-		g.setColor(new Color(100, 100, 100, 255));
+		g.setColor(new Color(100, 100, 100));
 		g.fillRect(vX, (int) (vY + super.hoverY), vW, vH);
 	}
 	@Override

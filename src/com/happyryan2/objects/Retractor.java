@@ -365,13 +365,13 @@ public class Retractor extends Thing {
 		return true; // (just to appease the compiler)
 	}
 	public void raisedRect(Graphics g, double x, double y, double w, double h) {
-		if(super.dir == "right" && x + w >= (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
+		if((super.dir == "right") && x + w >= (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			x = (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - w;
 		}
 		else if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			x = (super.x * Game.tileSize) + Game.tileSize - w;
 		}
-		if(super.dir == "down" && y + h >= (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
+		if((super.dir == "down") && y + h >= (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
 			y = (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - h;
 		}
 		else if(y + h >= (super.y * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {

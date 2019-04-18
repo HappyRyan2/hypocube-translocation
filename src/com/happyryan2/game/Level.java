@@ -20,6 +20,9 @@ public class Level {
 		if(!resized) {
 			resize();
 		}
+		if(this.isComplete()) {
+			Game.canClick = false;
+		}
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
 			thing.moved = false;
@@ -46,7 +49,7 @@ public class Level {
 			for(short i = 0; i < unsorted.size(); i ++) {
 				Thing thing = (Thing) unsorted.get(i);
 				Thing highest = (Thing) unsorted.get(highestIndex);
-				if(thing.y < highest.y && !(highest instanceof Goal)) {
+				if(thing.y < highest.y && !(highest instanceof Goal) || thing instanceof Goal) {
 					highestIndex = i;
 				}
 			}
@@ -141,8 +144,8 @@ public class Level {
 			if(thing instanceof Goal) {
 				boolean occupied = false;
 				for(short j = 0; j < this.content.size(); j ++) {
-					Thing thing2 = this.content.get(j);
-					if(thing2 instanceof Player && thing2.x == thing1.x && thing2.y == thing1.y) {
+					Thing thing2 = (Thing) this.content.get(j);
+					if(thing2 instanceof Player && thing2.x == thing.x && thing2.y == thing.y) {
 						occupied = true;
 						break;
 					}

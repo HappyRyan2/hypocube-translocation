@@ -21,6 +21,7 @@ public class Thing {
 	public String moveDir = "none";
 	public int timeMoving;
 	public int color;
+	public boolean winAnimation = false;
 	public void display(Graphics g) { }
 	public void update() { }
 	public void checkMovement(String dir) {}

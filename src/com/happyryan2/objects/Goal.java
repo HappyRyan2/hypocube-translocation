@@ -23,8 +23,13 @@ public class Goal extends Thing {
 		int h = (int) (Game.tileSize);
 		g.setColor(darkRed);
 		rect(g, (double) x, (double) y, (double) w, (double) h);
-		if(Game.currentLevel.isComplete()) {
-			darkRed = new Color(128 - (super.color / 2), 0, 0);
+		if(super.winAnimation) {
+			super.color += (super.color < 255) ? 5 : 0;
+			darkRed = new Color(128, 0, super.color);
+			if(super.color >= 255) {
+				Game.levelOpen ++;
+				Game.canClick = true;
+			}
 		}
 	}
 	public void rect(Graphics g, double x, double y, double w, double h) {
