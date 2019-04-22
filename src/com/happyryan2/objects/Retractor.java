@@ -18,6 +18,8 @@ public class Retractor extends Thing {
 	public Retractor(float x, float y, String dir) {
 		super.x = x;
 		super.y = y;
+		super.origX = x;
+		super.origY = y;
 		super.dir = dir;
 		super.extending = false;
 		super.retracting = false;
@@ -32,7 +34,7 @@ public class Retractor extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
-		if(this.cursorHovered() && Game.canClick && super.extension <= 0) {
+		if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.extension <= 0) {
 			// decide which tiles will be moved when it extends forward
 			switch(super.dir) {
 				case "up":
@@ -151,7 +153,7 @@ public class Retractor extends Thing {
 				}
 			}
 		}
-		else if(this.cursorHovered() && Game.canClick) {
+		else if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.extension >= 1) {
 			super.ignoring = true;
 			// decide which tiles will be moved when it retracts
 			switch(super.dir) {
@@ -175,7 +177,6 @@ public class Retractor extends Thing {
 				if(!thing.moved) {
 					continue;
 				}
-				System.out.println("can (" + thing.x + ", " + thing.y + ") be pushed right? " + thing.canBePushed("right"));
 				if((super.dir == "left" && !thing.canBePushed("right") || (super.dir == "right" && !thing.canBePushed("left")) || super.dir == "up" && !thing.canBePushed("down")) || (super.dir == "down" && !thing.canBePushed("up"))) {
 					canRetract = false;
 					break;
@@ -185,7 +186,6 @@ public class Retractor extends Thing {
 			boolean pullingSelf = false;
 			if(!canRetract) {
 				pullingSelf = true;
-				System.out.println("just pulling myself along...");
 			}
 			if((super.dir == "up" && super.y == 1) || (super.dir == "down" && super.y == Game.levelSize - 2) || (super.dir == "left" && super.x == 1) || (super.dir == "right" && super.x == Game.levelSize - 2)) {
 				pullingSelf = true;
@@ -235,7 +235,8 @@ public class Retractor extends Thing {
 		if(super.extending) {
 			super.extension += 0.05;
 			if(super.extension >= 1) {
-				Game.canClick = true;
+				System.out.println("finished extending");
+				Game.canClick = !Game.currentLevel.isComplete();
 				super.extending = false;
 				super.extension = 1;
 			}
@@ -243,7 +244,8 @@ public class Retractor extends Thing {
 		else if(super.retracting) {
 			super.extension -= 0.05;
 			if(super.extension <= 0) {
-				Game.canClick = true;
+				System.out.println("finished retracting");
+				Game.canClick = !Game.currentLevel.isComplete();
 				super.retracting = false;
 				super.extension = 0;
 			}
@@ -346,8 +348,8 @@ public class Retractor extends Thing {
 		g.fillPolygon(triangle);
 	}
 	public boolean cursorHovered() {
-		int x = (int) (super.x * Game.tileSize) + 200;
-		int y = (int) (super.y * Game.tileSize) + 200;
+		int x = (int) (super.x * Game.tileSize) + 100;
+		int y = (int) (super.y * Game.tileSize) + 100;
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		if(super.dir == "left") {
@@ -391,7 +393,6 @@ public class Retractor extends Thing {
 		/*
 		This function sets all of the tiles that would be moved to be 'moved' depending on which direction it was pushed.
 		*/
-		System.out.println("deciding which tiles are affected by (" + super.x + ", " + super.y + ")");
 		if(super.extension == 0) {
 			switch(dir) {
 				case "up":

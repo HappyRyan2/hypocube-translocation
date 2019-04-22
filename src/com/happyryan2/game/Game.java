@@ -11,7 +11,7 @@ import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "play";
+	public static String state = "select-level";
 	public static List levelPacks = new ArrayList();
 	public static int packOpen = 0;
 	public static int levelOpen = 0;
@@ -20,6 +20,7 @@ public class Game {
 	public static double[] sizes = {0.0625, 0.08, 0.095, 0.1, 0.104, 0.108, 0.111, 0.113, 0.115, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116};
 	public static boolean clickBefore = false;
 	public static boolean canClick = true;
+	public static boolean startingLevel = false;
 	public static Level currentLevel;
 	public static void run() {
 		if(!initialized) {
@@ -30,12 +31,19 @@ public class Game {
 		if(state == "home") {
 			// display the home page
 		}
+		else if(state == "select-levelpack") {
+			// display the level pack selection screen
+		}
+		else if(state == "select-level") {
+			// display the level selection screen
+			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
+			pack.updateLevelSelect();
+		}
 		else if(state == "play") {
 			// display the world
 			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
 			currentLevel = (Level) pack.levels.get(levelOpen);
 			currentLevel.update();
-			System.out.println("updating the level");
 		}
 		clickBefore = MouseClick.mouseIsPressed;
 	}
@@ -43,8 +51,20 @@ public class Game {
 		if(!initialized) {
 			return;
 		}
-		LevelPack pack = (LevelPack) levelPacks.get(packOpen);
-		Level level = (Level) pack.levels.get(levelOpen);
-		level.display(g);
+		if(state == "home") {
+
+		}
+		else if(state == "select-levelpack") {
+
+		}
+		else if(state == "select-level") {
+			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
+			pack.displayLevelSelect(g);
+		}
+		else if(state == "play") {
+			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
+			Level level = (Level) pack.levels.get(levelOpen);
+			level.display(g);
+		}
 	}
 }

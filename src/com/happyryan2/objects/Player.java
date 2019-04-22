@@ -17,6 +17,8 @@ public class Player extends Thing {
 	public Player(float x, float y) {
 		super.x = x;
 		super.y = y;
+		super.origX = x;
+		super.origY = y;
 	}
 	public void update() {
 		super.height = Game.sizes[(int) Game.levelSize - 2];
@@ -72,13 +74,13 @@ public class Player extends Thing {
 		g.setColor(darkBlue);
 		g.fillOval(x + (w / 3), (int) (y + (h / 3) + super.hoverY), (w / 3), (h / 3));
 		//win animation
+		darkBlue = new Color(super.color / 2, 0, 255);
 		if(Game.currentLevel.isComplete()) {
 			if(super.hoverY < h * super.height) {
 				super.hoverY ++;
 			}
 			else {
 				super.color += (super.color < 255) ? 5 : 0;
-				darkBlue = new Color(super.color / 2, 0, 255);
 				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 					Thing thing = (Thing) Game.currentLevel.content.get(i);
 					if(thing instanceof Goal && thing.x == super.x && thing.y == super.y) {

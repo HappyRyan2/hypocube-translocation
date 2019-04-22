@@ -8,6 +8,7 @@ import com.happyryan2.levels.*;
 
 public class TutorialPack extends LevelPack {
 	public TutorialPack() {
+		super.name = "Informational Pack";
 		this.levels = new ArrayList();
 		this.levels.add(new Tutorial1());
 		this.levels.add(new Tutorial2());

@@ -9,6 +9,8 @@ import java.awt.Graphics;
 public class Thing {
 	public float x;
 	public float y;
+	public float origX;
+	public float origY;
 	public float hoverY;
 	public String dir;
 	public double height;

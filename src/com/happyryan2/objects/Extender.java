@@ -19,6 +19,8 @@ public class Extender extends Thing {
 	public Extender(float x, float y, String dir) {
 		super.x = x;
 		super.y = y;
+		super.origX = x;
+		super.origY = y;
 		super.dir = dir;
 		super.extending = false;
 		super.retracting = false;
@@ -26,7 +28,6 @@ public class Extender extends Thing {
 		super.extension = 0;
 	}
 	public void update() {
-		System.out.println("can they click? " + Game.canClick);
 		// calculate visual position for hitboxes
 		super.height = Game.sizes[(int) Game.levelSize - 2];
 		int x = (int) (super.x * Game.tileSize);
@@ -34,7 +35,7 @@ public class Extender extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
-		if(this.cursorHovered() && Game.canClick && super.extension <= 0 && super.dir != "none") {
+		if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.extension <= 0 && super.dir != "none") {
 			// decide which tiles will be moved when it extends forward
 			switch(super.dir) {
 				case "up":
@@ -154,7 +155,7 @@ public class Extender extends Thing {
 				}
 			}
 		}
-		else if(this.cursorHovered() && Game.canClick && super.dir != "none") {
+		else if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.dir != "none") {
 			Screen.cursor = "hand";
 			if(super.hoverY < h * super.height) {
 				super.hoverY ++;
@@ -171,7 +172,7 @@ public class Extender extends Thing {
 		if(super.extending) {
 			super.extension += 0.05;
 			if(super.extension >= 1) {
-				Game.canClick = true;
+				Game.canClick = !Game.currentLevel.isComplete();
 				super.extending = false;
 				super.extension = 1;
 			}
@@ -179,7 +180,7 @@ public class Extender extends Thing {
 		else if(super.retracting) {
 			super.extension -= 0.05;
 			if(super.extension <= 0) {
-				Game.canClick = true;
+				Game.canClick = !Game.currentLevel.isComplete();
 				super.retracting = false;
 				super.extension = 0;
 			}
@@ -282,8 +283,8 @@ public class Extender extends Thing {
 		g.fillPolygon(triangle);
 	}
 	public boolean cursorHovered() {
-		int x = (int) (super.x * Game.tileSize) + 200;
-		int y = (int) (super.y * Game.tileSize) + 200;
+		int x = (int) (super.x * Game.tileSize) + 100;
+		int y = (int) (super.y * Game.tileSize) + 100;
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		if(super.dir == "left") {
@@ -327,7 +328,6 @@ public class Extender extends Thing {
 		/*
 		This function sets all of the tiles that would be moved to be 'moved' depending on which direction it was pushed.
 		*/
-		System.out.println("deciding which tiles are affected by (" + super.x + ", " + super.y + ")");
 		if(super.extension == 0) {
 			switch(dir) {
 				case "up":

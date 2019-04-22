@@ -12,6 +12,8 @@ public class Goal extends Thing {
 	public Goal(float x, float y) {
 		super.x = x;
 		super.y = y;
+		super.origX = x;
+		super.origY = y;
 	}
 	public void update() {
 		super.height = Game.sizes[(int) Game.levelSize - 2];
@@ -23,12 +25,12 @@ public class Goal extends Thing {
 		int h = (int) (Game.tileSize);
 		g.setColor(darkRed);
 		rect(g, (double) x, (double) y, (double) w, (double) h);
+		darkRed = new Color(128, 0, super.color);
 		if(super.winAnimation) {
 			super.color += (super.color < 255) ? 5 : 0;
-			darkRed = new Color(128, 0, super.color);
 			if(super.color >= 255) {
-				Game.levelOpen ++;
-				Game.canClick = true;
+				// Game.levelOpen ++;
+				// Game.canClick = true;
 			}
 		}
 	}
