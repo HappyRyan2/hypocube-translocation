@@ -7,6 +7,7 @@ com/happyryan2/levels/Tutorial2.java
 com/happyryan2/levels/Tutorial3.java
 com/happyryan2/levels/Tutorial4.java
 com/happyryan2/levels/Tutorial5.java
+com/happyryan2/levels/Intro1.java
 com/happyryan2/levels/Micro1.java
 com/happyryan2/objects/Thing.java
 com/happyryan2/objects/Extender.java
@@ -15,6 +16,7 @@ com/happyryan2/objects/Player.java
 com/happyryan2/objects/Goal.java
 com/happyryan2/packs/TutorialPack.java
 com/happyryan2/packs/MicroPack.java
+com/happyryan2/packs/IntroPack.java
 com/happyryan2/utilities/Screen.java
 com/happyryan2/utilities/Delay.java
 com/happyryan2/utilities/MousePos.java

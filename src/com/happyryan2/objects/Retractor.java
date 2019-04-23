@@ -397,15 +397,27 @@ public class Retractor extends Thing {
 			switch(dir) {
 				case "up":
 					Game.currentLevel.setMoved(super.x, super.y - 1, dir);
+					if(super.dir == "down") {
+						Game.currentLevel.setMoved(super.x, super.y + 1, dir);
+					}
 					break;
 				case "down":
 					Game.currentLevel.setMoved(super.x, super.y + 1, dir);
+					if(super.dir == "up") {
+						Game.currentLevel.setMoved(super.x, super.y - 1, dir);
+					}
 					break;
 				case "left":
 					Game.currentLevel.setMoved(super.x - 1, super.y, dir);
+					if(super.dir == "right") {
+						Game.currentLevel.setMoved(super.x + 1, super.y, dir);
+					}
 					break;
 				case "right":
 					Game.currentLevel.setMoved(super.x + 1, super.y, dir);
+					if(super.dir == "left") {
+						Game.currentLevel.setMoved(super.x - 1, super.y, dir);
+					}
 					break;
 			}
 		}
@@ -418,6 +430,7 @@ public class Retractor extends Thing {
 							break;
 						case "down":
 							Game.currentLevel.setMoved(super.x, super.y - 1, dir);
+							Game.currentLevel.setMoved(super.x, super.y + 2, dir);
 							break;
 						case "left":
 							Game.currentLevel.setMoved(super.x, super.y - 1, dir);
@@ -433,6 +446,7 @@ public class Retractor extends Thing {
 					switch(super.dir) {
 						case "up":
 							Game.currentLevel.setMoved(super.x, super.y + 1, dir);
+							Game.currentLevel.setMoved(super.x, super.y - 2, dir);
 							break;
 						case "down":
 							Game.currentLevel.setMoved(super.x, super.y + 2, dir);
@@ -462,6 +476,7 @@ public class Retractor extends Thing {
 							break;
 						case "right":
 							Game.currentLevel.setMoved(super.x - 1, super.y, dir);
+							Game.currentLevel.setMoved(super.x + 2, super.y, dir);
 							break;
 						}
 					break;
@@ -477,6 +492,7 @@ public class Retractor extends Thing {
 							break;
 						case "left":
 							Game.currentLevel.setMoved(super.x - 1, super.y, dir);
+							Game.currentLevel.setMoved(super.x + 2, super.y, dir);
 							break;
 						case "right":
 							Game.currentLevel.setMoved(super.x + 2, super.y, dir);

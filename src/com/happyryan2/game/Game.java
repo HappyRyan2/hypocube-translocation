@@ -11,9 +11,9 @@ import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "select-level";
+	public static String state = "play";
 	public static List levelPacks = new ArrayList();
-	public static int packOpen = 0;
+	public static int packOpen = 1;
 	public static int levelOpen = 0;
 	public static float levelSize = 0;
 	public static float tileSize = 0;
@@ -26,6 +26,7 @@ public class Game {
 		if(!initialized) {
 			initialized = true;
 			levelPacks.add(new TutorialPack());
+			levelPacks.add(new IntroPack());
 			levelPacks.add(new MicroPack());
 		}
 		if(state == "home") {
