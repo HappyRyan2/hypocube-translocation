@@ -23,15 +23,39 @@ public class Level {
 	public Button next = new Button(500, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowright", "circle");
 	public Button menu = new Button(400, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:3rects", "circle");
 	public Button retry = new Button(300, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowleft", "circle");
+	public boolean lastLevel = false;
 	public Level() {
 		this.content = new ArrayList();
+	}
+	public void reset() {
+		this.completionY = -500;
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			thing.x = thing.origX;
+			thing.y = thing.origY;
+			if(thing instanceof Extender || thing instanceof Retractor) {
+				thing.extending = false;
+				thing.retracting = false;
+				thing.extension = 0;
+			}
+			else if(thing instanceof Player || thing instanceof Goal) {
+				thing.hoverY = 0;
+				thing.color = 0;
+				thing.winAnimation = false;
+			}
+		}
 	}
 	public void update() {
 		// initialize
 		if(!resized) {
 			resize();
 		}
-		if(this.isComplete()) {
+		LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
+		int size = pack.levels.size();
+		if(Game.levelOpen == size - 1) {
+			this.lastLevel = true;
+		}
+		if(this.isComplete() || Game.transition > 5) {
 			Game.canClick = false;
 		}
 		if(Game.startingLevel && !MouseClick.mouseIsPressed) {
@@ -50,29 +74,22 @@ public class Level {
 			completeNow = true;
 			this.retry.update();
 			this.menu.update();
-			this.next.update();
-			if(this.next.pressed) {
+			if(!this.lastLevel) {
+				this.next.update();
+			}
+			if(this.menu.pressed) {
+				Game.transition = 255;
+				Game.state = "select-level";
+			}
+			if(this.next.pressed && !this.lastLevel) {
+				Game.transition = 255;
 				Game.levelOpen ++;
 				Game.startingLevel = true;
 			}
 			if(this.retry.pressed) {
+				Game.transition = 255;
 				Game.startingLevel = true;
-				this.completionY = -500;
-				for(short i = 0; i < this.content.size(); i ++) {
-					Thing thing = (Thing) this.content.get(i);
-					thing.x = thing.origX;
-					thing.y = thing.origY;
-					if(thing instanceof Extender || thing instanceof Retractor) {
-						thing.extending = false;
-						thing.retracting = false;
-						thing.extension = 0;
-					}
-					else if(thing instanceof Player || thing instanceof Goal) {
-						thing.hoverY = 0;
-						thing.color = 0;
-						thing.winAnimation = false;
-					}
-				}
+				this.reset();
 			}
 		}
 	}
@@ -119,7 +136,13 @@ public class Level {
 			this.next.y = this.completionY + 400;
 			this.retry.display(g);
 			this.menu.display(g);
-			this.next.display(g);
+			if(!this.lastLevel) {
+				this.next.display(g);
+			}
+			else {
+				this.retry.x = 350;
+				this.menu.x = 450;
+			}
 		}
 		// border
 		g.setColor(new Color(125, 125, 125));
@@ -128,26 +151,11 @@ public class Level {
 		g.fillRect(700, 0, 100, 800);
 		g.fillRect(0, 700, 800, 100);
 		// text for tutorials
-		if(this.infoTextBottom != "") {
+		if(this.infoTextBottom != "" && !this.isComplete()) {
 			g.setColor(new Color(200, 200, 200));
 			g.setFont(Screen.fontRighteous.deriveFont(15f));
-			boolean twoLines = false;
-			// for(short i = 0; i < this.infoText.length() - 1; i ++) {
-			// 	System.out.println(this.infoText.substring(i, i + 2));
-			// 	System.out.println(this.infoText.substring(i, i + 2) == "/n");
-			// 	if(this.infoText.substring(i, i + 2) == "/n") { // regular escape characters (\n) aren't detected for some reason
-			// 		twoLines = true;
-			// 		System.out.println("found a newline");
-			// 		Screen.centerText(g, 400, 50, this.infoText.substring(0, i));
-			// 		Screen.centerText(g, 400, 750, this.infoText.substring(i + 1, this.infoText.length()));
-			// 		break;
-			// 	}
-			// }
-			if(!this.isComplete()) {
-				// System.out.println("only one line");
-				Screen.centerText(g, 400, 725, this.infoTextTop);
-				Screen.centerText(g, 400, 750, this.infoTextBottom);
-			}
+			Screen.centerText(g, 400, 725, this.infoTextTop);
+			Screen.centerText(g, 400, 750, this.infoTextBottom);
 		}
 	}
 	public void resize() {

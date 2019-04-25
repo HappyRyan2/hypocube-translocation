@@ -1,6 +1,7 @@
 package com.happyryan2.game;
 
 import java.awt.Graphics;
+import java.awt.Color;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -68,7 +69,10 @@ public class Game {
 			Level level = (Level) pack.levels.get(levelOpen);
 			level.display(g);
 		}
+		// transitions
 		g.setColor(new Color(255, 255, 255, transition));
 		g.fillRect(0, 0, 800, 800);
+		transition -= (transition > 0) ? 10 : 0;
+		transition = (transition < 0) ? 0 : transition;
 	}
 }

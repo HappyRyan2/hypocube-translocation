@@ -106,7 +106,7 @@ public class Button {
 			if(this.hoverY < this.hoverH) {
 				this.hoverY ++;
 			}
-			if(MouseClick.mouseIsPressed) {
+			if(MouseClick.mouseIsPressed && Game.transition == 0) {
 				this.pressed = true;
 			}
 		}

@@ -56,7 +56,6 @@ public class Screen extends JPanel {
 			File dir;
 			if(System.getProperty("user.dir").contains("src")) {
 				// we are in the source directory, this is an experimental version being run by the dev
-				System.out.println("in the directory: 'src'");
 				dir = new File(new File(System.getProperty("user.dir")).getParent());
 			}
 			else {
@@ -73,19 +72,12 @@ public class Screen extends JPanel {
 			e.printStackTrace();
 		}
 		try {
-			File dir;
-			if(System.getProperty("user.dir").contains("src")) {
-				System.out.println("in the directory: 'src' (for the app icon)");
-				dir = new File(new File(System.getProperty("user.dir")).getParent());
-			}
-			else {
-				dir = new File(System.getProperty("user.dir"));
-			}
-			System.out.println(dir.getPath() + "\\res\\graphics\\icon.png");
-			// URL url = ClassLoader.getSystemResource(dir.getPath() + "res/graphics/icon.png");
-			URL url = frame.getClass().getResource(dir.getPath() + "\\res\\graphics\\icon.png");
-			BufferedImage image = ImageIO.read(url);
-			frame.setIconImage(image);
+			// File dir = new File(System.getProperty("user.dir"));
+			// System.out.println(dir.getPath() + "\\res\\graphics\\icon.png");
+			URL url = ClassLoader.getSystemResource("res/graphics/icon.png");
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			Image img = kit.createImage(url);
+			frame.setIconImage(img);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
