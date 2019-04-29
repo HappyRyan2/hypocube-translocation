@@ -35,6 +35,7 @@ public class Extender extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
+		this.ignoring = true;
 		if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.extension <= 0 && super.dir != "none") {
 			// decide which tiles will be moved when it extends forward
 			switch(super.dir) {
@@ -168,6 +169,7 @@ public class Extender extends Thing {
 		else if(super.hoverY > 0 && !super.extending && !super.retracting) {
 			super.hoverY --;
 		}
+		this.ignoring = false;
 		// extension + pushing tiles
 		if(super.extending) {
 			super.extension += 0.05;

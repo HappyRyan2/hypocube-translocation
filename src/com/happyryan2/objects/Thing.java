@@ -24,6 +24,7 @@ public class Thing {
 	public int timeMoving;
 	public int color;
 	public boolean winAnimation = false;
+	public boolean deleted = false;
 	public void display(Graphics g) { }
 	public void update() { }
 	public void checkMovement(String dir) {}

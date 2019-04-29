@@ -12,7 +12,7 @@ import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "select-level";
+	public static String state = "select-levelpack";
 	public static List levelPacks = new ArrayList();
 	public static int packOpen = 0;
 	public static int levelOpen = 0;
@@ -24,6 +24,7 @@ public class Game {
 	public static boolean startingLevel = false;
 	public static Level currentLevel;
 	public static int transition = 0;
+	public static int scrollY = 0;
 	public static void run() {
 		if(!initialized) {
 			initialized = true;
@@ -35,7 +36,15 @@ public class Game {
 			// display the home page
 		}
 		else if(state == "select-levelpack") {
-			// display the level pack selection screen
+			for(byte i = 0; i < levelPacks.size(); i ++) {
+				LevelPack pack = (LevelPack) levelPacks.get(i);
+				pack.updateLevelInfo((i * 125) + 100);
+				if(pack.playButton.pressed) {
+					transition = 255;
+					state = "select-level";
+					packOpen = i;
+				}
+			}
 		}
 		else if(state == "select-level") {
 			// display the level selection screen
@@ -58,7 +67,11 @@ public class Game {
 
 		}
 		else if(state == "select-levelpack") {
-
+			// display the level pack selection screen
+			for(byte i = 0; i < levelPacks.size(); i ++) {
+				LevelPack pack = (LevelPack) levelPacks.get(i);
+				pack.displayLevelInfo(g, (i * 125) + 100);
+			}
 		}
 		else if(state == "select-level") {
 			LevelPack pack = (LevelPack) levelPacks.get(packOpen);

@@ -14,7 +14,7 @@ import com.happyryan2.game.Button;
 
 public class Level {
 	public List content;
-	public boolean hasBeenCompleted = false;
+	public boolean hasBeenCompleted = true;
 	public boolean completeNow = false;
 	private boolean resized = false;
 	public String infoTextTop = "";
@@ -22,8 +22,12 @@ public class Level {
 	public int completionY = -500;
 	public Button next = new Button(500, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowright", "circle");
 	public Button menu = new Button(400, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:3rects", "circle");
-	public Button retry = new Button(300, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowleft", "circle");
+	public Button retry = new Button(300, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowleft", "circle"); // retry button that shows when you have completed the level
+	public Button pause = new Button(30, 30, 40, 40, new Color(200, 200, 200), new Color(255, 255, 255), "icon:2rects", "circle");
+	public Button restart = new Button(300, 325, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Restart", "rect"); // retry button that shows when you are on the pause screen
+	public Button exit = new Button(300, 400, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Exit", "rect");
 	public boolean lastLevel = false;
+	public boolean paused = false;
 	public Level() {
 		this.content = new ArrayList();
 	}
@@ -39,6 +43,7 @@ public class Level {
 				thing.extension = 0;
 			}
 			else if(thing instanceof Player || thing instanceof Goal) {
+				thing.deleted = false;
 				thing.hoverY = 0;
 				thing.color = 0;
 				thing.winAnimation = false;
@@ -60,6 +65,23 @@ public class Level {
 		}
 		if(Game.startingLevel && !MouseClick.mouseIsPressed) {
 			Game.canClick = true;
+		}
+		if(this.paused) {
+			Game.canClick = false;
+			this.restart.update();
+			this.exit.update();
+			if(this.restart.pressed) {
+				Game.transition = 255;
+				this.paused = false;
+				this.reset();
+			}
+			if(this.exit.pressed) {
+				this.paused = false;
+				Game.transition = 255;
+				Game.state = "select-level";
+				Game.canClick = false;
+				Game.startingLevel = true;
+			}
 		}
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -85,12 +107,19 @@ public class Level {
 				Game.transition = 255;
 				Game.levelOpen ++;
 				Game.startingLevel = true;
+				// LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
+				Level level = (Level) pack.levels.get(Game.levelOpen);
+				level.reset();
 			}
 			if(this.retry.pressed) {
 				Game.transition = 255;
 				Game.startingLevel = true;
 				this.reset();
 			}
+		}
+		this.pause.update();
+		if(this.pause.pressed && !this.pause.pressedBefore) {
+			this.paused = !this.paused;
 		}
 	}
 	public void display(Graphics g) {
@@ -144,6 +173,15 @@ public class Level {
 				this.menu.x = 450;
 			}
 		}
+		if(this.paused) {
+			g.setColor(new Color(100, 100, 100, 150));
+			g.fillRect(200, 0, 400, 800);
+			g.setFont(Screen.fontRighteous);
+			g.setColor(new Color(255, 255, 255));
+			Screen.centerText(g, 400, 300, "Menu");
+			this.restart.display(g);
+			this.exit.display(g);
+		}
 		// border
 		g.setColor(new Color(125, 125, 125));
 		g.fillRect(0, 0, 800, 100);
@@ -157,6 +195,8 @@ public class Level {
 			Screen.centerText(g, 400, 725, this.infoTextTop);
 			Screen.centerText(g, 400, 750, this.infoTextBottom);
 		}
+		// pause button
+		this.pause.display(g);
 	}
 	public void resize() {
 		resized = true;
@@ -240,15 +280,25 @@ public class Level {
 				}
 			}
 		}
+		boolean hasAGoal = false;
+		for(byte i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Goal) {
+				hasAGoal = true;
+			}
+		}
+		if(!hasAGoal) {
+			return false; // level is under construction
+		}
 		return complete;
 	}
 	public boolean winAnimationDone() {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			if(thing instanceof Goal && thing.color >= 255) {
-				return true;
+			if(thing instanceof Goal && thing.color < 255) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 }

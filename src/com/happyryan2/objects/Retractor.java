@@ -34,6 +34,7 @@ public class Retractor extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
+		super.ignoring = true;
 		if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.extension <= 0) {
 			// decide which tiles will be moved when it extends forward
 			switch(super.dir) {
@@ -154,7 +155,6 @@ public class Retractor extends Thing {
 			}
 		}
 		else if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.extension >= 1) {
-			super.ignoring = true;
 			// decide which tiles will be moved when it retracts
 			switch(super.dir) {
 				case "up":
@@ -226,16 +226,15 @@ public class Retractor extends Thing {
 					}
 				}
 			}
-			super.ignoring = false;
 		}
 		else if(super.hoverY > 0 && !super.extending && !super.retracting) {
 			super.hoverY --;
 		}
+		super.ignoring = false;
 		// extension + pushing tiles
 		if(super.extending) {
 			super.extension += 0.05;
 			if(super.extension >= 1) {
-				System.out.println("finished extending");
 				Game.canClick = !Game.currentLevel.isComplete();
 				super.extending = false;
 				super.extension = 1;
@@ -244,7 +243,6 @@ public class Retractor extends Thing {
 		else if(super.retracting) {
 			super.extension -= 0.05;
 			if(super.extension <= 0) {
-				System.out.println("finished retracting");
 				Game.canClick = !Game.currentLevel.isComplete();
 				super.retracting = false;
 				super.extension = 0;

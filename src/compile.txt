@@ -8,7 +8,10 @@ com/happyryan2/levels/Tutorial3.java
 com/happyryan2/levels/Tutorial4.java
 com/happyryan2/levels/Tutorial5.java
 com/happyryan2/levels/Intro1.java
+com/happyryan2/levels/Intro2.java
 com/happyryan2/levels/Micro1.java
+com/happyryan2/levels/Micro2.java
+com/happyryan2/levels/Micro3.java
 com/happyryan2/objects/Thing.java
 com/happyryan2/objects/Extender.java
 com/happyryan2/objects/Retractor.java

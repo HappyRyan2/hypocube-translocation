@@ -21,6 +21,7 @@ public class Player extends Thing {
 		super.origY = y;
 	}
 	public void update() {
+		if(super.deleted) { return; }
 		super.height = Game.sizes[(int) Game.levelSize - 2];
 		//movement
 		if(super.moveDir == "up") {
@@ -75,17 +76,18 @@ public class Player extends Thing {
 		g.fillOval(x + (w / 3), (int) (y + (h / 3) + super.hoverY), (w / 3), (h / 3));
 		//win animation
 		darkBlue = new Color(super.color / 2, 0, 255);
-		if(Game.currentLevel.isComplete()) {
-			if(super.hoverY < h * super.height) {
-				super.hoverY ++;
-			}
-			else {
-				super.color += (super.color < 255) ? 5 : 0;
-				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
-					Thing thing = (Thing) Game.currentLevel.content.get(i);
-					if(thing instanceof Goal && thing.x == super.x && thing.y == super.y) {
-						thing.winAnimation = true;
-					}
+		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+			Thing thing = (Thing) Game.currentLevel.content.get(i);
+			if(thing instanceof Goal && thing.x == super.x && thing.y == super.y) {
+				thing.winAnimation = true;
+				if(super.hoverY < h * super.height) {
+					super.hoverY ++;
+				}
+				else if(super.color < 255) {
+					super.color += 5;
+				}
+				else {
+					super.deleted = true;
 				}
 			}
 		}
@@ -107,9 +109,11 @@ public class Player extends Thing {
 		g.fillRect(vX, (int) (vY + super.hoverY), vW, vH);
 	}
 	public boolean canBePushed(String dir) {
+		if(super.deleted) { return true; }
 		return !((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.levelSize - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.levelSize - 1));
 	}
 	public void checkMovement(String dir) {
+		if(super.deleted) { return; }
 		switch(dir) {
 			case "up":
 				Game.currentLevel.setMoved(super.x, super.y - 1, dir);

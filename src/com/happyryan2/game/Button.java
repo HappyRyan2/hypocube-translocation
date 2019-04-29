@@ -22,6 +22,7 @@ public class Button {
 	public String text;
 	public String type;
 	public boolean pressed = false;
+	public boolean pressedBefore = false;
 	public Button(float x, float y, float w, float h, Color frontCol, Color sideCol, String text, String type) {
 		this.x = x;
 		this.y = y;
@@ -91,6 +92,12 @@ public class Button {
 			}
 			g.translate(0, (int) -this.hoverY);
 		}
+		else if(this.text == "icon:2rects") {
+			g.translate(0, (int) this.hoverY);
+			g.fillRect((int) Math.round(this.x - (this.w / 4)), (int) Math.round(this.y - (this.h / 4)), (int) Math.round(this.w / 8), (int) Math.round(this.h / 2));
+			g.fillRect((int) Math.round(this.x + (this.w / 8)), (int) Math.round(this.y - (this.h / 4)), (int) Math.round(this.w / 8), (int) Math.round(this.h / 2));
+			g.translate(0, (int) -this.hoverY);
+		}
 		else {
 			if(this.textCol != null) {
 				g.setColor(this.textCol);
@@ -100,6 +107,7 @@ public class Button {
 		}
 	}
 	public void update() {
+		this.pressedBefore = this.pressed;
 		this.pressed = false;
 		if((this.type == "circle" && Math.hypot(this.x - MousePos.x, this.y - MousePos.y) <= this.w / 2) || (this.type == "rect" && MousePos.x > this.x && MousePos.x < this.x + this.w && MousePos.y > this.y && MousePos.y < this.y + this.h)) {
 			Screen.cursor = "hand";
