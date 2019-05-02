@@ -11,13 +11,14 @@ public class Thing {
 	public float y;
 	public float origX;
 	public float origY;
-	public float hoverY;
+	public float hoverY = 0;
 	public String dir;
 	public double height;
-	public boolean extending;
-	public boolean retracting;
-	public float extension;
+	public boolean extending = false;
+	public boolean retracting = false;
+	public float extension = 0;
 	public boolean canExtend;
+	public boolean isWeak = false;
 	public boolean ignoring = false;
 	public boolean moved = false;
 	public String moveDir = "none";

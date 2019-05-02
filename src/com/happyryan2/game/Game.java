@@ -30,6 +30,7 @@ public class Game {
 			initialized = true;
 			levelPacks.add(new TutorialPack());
 			levelPacks.add(new IntroPack());
+			levelPacks.add(new ChallengePack());
 			levelPacks.add(new MicroPack());
 		}
 		if(state == "home") {

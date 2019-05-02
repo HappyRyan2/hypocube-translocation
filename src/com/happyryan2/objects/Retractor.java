@@ -21,10 +21,14 @@ public class Retractor extends Thing {
 		super.origX = x;
 		super.origY = y;
 		super.dir = dir;
-		super.extending = false;
-		super.retracting = false;
-		super.hoverY = 0;
-		super.extension = 0;
+	}
+	public Retractor(float x, float y, String dir, boolean isWeak) {
+		super.x = x;
+		super.y = y;
+		super.origX = x;
+		super.origY = y;
+		super.dir = dir;
+		super.isWeak = isWeak;
 	}
 	public void update() {
 		// calculate visual position for hitboxes
@@ -53,12 +57,22 @@ public class Retractor extends Thing {
 			}
 			// decide whether it can extend or not (by pushing the tiles in front of it)
 			boolean canExtend = true;
+			int numAffected = 0;
 			for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 				Thing thing = (Thing) Game.currentLevel.content.get(i);
 				if(thing.moved && !thing.canBePushed(super.dir)) {
 					canExtend = false;
 					break;
 				}
+				if(thing.moved) {
+					numAffected ++;
+				}
+			}
+			System.out.println(numAffected);
+			System.out.println(super.isWeak);
+			if(super.isWeak && numAffected > 1) {
+				System.out.println("cannot extend; there are more than one tiles");
+				canExtend = false;
 			}
 			if(!canExtend || ((super.dir == "up" && super.y == 0) || (super.dir == "down" && super.y == Game.levelSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.levelSize - 1))) {
 				// decide which tiles will be affected by pushing itself backwards
@@ -82,6 +96,7 @@ public class Retractor extends Thing {
 				}
 				// decide whether it can extend (by pushing itself backwards)
 				canExtend = true;
+				numAffected = 0;
 				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 					Thing thing = (Thing) Game.currentLevel.content.get(i);
 					if(!thing.moved) {
@@ -90,6 +105,10 @@ public class Retractor extends Thing {
 					if((super.dir == "up" && !thing.canBePushed("down")) || (super.dir == "down" && !thing.canBePushed("up")) || (super.dir == "left" && !thing.canBePushed("right")) || (super.dir == "right" && !thing.canBePushed("left"))) {
 						canExtend = false;
 					}
+					numAffected ++;
+				}
+				if(super.isWeak && numAffected > 1) {
+					canExtend = false;
 				}
 				if((super.dir == "up" && super.y == Game.levelSize - 1) || (super.dir == "down" && super.y == 0) || (super.dir == "left" && super.x == Game.levelSize - 1) || (super.dir == "right" && super.x == 0)) {
 					canExtend = false;
@@ -172,6 +191,7 @@ public class Retractor extends Thing {
 			}
 			// decide whether it can retract or not
 			boolean canRetract = true;
+			int numAffected = 0;
 			for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 				Thing thing = (Thing) Game.currentLevel.content.get(i);
 				if(!thing.moved) {
@@ -181,6 +201,10 @@ public class Retractor extends Thing {
 					canRetract = false;
 					break;
 				}
+				numAffected ++;
+			}
+			if(super.isWeak && numAffected > 1) {
+				canExtend = false;
 			}
 			// decide whether it can pull itself forward
 			boolean pullingSelf = false;
@@ -343,7 +367,18 @@ public class Retractor extends Thing {
 			triangle.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY));
 			triangle.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY));
 		}
+		// g.setColor(darkGreen);
 		g.fillPolygon(triangle);
+		//cutout when on a single-tile extender
+		if(super.isWeak) {
+			if(super.dir == "up") {}
+			Polygon cutout = new Polygon();
+			cutout.addPoint((int) x + (w / 3), (int) ((y + h - (h / 3) + super.hoverY - (super.extension * Game.tileSize / 2))));
+			cutout.addPoint((int) x + w - (w / 3), (int) ((y + h - (h / 3) + super.hoverY) - (super.extension * Game.tileSize / 2)));
+			cutout.addPoint((int) x + (w / 2), (int) ((y + (h / 3) + super.hoverY) - (super.extension * Game.tileSize / 2)));
+			g.setColor(new Color(255, 0, 0, 100));
+			g.fillPolygon(cutout);
+		}
 	}
 	public boolean cursorHovered() {
 		int x = (int) (super.x * Game.tileSize) + 100;

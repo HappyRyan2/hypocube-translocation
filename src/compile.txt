@@ -18,8 +18,9 @@ com/happyryan2/objects/Retractor.java
 com/happyryan2/objects/Player.java
 com/happyryan2/objects/Goal.java
 com/happyryan2/packs/TutorialPack.java
-com/happyryan2/packs/MicroPack.java
 com/happyryan2/packs/IntroPack.java
+com/happyryan2/packs/ChallengePack.java
+com/happyryan2/packs/MicroPack.java
 com/happyryan2/utilities/Screen.java
 com/happyryan2/utilities/Delay.java
 com/happyryan2/utilities/MousePos.java
