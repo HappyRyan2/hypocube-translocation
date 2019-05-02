@@ -370,12 +370,12 @@ public class Retractor extends Thing {
 		// g.setColor(darkGreen);
 		g.fillPolygon(triangle);
 		//cutout when on a single-tile extender
-		if(super.isWeak) {
+		if(super.isWeak || true) {
 			if(super.dir == "up") {}
 			Polygon cutout = new Polygon();
-			cutout.addPoint((int) x + (w / 3), (int) ((y + h - (h / 3) + super.hoverY - (super.extension * Game.tileSize / 2))));
-			cutout.addPoint((int) x + w - (w / 3), (int) ((y + h - (h / 3) + super.hoverY) - (super.extension * Game.tileSize / 2)));
-			cutout.addPoint((int) x + (w / 2), (int) ((y + (h / 3) + super.hoverY) - (super.extension * Game.tileSize / 2)));
+			cutout.addPoint((int) x + (w / 3) + (w / 9), (int) ((y + h - (h / 3) - (h / 9) + super.hoverY - (super.extension * Game.tileSize / 2))));
+			cutout.addPoint((int) x + w - (w / 3) - (w / 9), (int) ((y + h - (h / 3) - (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2)));
+			cutout.addPoint((int) x + (w / 2) + (w / 9), (int) ((y + (h / 3) + (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2)));
 			g.setColor(new Color(255, 0, 0, 100));
 			g.fillPolygon(cutout);
 		}
