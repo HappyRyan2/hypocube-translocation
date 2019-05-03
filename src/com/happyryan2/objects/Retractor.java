@@ -382,6 +382,11 @@ public class Retractor extends Thing {
 				cutout.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + h - (h / 3) - (h / 9) + super.hoverY) + (super.extension * Game.tileSize / 2))); // middle
 				cutout.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + (h / 3) + (h / 36) + super.hoverY) + (super.extension * Game.tileSize / 2))); // right
 			}
+			else if(super.dir == "left") {
+				cutout.addPoint((int) (x + w - (w / 3) - (w / 18) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 3) + (h / 18) + super.hoverY)); // top
+				cutout.addPoint((int) (x + w - (w / 3) - (w / 18) - (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) - (h / 18) + super.hoverY)); // bottom
+				cutout.addPoint((int) (x + (w / 3) + (w / 9) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY)); // middle
+			}
 			g.setColor(new Color(255, 255, 255));
 			g.fillPolygon(cutout);
 			g.setClip(cutout);
