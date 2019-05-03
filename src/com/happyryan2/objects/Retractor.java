@@ -371,13 +371,35 @@ public class Retractor extends Thing {
 		g.fillPolygon(triangle);
 		//cutout when on a single-tile extender
 		if(super.isWeak || true) {
-			if(super.dir == "up") {}
 			Polygon cutout = new Polygon();
-			cutout.addPoint((int) x + (w / 3) + (w / 9), (int) ((y + h - (h / 3) - (h / 9) + super.hoverY - (super.extension * Game.tileSize / 2))));
-			cutout.addPoint((int) x + w - (w / 3) - (w / 9), (int) ((y + h - (h / 3) - (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2)));
-			cutout.addPoint((int) x + (w / 2) + (w / 9), (int) ((y + (h / 3) + (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2)));
-			g.setColor(new Color(255, 0, 0, 100));
+			if(super.dir == "up") {
+				cutout.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY - (super.extension * Game.tileSize / 2)))); // left
+				cutout.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + (h / 3) + (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2))); // middle
+				cutout.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY) - (super.extension * Game.tileSize / 2))); // right
+			}
+			else if(super.dir == "down") {
+				cutout.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + (h / 3) + (h / 36) + super.hoverY + (super.extension * Game.tileSize / 2)))); // left
+				cutout.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + h - (h / 3) - (h / 9) + super.hoverY) + (super.extension * Game.tileSize / 2))); // middle
+				cutout.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + (h / 3) + (h / 36) + super.hoverY) + (super.extension * Game.tileSize / 2))); // right
+			}
+			g.setColor(new Color(255, 255, 255));
 			g.fillPolygon(cutout);
+			g.setClip(cutout);
+			if(super.dir == "up") {
+				Polygon inside = new Polygon();
+				inside.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY - (super.extension * Game.tileSize / 2)))); // left
+				inside.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + (h / 3) + (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2))); // middle
+				inside.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY) - (super.extension * Game.tileSize / 2))); // right
+				inside.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + (Game.tileSize * super.height)) - (super.extension * Game.tileSize / 2))); // right bottom
+				inside.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + (h / 3) + (h / 9) + (Game.tileSize * super.height)) - (super.extension * Game.tileSize / 2))); // middle
+				inside.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + (Game.tileSize * super.height) - (super.extension * Game.tileSize / 2)))); // left
+				g.setColor(lightGreen);
+				g.fillPolygon(inside);
+			}
+			else if(super.dir == "down") {
+				raisedRect(g, x + (w / 3) + (w / 18), y + (h / 3) + (h / 36) + (super.extension * Game.tileSize / 2), (w / 3), 1);
+			}
+			g.setClip(null);
 		}
 	}
 	public boolean cursorHovered() {
