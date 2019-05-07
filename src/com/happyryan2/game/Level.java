@@ -125,6 +125,7 @@ public class Level {
 				// LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
 				Level level = (Level) pack.levels.get(Game.levelOpen);
 				level.reset();
+				level.resize();
 			}
 			if(this.retry.pressed) {
 				Game.transition = 255;
