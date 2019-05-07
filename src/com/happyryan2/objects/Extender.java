@@ -6,6 +6,7 @@ import java.awt.Polygon;
 import java.lang.Math;
 
 import com.happyryan2.game.Game;
+import com.happyryan2.game.Stack;
 import com.happyryan2.game.Level;
 import com.happyryan2.game.LevelPack;
 import com.happyryan2.utilities.MousePos;
@@ -159,6 +160,7 @@ public class Extender extends Thing {
 									thing.timeMoving = 0;
 								}
 							}
+							Stack.addAction();
 						}
 					}
 					canExtend = false;
@@ -178,6 +180,7 @@ public class Extender extends Thing {
 								thing.timeMoving = 0;
 							}
 						}
+						Stack.addAction();
 					}
 				}
 			}
@@ -189,6 +192,7 @@ public class Extender extends Thing {
 				if(MouseClick.mouseIsPressed) {
 					Game.canClick = false;
 					super.retracting = true;
+					Stack.addAction();
 				}
 			}
 			else if(super.hoverY > 0 && !super.extending && !super.retracting) {

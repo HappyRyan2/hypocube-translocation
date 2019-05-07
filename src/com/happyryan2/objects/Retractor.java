@@ -6,6 +6,7 @@ import java.awt.Polygon;
 import java.lang.Math;
 
 import com.happyryan2.game.Game;
+import com.happyryan2.game.Stack;
 import com.happyryan2.game.Level;
 import com.happyryan2.game.LevelPack;
 import com.happyryan2.utilities.MousePos;
@@ -151,6 +152,7 @@ public class Retractor extends Thing {
 								thing.timeMoving = 0;
 							}
 						}
+						Stack.addAction();
 					}
 				}
 				canExtend = false;
@@ -170,6 +172,7 @@ public class Retractor extends Thing {
 							thing.timeMoving = 0;
 						}
 					}
+					Stack.addAction();
 				}
 			}
 		}

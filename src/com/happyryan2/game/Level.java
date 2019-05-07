@@ -26,6 +26,7 @@ public class Level {
 	public Button pause = new Button(30, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:2rects", "circle");
 	public Button restart = new Button(300, 325, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Restart", "rect"); // retry button that shows when you are on the pause screen
 	public Button exit = new Button(300, 400, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Exit", "rect");
+	public Button undo = new Button(100, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:arrowleft", "circle");
 	public boolean lastLevel = false;
 	public boolean paused = false;
 	public Level() {
@@ -135,6 +136,10 @@ public class Level {
 		if(this.pause.pressed && !this.pause.pressedBefore) {
 			this.paused = !this.paused;
 		}
+		this.undo.update();
+		if(this.undo.pressed && !this.undo.pressedBefore) {
+			Stack.undoAction();
+		}
 	}
 	public void display(Graphics g) {
 		// sort by y-value (display top ones first)
@@ -211,6 +216,7 @@ public class Level {
 		}
 		// pause button
 		this.pause.display(g);
+		this.undo.display(g);
 	}
 	public void resize() {
 		resized = true;
