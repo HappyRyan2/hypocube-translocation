@@ -7,5 +7,6 @@ public class ChallengePack extends LevelPack {
 	public ChallengePack() {
 		super.name = "Challenge Pack";
         super.levels.add(new Challenge1());
+        super.levels.add(new Challenge2());
 	}
 }

@@ -53,14 +53,7 @@ public class Screen extends JPanel {
 
 		//load resources
 		try {
-			File dir;
-			if(System.getProperty("user.dir").contains("src")) {
-				// we are in the source directory, this is an experimental version being run by the dev
-				dir = new File(new File(System.getProperty("user.dir")).getParent());
-			}
-			else {
-				dir = new File(System.getProperty("user.dir"));
-			}
+			File dir = new File(System.getProperty("user.dir"));
 			File res = new File(dir.getPath() + "/res");
 			Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File(res.getPath() + "/fonts/righteous.ttf")).deriveFont(40f);
 	    	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -68,12 +61,9 @@ public class Screen extends JPanel {
 			fontRighteous = customFont;
 		}
 		catch (Exception e) {
-			// System.out.println("resource loading failed...");
 			e.printStackTrace();
 		}
 		try {
-			// File dir = new File(System.getProperty("user.dir"));
-			// System.out.println(dir.getPath() + "\\res\\graphics\\icon.png");
 			URL url = ClassLoader.getSystemResource("res/graphics/icon.png");
 			Toolkit kit = Toolkit.getDefaultToolkit();
 			Image img = kit.createImage(url);

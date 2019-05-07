@@ -81,6 +81,7 @@ public class LevelPack {
 				Game.transition = 255;
 				Level level = (Level) this.levels.get(i);
 				level.reset();
+				level.resize();
 			}
 		}
 		this.backButton.update();

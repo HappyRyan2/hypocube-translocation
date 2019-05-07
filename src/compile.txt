@@ -2,6 +2,8 @@ com/happyryan2/game/Game.java
 com/happyryan2/game/Level.java
 com/happyryan2/game/LevelPack.java
 com/happyryan2/game/Button.java
+com/happyryan2/game/Stack.java
+com/happyryan2/game/StackItem.java
 com/happyryan2/levels/Tutorial1.java
 com/happyryan2/levels/Tutorial2.java
 com/happyryan2/levels/Tutorial3.java
@@ -9,6 +11,8 @@ com/happyryan2/levels/Tutorial4.java
 com/happyryan2/levels/Tutorial5.java
 com/happyryan2/levels/Intro1.java
 com/happyryan2/levels/Intro2.java
+com/happyryan2/levels/Challenge1.java
+com/happyryan2/levels/Challenge2.java
 com/happyryan2/levels/Micro1.java
 com/happyryan2/levels/Micro2.java
 com/happyryan2/levels/Micro3.java
