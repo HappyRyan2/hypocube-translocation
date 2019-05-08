@@ -69,8 +69,6 @@ public class Retractor extends Thing {
 					numAffected ++;
 				}
 			}
-			System.out.println(numAffected);
-			System.out.println(super.isWeak);
 			if(super.isWeak && numAffected > 1) {
 				System.out.println("cannot extend; there are more than one tiles");
 				canExtend = false;

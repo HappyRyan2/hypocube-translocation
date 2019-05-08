@@ -26,7 +26,7 @@ public class Game {
 	public static int transition = 0;
 	public static int scrollY = 0;
 	public static void run() {
-		System.out.println(Stack.stack.size());
+		// System.out.println(Stack.stack.size());
 		if(!initialized) {
 			initialized = true;
 			levelPacks.add(new TutorialPack());

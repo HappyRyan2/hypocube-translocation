@@ -19,14 +19,33 @@ public class Stack {
             if(thing.moveDir == "none" && !thing.extending && !thing.retracting) {
                 continue;
             }
+			int x = Math.round(thing.x);
+			int y = Math.round(thing.y);
+			switch(thing.moveDir) {
+				case "up":
+					y --;
+					break;
+				case "down":
+					y ++;
+					break;
+				case "left":
+					x --;
+					break;
+				case "right":
+					x ++;
+					break;
+			}
             if(thing.moveDir != "none") {
-                action.movement.add(new StackItem(Math.round(thing.x), Math.round(thing.y), (thing.moveDir == "up" || thing.moveDir == "down") ? (thing.moveDir == "up" ? "down" : "up") : (thing.moveDir == "left" ? "right" : "left"), true));
+				System.out.println("detected something moving");
+                action.movement.add(new StackItem(x, y, (thing.moveDir == "up" || thing.moveDir == "down") ? (thing.moveDir == "up" ? "down" : "up") : (thing.moveDir == "left" ? "right" : "left"), true));
             }
             if(thing.extending) {
-                action.movement.add(new StackItem(Math.round(thing.x), Math.round(thing.y), "retract", false));
+				System.out.println("detected something extending");
+                action.movement.add(new StackItem(x, y, "retract", false));
             }
             if(thing.retracting) {
-                action.movement.add(new StackItem(Math.round(thing.x), Math.round(thing.y), "extend", false));
+				System.out.println("detected something retracting");
+                action.movement.add(new StackItem(x, y, "extend", false));
             }
         }
         stack.add(action);
@@ -42,12 +61,16 @@ public class Stack {
 				Thing thing = (Thing) Game.currentLevel.content.get(i);
 				if(thing.x == action.x && thing.y == action.y) {
 					if(action.moving) {
+						System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
 						thing.moveDir = action.dir;
+						thing.timeMoving = 0;
 					}
 					if(action.dir == "retract") {
+						System.out.println("retracting the thing at position (" + thing.x + ", " + thing.y + ")");
 						thing.retracting = true;
 					}
 					if(action.dir == "extend") {
+						System.out.println("extending the thing at position (" + thing.x + ", " + thing.y + ")");
 						thing.extending = true;
 					}
 				}
