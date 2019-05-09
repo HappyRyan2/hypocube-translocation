@@ -70,7 +70,7 @@ public class Retractor extends Thing {
 				}
 			}
 			if(super.isWeak && numAffected > 1) {
-				System.out.println("cannot extend; there are more than one tiles");
+				// System.out.println("cannot extend; there are more than one tiles");
 				canExtend = false;
 			}
 			if(!canExtend || ((super.dir == "up" && super.y == 0) || (super.dir == "down" && super.y == Game.levelSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.levelSize - 1))) {
@@ -250,6 +250,7 @@ public class Retractor extends Thing {
 						}
 					}
 				}
+				Stack.addAction();
 			}
 		}
 		else if(super.hoverY > 0 && !super.extending && !super.retracting) {
@@ -300,7 +301,7 @@ public class Retractor extends Thing {
 		}
 		// debug
 		if(super.retracting) {
-			System.out.println("retracting!");
+			// System.out.println("retracting!");
 		}
 	}
 	public void display(Graphics g) {

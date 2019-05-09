@@ -244,7 +244,7 @@ public class Extender extends Thing {
 		}
 		// debug
 		if(super.retracting) {
-			System.out.println("retracting!");
+			// System.out.println("retracting!");
 		}
 	}
 	public void display(Graphics g) {
