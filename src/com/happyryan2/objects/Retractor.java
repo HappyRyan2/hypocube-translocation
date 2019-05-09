@@ -298,6 +298,10 @@ public class Retractor extends Thing {
 				super.timeMoving = 0;
 			}
 		}
+		// debug
+		if(super.retracting) {
+			System.out.println("retracting!");
+		}
 	}
 	public void display(Graphics g) {
 		int x = (int) (super.x * Game.tileSize);

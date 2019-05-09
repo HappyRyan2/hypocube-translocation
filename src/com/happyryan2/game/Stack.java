@@ -36,15 +36,15 @@ public class Stack {
 					break;
 			}
             if(thing.moveDir != "none") {
-				System.out.println("detected something moving");
+				System.out.println("detected something moving to the " + thing.moveDir + " from position (" + thing.x + ", " + thing.y + ")");
                 action.movement.add(new StackItem(x, y, (thing.moveDir == "up" || thing.moveDir == "down") ? (thing.moveDir == "up" ? "down" : "up") : (thing.moveDir == "left" ? "right" : "left"), true));
             }
             if(thing.extending) {
-				System.out.println("detected something extending");
+				System.out.println("detected something extending at (" + thing.x + ", " + thing.y + ")");
                 action.movement.add(new StackItem(x, y, "retract", false));
             }
             if(thing.retracting) {
-				System.out.println("detected something retracting");
+				System.out.println("detected something retracting at (" + thing.x + ", " + thing.y + ")");
                 action.movement.add(new StackItem(x, y, "extend", false));
             }
         }
@@ -57,9 +57,13 @@ public class Stack {
 		Stack actions = (Stack) stack.get(stack.size() - 1);
 		for(byte i = 0; i < actions.movement.size(); i ++) {
 			StackItem action = (StackItem) actions.movement.get(i);
+			System.out.println("the direction is: " + action.dir);
+			System.out.println("looking for something at (" + action.x + ", " + action.y + ")");
 			for(byte j = 0; j < Game.currentLevel.content.size(); j ++) {
-				Thing thing = (Thing) Game.currentLevel.content.get(i);
+				Thing thing = (Thing) Game.currentLevel.content.get(j);
+				System.out.println("found something at (" + thing.x + ", " + thing.y);
 				if(thing.x == action.x && thing.y == action.y) {
+					System.out.println("found something at the right position");
 					if(action.moving) {
 						System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
 						thing.moveDir = action.dir;
