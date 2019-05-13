@@ -53,21 +53,21 @@ public class Screen extends JPanel {
 
 		//load resources
 		try {
+			URL url = ClassLoader.getSystemResource("res/graphics/icon.png");
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			Image img = kit.createImage(url);
+			frame.setIconImage(img);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			File dir = new File(System.getProperty("user.dir"));
 			File res = new File(dir.getPath() + "/res");
 			Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File(res.getPath() + "/fonts/righteous.ttf")).deriveFont(40f);
 	    	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			ge.registerFont(customFont);
 			fontRighteous = customFont;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			URL url = ClassLoader.getSystemResource("res/graphics/icon.png");
-			Toolkit kit = Toolkit.getDefaultToolkit();
-			Image img = kit.createImage(url);
-			frame.setIconImage(img);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

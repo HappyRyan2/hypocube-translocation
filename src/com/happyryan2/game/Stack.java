@@ -13,6 +13,7 @@ import com.happyryan2.objects.*;
 public class Stack {
     public static List stack = new ArrayList();
     public static void addAction() {
+        System.out.println("adding an action!");
         Stack action = new Stack();
         for(byte i = 0; i < Game.currentLevel.content.size(); i ++) {
             Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -54,6 +55,7 @@ public class Stack {
 		if(stack.size() == 0) {
 			return;
 		}
+        System.out.println("undoing an action!");
 		Stack actions = (Stack) stack.get(stack.size() - 1);
 		for(byte i = 0; i < actions.movement.size(); i ++) {
 			StackItem action = (StackItem) actions.movement.get(i);

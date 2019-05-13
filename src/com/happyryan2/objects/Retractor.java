@@ -205,7 +205,7 @@ public class Retractor extends Thing {
 				numAffected ++;
 			}
 			if(super.isWeak && numAffected > 1) {
-				canExtend = false;
+				canRetract = false;
 			}
 			// decide whether it can pull itself forward
 			boolean pullingSelf = false;
@@ -428,8 +428,8 @@ public class Retractor extends Thing {
 		}
 	}
 	public boolean cursorHovered() {
-		int x = (int) (super.x * Game.tileSize) + 100;
-		int y = (int) (super.y * Game.tileSize) + 100;
+		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
+		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		if(super.dir == "left") {

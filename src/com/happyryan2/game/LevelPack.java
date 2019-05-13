@@ -21,7 +21,7 @@ public class LevelPack {
 	public Button backButton = new Button(25, 25, 30, 30, new Color(0, 0, 255), new Color(100, 100, 255), "icon:arrowleft", "circle");
 	public void displayLevelSelect(Graphics g) {
 		// margins
-		g.setColor(new Color(100, 100, 100));
+		g.setColor(new Color(200, 200, 200));
 		g.fillRect(0, 0, 800, 100);
 		g.fillRect(0, 700, 800, 100);
 		// title

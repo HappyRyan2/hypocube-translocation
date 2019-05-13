@@ -29,6 +29,12 @@ public class Level {
 	public Button undo = new Button(100, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:arrowleft", "circle");
 	public boolean lastLevel = false;
 	public boolean paused = false;
+	public int width = 0;
+	public int height = 0;
+	public int visualWidth = 0;
+	public int visualHeight = 0;
+	public int top = 0;
+	public int left = 0;
 	public Level() {
 		this.content = new ArrayList();
 	}
@@ -55,7 +61,7 @@ public class Level {
 		}
 	}
 	public void update() {
-		Stack.resetStack();
+		// Stack.resetStack();
 		// initialize
 		if(!resized) {
 			resize();
@@ -144,6 +150,7 @@ public class Level {
 		}
 	}
 	public void display(Graphics g) {
+		System.out.println("")
 		// sort by y-value (display top ones first)
 		List sorted = new ArrayList();
 		List unsorted = new ArrayList();
@@ -165,12 +172,12 @@ public class Level {
 			unsorted.remove(highestIndex);
 		}
 		// display objects
-		g.translate(100, 100);
+		g.translate(this.left, this.top);
 		for(short i = 0; i < sorted.size(); i ++) {
 			Thing thing = (Thing) sorted.get(i);
 			thing.display(g);
 		}
-		g.translate(-100, -100);
+		g.translate(-this.left, -this.top);
 		//gui box for winning
 		if(this.winAnimationDone()) {
 			if(this.completionY < 100) {
@@ -205,10 +212,10 @@ public class Level {
 		}
 		// border
 		g.setColor(new Color(200, 200, 200));
-		g.fillRect(0, 0, 800, 100);
-		g.fillRect(0, 0, 100, 800);
-		g.fillRect(700, 0, 100, 800);
-		g.fillRect(0, 700, 800, 100);
+		g.fillRect(0, 0, 800, this.top);
+		g.fillRect(0, 0, this.left, 800);
+		g.fillRect(800 - this.left, 0, this.left, 800);
+		g.fillRect(0, 800 - this.top, 800, this.top);
 		// text for tutorials
 		if(this.infoTextBottom != "" && !this.isComplete()) {
 			g.setColor(new Color(200, 200, 200));
@@ -221,6 +228,9 @@ public class Level {
 		this.undo.display(g);
 	}
 	public void resize() {
+		if(this.width != 0 || this.height != 0) {
+			return;
+		}
 		resized = true;
 		float left = 0;
 		float right = 0;
@@ -243,12 +253,22 @@ public class Level {
 				bottom = y;
 			}
 		}
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			thing.x -= left;
-			thing.y -= top;
-		}
+		// for(short i = 0; i < this.content.size(); i ++) {
+		// 	Thing thing = (Thing) this.content.get(i);
+		// 	thing.x -= left;
+		// 	thing.y -= top;
+		// }
 		Game.levelSize = (right - left > bottom - top) ? (right - left + 1) : (bottom - top + 1);
+		this.width = (int) (right - left + 1);
+		this.height = (int) (bottom - top + 1);
+		if(this.width < this.height) {
+			this.visualHeight = 600;
+			this.visualWidth = 600 * (this.visualWidth / this.visualHeight);
+		}
+		else {
+			this.visualWidth = 600;
+			this.visualHeight = 600 * (this.visualHeight / this.visualWidth);
+		}
 		Game.tileSize = 600 / Game.levelSize;
 	}
 	public Thing getAtPos(float x, float y) {
