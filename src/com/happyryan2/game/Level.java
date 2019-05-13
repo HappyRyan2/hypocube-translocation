@@ -150,7 +150,8 @@ public class Level {
 		}
 	}
 	public void display(Graphics g) {
-		System.out.println("")
+		System.out.println("level size: (" + this.width + ", " + this.height + ")");
+		System.out.println("visual level size: (" + this.visualWidth + ", " + this.visualHeight + ")");
 		// sort by y-value (display top ones first)
 		List sorted = new ArrayList();
 		List unsorted = new ArrayList();
@@ -263,11 +264,15 @@ public class Level {
 		this.height = (int) (bottom - top + 1);
 		if(this.width < this.height) {
 			this.visualHeight = 600;
-			this.visualWidth = 600 * (this.visualWidth / this.visualHeight);
+			this.visualWidth = Math.round(600 * (float) (this.width / this.height));
+			System.out.println("when resizing, this.width is " + this.width + " and this.height is " + this.height);
+			System.out.println("setting visualWidth to " + (float) (this.width / this.height) + " but then x600");
+			System.out.println("this.width / this.height = " + this.width + " / " + this.height + " = " + (this.width / this.height));
 		}
 		else {
 			this.visualWidth = 600;
-			this.visualHeight = 600 * (this.visualHeight / this.visualWidth);
+			this.visualHeight = Math.round(600 * (this.height / this.width));
+			System.out.println("setting visualHeight to " + (600 * (this.height / this.width)));
 		}
 		Game.tileSize = 600 / Game.levelSize;
 	}
