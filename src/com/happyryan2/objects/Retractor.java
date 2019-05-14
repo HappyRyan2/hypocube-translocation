@@ -34,8 +34,8 @@ public class Retractor extends Thing {
 	public void update() {
 		// calculate visual position for hitboxes
 		super.height = Game.sizes[(int) Game.levelSize - 2];
-		int x = (int) (super.x * Game.tileSize);
-		int y = (int) (super.y * Game.tileSize);
+		int x = (int) (super.x * Game.tileSize) + ;
+		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks

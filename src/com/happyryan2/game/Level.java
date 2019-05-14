@@ -264,16 +264,14 @@ public class Level {
 		this.height = (int) (bottom - top + 1);
 		if(this.width < this.height) {
 			this.visualHeight = 600;
-			this.visualWidth = Math.round(600 * (float) (this.width / this.height));
-			System.out.println("when resizing, this.width is " + this.width + " and this.height is " + this.height);
-			System.out.println("setting visualWidth to " + (float) (this.width / this.height) + " but then x600");
-			System.out.println("this.width / this.height = " + this.width + " / " + this.height + " = " + (this.width / this.height));
+			this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
 		}
 		else {
 			this.visualWidth = 600;
-			this.visualHeight = Math.round(600 * (this.height / this.width));
-			System.out.println("setting visualHeight to " + (600 * (this.height / this.width)));
+			this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
 		}
+		this.left = Math.round((800 - this.visualWidth) / 2.0f);
+		this.top = Math.round((800 - this.visualHeight) / 2.0f);
 		Game.tileSize = 600 / Game.levelSize;
 	}
 	public Thing getAtPos(float x, float y) {
