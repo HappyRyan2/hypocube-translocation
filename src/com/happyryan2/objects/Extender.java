@@ -35,8 +35,8 @@ public class Extender extends Thing {
 	public void update() {
 		// calculate visual position for hitboxes
 		super.height = Game.sizes[(int) Game.levelSize - 2];
-		int x = (int) (super.x * Game.tileSize);
-		int y = (int) (super.y * Game.tileSize);
+		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
+		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
@@ -373,8 +373,8 @@ public class Extender extends Thing {
 		}
 	}
 	public boolean cursorHovered() {
-		int x = (int) (super.x * Game.tileSize) + 100;
-		int y = (int) (super.y * Game.tileSize) + 100;
+		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
+		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		if(super.dir == "left") {

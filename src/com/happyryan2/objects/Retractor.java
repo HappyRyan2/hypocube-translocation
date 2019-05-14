@@ -34,7 +34,7 @@ public class Retractor extends Thing {
 	public void update() {
 		// calculate visual position for hitboxes
 		super.height = Game.sizes[(int) Game.levelSize - 2];
-		int x = (int) (super.x * Game.tileSize) + ;
+		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
 		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
@@ -586,20 +586,20 @@ public class Retractor extends Thing {
 		/*
 		Returns whether this can be pushed without colliding with a wall. Assumes no other extenders exist.
 		*/
-		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.levelSize - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.levelSize - 1))) {
+		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.currentLevel.width - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.currentLevel.height - 1))) {
 			return false;
 		}
 		if(super.extension != 0) {
 			if(dir == "left" && super.dir == "left" && super.x <= 1) {
 				return false;
 			}
-			if(dir == "right" && super.dir == "right" && super.x >= Game.levelSize - 2) {
+			if(dir == "right" && super.dir == "right" && super.x >= Game.currentLevel.width - 2) {
 				return false;
 			}
 			if(dir == "up" && super.dir == "up" && super.y <= 1) {
 				return false;
 			}
-			if(dir == "down" && super.dir == "down" && super.y >= Game.levelSize - 2) {
+			if(dir == "down" && super.dir == "down" && super.y >= Game.currentLevel.height - 2) {
 				return false;
 			}
 		}
