@@ -154,8 +154,8 @@ public class Level {
 		}
 	}
 	public void display(Graphics g) {
-		System.out.println("level size: (" + this.width + ", " + this.height + ")");
-		System.out.println("visual level size: (" + this.visualWidth + ", " + this.visualHeight + ")");
+		// System.out.println("level size: (" + this.width + ", " + this.height + ")");
+		// System.out.println("visual level size: (" + this.visualWidth + ", " + this.visualHeight + ")");
 		// sort by y-value (display top ones first)
 		List sorted = new ArrayList();
 		List unsorted = new ArrayList();

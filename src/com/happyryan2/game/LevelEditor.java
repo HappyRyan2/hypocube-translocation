@@ -19,14 +19,15 @@ public class LevelEditor {
 			int y = MousePos.y;
 			x -= 100;
 			y -= 100;
-			x = Math.round(x / 10);
-			y = Math.round(y / 10);
-			y += 100;
+			x = Math.round(x / 60);
+			y = Math.round(y / 60);
 			String dir = (KeyInputs.keyA || KeyInputs.keyD) ? (KeyInputs.keyA ? "left" : "right") : ((KeyInputs.keyW || KeyInputs.keyS) ? (KeyInputs.keyW ? "up" : "down") : "none");
 			if(extender.text == "extender") {
+				System.out.println("adding an extender");
 				level.content.add(new Extender(x, y, dir, (isWeak.text == "is weak")));
 			}
 			else {
+				System.out.println("adding a retractor");
 				level.content.add(new Retractor(x, y, dir, (isWeak.text == "is weak")));
 			}
 		}
@@ -36,6 +37,8 @@ public class LevelEditor {
 		}
 		Game.currentLevel = level;
 		level.isForTesting = true;
+		level.width = 10;
+		level.height = 10;
 		level.update();
 		extender.update();
 		isWeak.update();
