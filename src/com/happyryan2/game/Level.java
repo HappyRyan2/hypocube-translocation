@@ -29,6 +29,7 @@ public class Level {
 	public Button undo = new Button(100, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:arrowleft", "circle");
 	public boolean lastLevel = false;
 	public boolean paused = false;
+	public boolean isForTesting = false;
 	public int width = 0;
 	public int height = 0;
 	public int visualWidth = 0;
@@ -66,10 +67,12 @@ public class Level {
 		if(!resized) {
 			resize();
 		}
-		LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
-		int size = pack.levels.size();
-		if(Game.levelOpen == size - 1) {
-			this.lastLevel = true;
+		if(!this.isForTesting) {
+			LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
+			int size = pack.levels.size();
+			if(Game.levelOpen == size - 1) {
+				this.lastLevel = true;
+			}
 		}
 		if(this.isComplete() || Game.transition > 5) {
 			Game.canClick = false;
@@ -105,8 +108,8 @@ public class Level {
 				Game.startingLevel = true;
 			}
 		}
-		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
-			Thing thing = (Thing) Game.currentLevel.content.get(i);
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
 			thing.moved = false;
 		}
 		for(short i = 0; i < this.content.size(); i ++) {
@@ -130,6 +133,7 @@ public class Level {
 				Game.levelOpen ++;
 				Game.startingLevel = true;
 				// LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
+				LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
 				Level level = (Level) pack.levels.get(Game.levelOpen);
 				level.reset();
 				level.resize();

@@ -12,7 +12,7 @@ import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "select-levelpack";
+	public static String state = "level-editor";
 	public static List levelPacks = new ArrayList();
 	public static int packOpen = 0;
 	public static int levelOpen = 0;
@@ -60,6 +60,9 @@ public class Game {
 			currentLevel = (Level) pack.levels.get(levelOpen);
 			currentLevel.update();
 		}
+		else if(state == "level-editor") {
+			LevelEditor.update();
+		}
 		clickBefore = MouseClick.mouseIsPressed;
 	}
 	public static void display(Graphics g) {
@@ -84,6 +87,9 @@ public class Game {
 			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
 			Level level = (Level) pack.levels.get(levelOpen);
 			level.display(g);
+		}
+		else if(state == "level-editor") {
+			LevelEditor.display(g);
 		}
 		// transitions
 		g.setColor(new Color(255, 255, 255, transition));

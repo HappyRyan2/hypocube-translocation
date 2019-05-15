@@ -13,7 +13,7 @@ public class Tutorial4 extends Level {
 		// super.content.add(new Goal(0, 1));
 		super.content.add(new Retractor(0, 0, "down"));
 		super.content.add(new Retractor(0, 2, "right"));
-		super.content.add(new Extender(0, 3, "right"));
+		// super.content.add(new Extender(0, 3, "right"));
 		super.content.add(new Retractor(1, 3, "up", true));
 		super.content.add(new Player(2, 2));
 		super.content.add(new Goal(1, 1));
