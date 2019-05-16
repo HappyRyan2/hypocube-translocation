@@ -12,7 +12,7 @@ import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "level-editor";
+	public static String state = "select-levelpack";
 	public static List levelPacks = new ArrayList();
 	public static int packOpen = 0;
 	public static int levelOpen = 0;

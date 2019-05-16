@@ -78,6 +78,7 @@ public class Level {
 			Game.canClick = false;
 		}
 		if(Game.startingLevel && !MouseClick.mouseIsPressed) {
+			System.out.println("clicking");
 			Game.canClick = true;
 		}
 		for(byte i = 0; i < this.content.size(); i ++) {
@@ -95,12 +96,12 @@ public class Level {
 			Game.canClick = false;
 			this.restart.update();
 			this.exit.update();
-			if(this.restart.pressed) {
+			if(this.restart.pressed && !this.isForTesting) {
 				Game.transition = 255;
 				this.paused = false;
 				this.reset();
 			}
-			if(this.exit.pressed) {
+			if(this.exit.pressed && !this.isForTesting) {
 				this.paused = false;
 				Game.transition = 255;
 				Game.state = "select-level";
@@ -124,11 +125,11 @@ public class Level {
 			if(!this.lastLevel) {
 				this.next.update();
 			}
-			if(this.menu.pressed) {
+			if(this.menu.pressed && !this.isForTesting) {
 				Game.transition = 255;
 				Game.state = "select-level";
 			}
-			if(this.next.pressed && !this.lastLevel) {
+			if(this.next.pressed && !this.lastLevel && !this.isForTesting) {
 				Game.transition = 255;
 				Game.levelOpen ++;
 				Game.startingLevel = true;
@@ -184,7 +185,7 @@ public class Level {
 		}
 		g.translate(-this.left, -this.top);
 		//gui box for winning
-		if(this.winAnimationDone()) {
+		if(this.winAnimationDone() && this.isComplete()) {
 			if(this.completionY < 100) {
 				this.completionY += Math.max((100 - this.completionY) / 15, 1);
 			}
