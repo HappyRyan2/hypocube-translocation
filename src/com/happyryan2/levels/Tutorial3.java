@@ -9,12 +9,11 @@ import com.happyryan2.game.Level;
 public class Tutorial3 extends Level {
 	List content = new ArrayList();
 	public Tutorial3() {
-		super.infoTextBottom = "you can push / pull extenders using other extenders";
-		super.content.add(new Extender(3, 0, "left"));
-		super.content.add(new Extender(2, 0, "down"));
-		super.content.add(new Player(1, 1));
-		super.content.add(new Goal(1, 3));
-		super.content.add(new Retractor(2, 4, "up"));
-		super.content.add(new Retractor(0, 4, "right"));
+		super.content.add(new Extender(1, 0, "down", false));
+		super.content.add(new Extender(2, 0, "left", false));
+		super.content.add(new Retractor(2, 1, "down", false));
+		super.content.add(new Retractor(2, 3, "left", false));
+		super.content.add(new Goal(1, 2));
+		super.content.add(new Player(0, 1));
 	}
 }

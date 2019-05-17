@@ -33,7 +33,8 @@ public class Retractor extends Thing {
 	}
 	public void update() {
 		// calculate visual position for hitboxes
-		super.height = Game.sizes[(int) Game.levelSize - 2];
+		// super.height = Game.sizes[(int) Game.levelSize - 2];
+		super.height = 0.1;
 		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
 		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
 		int w = (int) (Game.tileSize);
@@ -73,7 +74,7 @@ public class Retractor extends Thing {
 				// System.out.println("cannot extend; there are more than one tiles");
 				canExtend = false;
 			}
-			if(!canExtend || ((super.dir == "up" && super.y == 0) || (super.dir == "down" && super.y == Game.levelSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.levelSize - 1))) {
+			if(!canExtend || ((super.dir == "up" && super.y == 0) || (super.dir == "down" && super.y == Game.currentLevel.height - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.currentLevel.width - 1))) {
 				// decide which tiles will be affected by pushing itself backwards
 				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 					Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -109,7 +110,7 @@ public class Retractor extends Thing {
 				if(super.isWeak && numAffected > 1) {
 					canExtend = false;
 				}
-				if((super.dir == "up" && super.y == Game.levelSize - 1) || (super.dir == "down" && super.y == 0) || (super.dir == "left" && super.x == Game.levelSize - 1) || (super.dir == "right" && super.x == 0)) {
+				if((super.dir == "up" && super.y == Game.currentLevel.height - 1) || (super.dir == "down" && super.y == 0) || (super.dir == "left" && super.x == Game.currentLevel.width - 1) || (super.dir == "right" && super.x == 0)) {
 					canExtend = false;
 				}
 				if(canExtend) {
@@ -155,7 +156,7 @@ public class Retractor extends Thing {
 				}
 				canExtend = false;
 			}
-			if(canExtend && !((super.x == 0 && super.dir == "left") || (super.y == 0 && super.dir == "up") || (super.x == Game.levelSize - 1 && super.dir == "right") || (super.y == Game.levelSize - 1 && super.dir == "down"))) {
+			if(canExtend && !((super.x == 0 && super.dir == "left") || (super.y == 0 && super.dir == "up") || (super.x == Game.currentLevel.width - 1 && super.dir == "right") || (super.y == Game.currentLevel.height - 1 && super.dir == "down"))) {
 				Screen.cursor = "hand";
 				if(super.hoverY < h * super.height) {
 					super.hoverY ++;
@@ -212,7 +213,7 @@ public class Retractor extends Thing {
 			if(!canRetract) {
 				pullingSelf = true;
 			}
-			if((super.dir == "up" && super.y == 1) || (super.dir == "down" && super.y == Game.levelSize - 2) || (super.dir == "left" && super.x == 1) || (super.dir == "right" && super.x == Game.levelSize - 2)) {
+			if((super.dir == "up" && super.y == 1) || (super.dir == "down" && super.y == Game.currentLevel.height - 2) || (super.dir == "left" && super.x == 1) || (super.dir == "right" && super.x == Game.currentLevel.width - 2)) {
 				pullingSelf = true;
 			}
 			// hovering animations

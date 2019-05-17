@@ -34,7 +34,8 @@ public class Extender extends Thing {
 	}
 	public void update() {
 		// calculate visual position for hitboxes
-		super.height = Game.sizes[(int) Game.levelSize - 2];
+		// super.height = Game.sizes[(int) Game.levelSize - 2];
+		super.height = 0.1;
 		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
 		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
 		int w = (int) (Game.tileSize);
@@ -74,7 +75,7 @@ public class Extender extends Thing {
 					if(!thing.moved) {
 						continue;
 					}
-					if((thing.x == 0 && super.dir == "left") || (thing.y == 0 && super.dir == "up") || (thing.x == Game.levelSize - 1 && super.dir == "right") || (thing.y == Game.levelSize - 1 && super.dir == "down")) {
+					if((thing.x == 0 && super.dir == "left") || (thing.y == 0 && super.dir == "up") || (thing.x == Game.currentLevel.width - 1 && super.dir == "right") || (thing.y == Game.currentLevel.height - 1 && super.dir == "down")) {
 						canExtend = false;
 						break;
 					}
@@ -83,7 +84,7 @@ public class Extender extends Thing {
 				if(super.isWeak && numAffected > 1) {
 					canExtend = false;
 				}
-				if(!canExtend || ((super.dir == "up" && super.y == 0) || (super.dir == "down" && super.y == Game.levelSize - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.levelSize - 1))) {
+				if(!canExtend || ((super.dir == "up" && super.y == 0) || (super.dir == "down" && super.y == Game.currentLevel.height - 1) || (super.dir == "left" && super.x == 0) || (super.dir == "right" && super.x == Game.currentLevel.width - 1))) {
 					// decide which tiles will be affected by pushing itself backwards
 					for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 						Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -119,7 +120,7 @@ public class Extender extends Thing {
 					if(super.isWeak && numAffected > 1) {
 						canExtend = false;
 					}
-					if((super.dir == "up" && super.y == Game.levelSize - 1) || (super.dir == "down" && super.y == 0) || (super.dir == "left" && super.x == Game.levelSize - 1) || (super.dir == "right" && super.x == 0)) {
+					if((super.dir == "up" && super.y == Game.currentLevel.height - 1) || (super.dir == "down" && super.y == 0) || (super.dir == "left" && super.x == Game.currentLevel.width - 1) || (super.dir == "right" && super.x == 0)) {
 						canExtend = false;
 					}
 					if(canExtend) {
@@ -165,7 +166,7 @@ public class Extender extends Thing {
 					}
 					canExtend = false;
 				}
-				if(canExtend && !((super.x == 0 && super.dir == "left") || (super.y == 0 && super.dir == "up") || (super.x == Game.levelSize - 1 && super.dir == "right") || (super.y == Game.levelSize - 1 && super.dir == "down"))) {
+				if(canExtend && !((super.x == 0 && super.dir == "left") || (super.y == 0 && super.dir == "up") || (super.x == Game.currentLevel.width - 1 && super.dir == "right") || (super.y == Game.currentLevel.height - 1 && super.dir == "down"))) {
 					Screen.cursor = "hand";
 					if(super.hoverY < h * super.height) {
 						super.hoverY ++;
@@ -515,20 +516,20 @@ public class Extender extends Thing {
 		/*
 		Returns whether this can be pushed without colliding with a wall. Assumes no other extenders exist.
 		*/
-		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.levelSize - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.levelSize - 1))) {
+		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.currentLevel.width - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.currentLevel.height - 1))) {
 			return false;
 		}
 		if(super.extension != 0) {
 			if(dir == "left" && super.dir == "left" && super.x <= 1) {
 				return false;
 			}
-			if(dir == "right" && super.dir == "right" && super.x >= Game.levelSize - 2) {
+			if(dir == "right" && super.dir == "right" && super.x >= Game.currentLevel.width - 2) {
 				return false;
 			}
 			if(dir == "up" && super.dir == "up" && super.y <= 1) {
 				return false;
 			}
-			if(dir == "down" && super.dir == "down" && super.y >= Game.levelSize - 2) {
+			if(dir == "down" && super.dir == "down" && super.y >= Game.currentLevel.height - 2) {
 				return false;
 			}
 		}

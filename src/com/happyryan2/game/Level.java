@@ -36,11 +36,9 @@ public class Level {
 	public int visualHeight = 0;
 	public int top = 0;
 	public int left = 0;
+	public boolean manualSize = false;
 	public Level() {
 		this.content = new ArrayList();
-	}
-	public Level(int w, int h) {
-
 	}
 	public void reset() {
 		this.completionY = -500;
@@ -83,6 +81,12 @@ public class Level {
 		}
 		for(byte i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
+			if((thing instanceof Extender || thing instanceof Retractor) && thing.extension != 0 && thing.extension != 1) {
+				Game.canClick = false;
+			}
+		}
+		for(byte i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
 			if((thing instanceof Extender || thing instanceof Retractor) && ((thing.extension != 0 && thing.extension != 1) || thing.extending || thing.retracting)) {
 				Game.canClick = false;
 				break;
@@ -101,7 +105,7 @@ public class Level {
 				this.paused = false;
 				this.reset();
 			}
-			if(this.exit.pressed && !this.isForTesting) {
+			if(this.exit.pressed) {
 				this.paused = false;
 				Game.transition = 255;
 				Game.state = "select-level";
@@ -125,7 +129,7 @@ public class Level {
 			if(!this.lastLevel) {
 				this.next.update();
 			}
-			if(this.menu.pressed && !this.isForTesting) {
+			if(this.menu.pressed) {
 				Game.transition = 255;
 				Game.state = "select-level";
 			}
@@ -150,7 +154,7 @@ public class Level {
 			this.paused = !this.paused;
 		}
 		this.undo.update();
-		if(this.undo.pressed && !this.undo.pressedBefore) {
+		if(this.undo.pressed && !this.undo.pressedBefore && Game.canClick) {
 			Stack.undoAction();
 		}
 	}
@@ -235,6 +239,15 @@ public class Level {
 	}
 	public void resize() {
 		if(this.width != 0 || this.height != 0) {
+			Game.levelSize = (width > height) ? width : height;
+			if(this.width < this.height) {
+				this.visualHeight = 600;
+				this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
+			}
+			else {
+				this.visualWidth = 600;
+				this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
+			}
 			return;
 		}
 		resized = true;

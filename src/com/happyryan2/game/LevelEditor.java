@@ -105,10 +105,10 @@ public class LevelEditor {
 					code += "super.content.add(new Goal(" + thing.x + ", " + thing.y + ");";
 				}
 				else if(thing instanceof Extender) {
-					code += "super.content.add(new Extender(" + thing.x + ", " + thing.y + ", " + thing.dir + ", " + thing.isWeak + ");";
+					code += "super.content.add(new Extender(" + thing.x + ", " + thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
 				}
 				else if(thing instanceof Retractor) {
-					code += "super.content.add(new Retractor(" + thing.x + ", " + thing.y + ", " + thing.dir + ", " + thing.isWeak + ");";
+					code += "super.content.add(new Retractor(" + thing.x + ", " + thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
 				}
 			}
 			System.out.println(code);

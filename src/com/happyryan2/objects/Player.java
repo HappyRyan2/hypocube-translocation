@@ -22,7 +22,8 @@ public class Player extends Thing {
 	}
 	public void update() {
 		if(super.deleted) { return; }
-		super.height = Game.sizes[(int) Game.levelSize - 2];
+		// super.height = Game.sizes[(int) Game.levelSize - 2];
+		super.height = 0.1;
 		//movement
 		if(super.moveDir == "up") {
 			super.y -= 0.05;
@@ -110,7 +111,7 @@ public class Player extends Thing {
 	}
 	public boolean canBePushed(String dir) {
 		if(super.deleted) { return true; }
-		return !((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.levelSize - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.levelSize - 1));
+		return !((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.currentLevel.width - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.currentLevel.height - 1));
 	}
 	public void checkMovement(String dir) {
 		if(super.deleted) { return; }
