@@ -104,6 +104,7 @@ public class Level {
 				Game.transition = 255;
 				this.paused = false;
 				this.reset();
+				Stack.resetStack();
 			}
 			if(this.exit.pressed) {
 				this.paused = false;
@@ -147,6 +148,7 @@ public class Level {
 				Game.transition = 255;
 				Game.startingLevel = true;
 				this.reset();
+				Stack.resetStack();
 			}
 		}
 		this.pause.update();
@@ -240,6 +242,7 @@ public class Level {
 	public void resize() {
 		if(this.width != 0 || this.height != 0) {
 			Game.levelSize = (width > height) ? width : height;
+			Game.tileSize = 600 / Game.levelSize;
 			if(this.width < this.height) {
 				this.visualHeight = 600;
 				this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
@@ -248,6 +251,8 @@ public class Level {
 				this.visualWidth = 600;
 				this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
 			}
+			this.left = Math.round((800 - this.visualWidth) / 2.0f);
+			this.top = Math.round((800 - this.visualHeight) / 2.0f);
 			return;
 		}
 		resized = true;

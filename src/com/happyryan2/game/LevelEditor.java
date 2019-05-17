@@ -99,16 +99,16 @@ public class LevelEditor {
 				code += "\n";
 				Thing thing = (Thing) level.content.get(i);
 				if(thing instanceof Player) {
-					code += "super.content.add(new Player(" + thing.x + ", " + thing.y + ");";
+					code += "super.content.add(new Player(" + (int) thing.x + ", " + (int) thing.y + "));";
 				}
 				else if(thing instanceof Goal) {
-					code += "super.content.add(new Goal(" + thing.x + ", " + thing.y + ");";
+					code += "super.content.add(new Goal(" + (int) thing.x + ", " + (int) thing.y + "));";
 				}
 				else if(thing instanceof Extender) {
-					code += "super.content.add(new Extender(" + thing.x + ", " + thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
+					code += "super.content.add(new Extender(" + (int) thing.x + ", " + (int) thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
 				}
 				else if(thing instanceof Retractor) {
-					code += "super.content.add(new Retractor(" + thing.x + ", " + thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
+					code += "super.content.add(new Retractor(" + (int) thing.x + ", " + (int) thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
 				}
 			}
 			System.out.println(code);

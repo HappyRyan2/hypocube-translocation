@@ -5,17 +5,12 @@ import com.happyryan2.game.Level;
 
 public class Challenge2 extends Level {
 	public Challenge2() {
-        super.content.add(new Goal(2, 0));
-        super.content.add(new Goal(0, 2));
-		super.content.add(new Retractor(0, 0, "down"));
-        super.content.add(new Retractor(1, 1, "down"));
-        super.content.add(new Retractor(4, 0, "left"));
-        super.content.add(new Retractor(3, 1, "left"));
-        super.content.add(new Retractor(1, 3, "right"));
-        super.content.add(new Retractor(0, 4, "right"));
-        super.content.add(new Retractor(3, 3, "up"));
-        super.content.add(new Retractor(4, 4, "up"));
-        super.content.add(new Player(4, 2));
-        super.content.add(new Player(2, 4));
+        super.content.add(new Extender(3, 0, "left", true));
+		super.content.add(new Retractor(3, 2, "up", false));
+		super.content.add(new Retractor(0, 2, "right", false));
+		super.content.add(new Retractor(0, 0, "down", false));
+		super.content.add(new Retractor(1, 1, "up", false));
+		super.content.add(new Goal(1, 1));
+		super.content.add(new Player(2, 1));
 	}
 }
