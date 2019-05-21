@@ -249,6 +249,13 @@ public class Extender extends Thing {
 		}
 	}
 	public void onClick() {
+		if(!Game.canClick) {
+			return;
+		}
+		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
+		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
+		int w = (int) (Game.tileSize);
+		int h = (int) (Game.tileSize);
 		this.ignoring = true;
 		if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.extension <= 0 && super.dir != "none") {
 			// decide which tiles will be moved when it extends forward

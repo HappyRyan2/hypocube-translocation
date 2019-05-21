@@ -40,6 +40,61 @@ public class Retractor extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
+		// extension + pushing tiles
+		if(super.extending) {
+			super.extension += 0.05;
+			if(super.extension >= 1) {
+				Game.canClick = !Game.currentLevel.isComplete();
+				super.extending = false;
+				super.extension = 1;
+			}
+		}
+		else if(super.retracting) {
+			super.extension -= 0.05;
+			if(super.extension <= 0) {
+				Game.canClick = !Game.currentLevel.isComplete();
+				super.retracting = false;
+				super.extension = 0;
+			}
+		}
+		if((super.extending || super.retracting) && super.hoverY < h * super.height) {
+			super.hoverY ++;
+		}
+		//movement
+		if(super.moveDir == "up") {
+			super.y -= 0.05;
+		}
+		else if(super.moveDir == "down") {
+			super.y += 0.05;
+		}
+		else if(super.moveDir == "left") {
+			super.x -= 0.05;
+		}
+		else if(super.moveDir == "right") {
+			super.x += 0.05;
+		}
+		if(super.moveDir != "none") {
+			super.timeMoving ++;
+			if(super.timeMoving >= 20) {
+				super.x = Math.round(super.x);
+				super.y = Math.round(super.y);
+				super.moveDir = "none";
+				super.timeMoving = 0;
+			}
+		}
+		// debug
+		if(super.retracting) {
+			// System.out.println("retracting!");
+		}
+	}
+	public void onClick() {
+		if(!Game.canClick) {
+			return;
+		}
+		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
+		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
+		int w = (int) (Game.tileSize);
+		int h = (int) (Game.tileSize);
 		super.ignoring = true;
 		if(this.cursorHovered() && Game.canClick && !Game.currentLevel.isComplete() && super.extension <= 0) {
 			// decide which tiles will be moved when it extends forward
@@ -258,52 +313,6 @@ public class Retractor extends Thing {
 			super.hoverY --;
 		}
 		super.ignoring = false;
-		// extension + pushing tiles
-		if(super.extending) {
-			super.extension += 0.05;
-			if(super.extension >= 1) {
-				Game.canClick = !Game.currentLevel.isComplete();
-				super.extending = false;
-				super.extension = 1;
-			}
-		}
-		else if(super.retracting) {
-			super.extension -= 0.05;
-			if(super.extension <= 0) {
-				Game.canClick = !Game.currentLevel.isComplete();
-				super.retracting = false;
-				super.extension = 0;
-			}
-		}
-		if((super.extending || super.retracting) && super.hoverY < h * super.height) {
-			super.hoverY ++;
-		}
-		//movement
-		if(super.moveDir == "up") {
-			super.y -= 0.05;
-		}
-		else if(super.moveDir == "down") {
-			super.y += 0.05;
-		}
-		else if(super.moveDir == "left") {
-			super.x -= 0.05;
-		}
-		else if(super.moveDir == "right") {
-			super.x += 0.05;
-		}
-		if(super.moveDir != "none") {
-			super.timeMoving ++;
-			if(super.timeMoving >= 20) {
-				super.x = Math.round(super.x);
-				super.y = Math.round(super.y);
-				super.moveDir = "none";
-				super.timeMoving = 0;
-			}
-		}
-		// debug
-		if(super.retracting) {
-			// System.out.println("retracting!");
-		}
 	}
 	public void display(Graphics g) {
 		int x = (int) (super.x * Game.tileSize);

@@ -70,6 +70,7 @@ public class LevelEditor {
 		isWeak.update();
 		editing.update();
 		printCode.update();
+		checkSolvable.update();
 		if(isWeak.pressed && !isWeak.pressedBefore) {
 			isWeak.text = (isWeak.text == "is weak") ? "is not weak" : "is weak";
 		}
@@ -118,17 +119,55 @@ public class LevelEditor {
 			System.out.println(code);
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
+			Level depth0 = ((Level)level).clone();
+			depth0.depth = 0;
+			tree.add(depth0);
 			boolean solved = false;
 			while(!solved) {
 				for(int i = 0; i < tree.size(); i ++) {
 					Level level = (Level) tree.get(i);
 					for(int x = 0; x < level.width; x ++) {
 						yLoop: for(int y = 0; y < level.height; y ++) {
-							Thing thing = (Thing) level.getAtPos(i);
-							if(thing == null || thing instanceof Player || thing instanceof Goal) {
+							Thing thing = (Thing) level.getAtPos(x, y);
+							if(!(thing instanceof Extender || thing instanceof Retractor)) {
 								continue yLoop;
 							}
-							
+							if(thing instanceof Extender) {
+								Extender extender = (Extender) thing;
+								extender.onClick();
+							}
+							else if(thing instanceof Retractor) {
+								Retractor retractor = (Retractor) thing;
+								retractor.onClick();
+							}
+							boolean canDoSomething = false;
+							for(int j = 0; j < level.content.size(); j ++) {
+								Thing thing2 = (Thing) level.content.get(j);
+								if((thing2.extension != 0 && thing2.extension != 1) || thing2.moveDir != "none") {
+									canDoSomething = true;
+								}
+								if(thing2.extending) {
+									thing2.extension = 1;
+								}
+								else if(thing2.retracting) {
+									thing2.extension = 0;
+								}
+								if(thing2.moveDir == "up") {
+									thing2.y = Math.round(thing2.y - 1);
+								}
+								else if(thing2.moveDir == "down") {
+									thing2.y = Math.round(thing2.y + 1);
+								}
+								else if(thing2.moveDir == "left") {
+									thing2.x = Math.round(thing2.x - 1);
+								}
+								else if(thing2.moveDir == "right") {
+									thing2.x = Math.round(thing2.x + 1);
+								}
+							}
+							if(canDoSomething) {
+								
+							}
 						}
 					}
 				}
@@ -141,5 +180,6 @@ public class LevelEditor {
 		isWeak.display(g);
 		editing.display(g);
 		printCode.display(g);
+		checkSolvable.display(g);
 	}
 }
