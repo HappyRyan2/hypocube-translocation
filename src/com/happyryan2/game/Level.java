@@ -37,6 +37,7 @@ public class Level {
 	public int top = 0;
 	public int left = 0;
 	public boolean manualSize = false;
+	public int depth = 0; // only for checking whether it is solvable or not
 	public Level() {
 		this.content = new ArrayList();
 	}

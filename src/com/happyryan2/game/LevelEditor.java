@@ -3,6 +3,8 @@ package com.happyryan2.game;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.lang.Math;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.happyryan2.utilities.*;
 import com.happyryan2.objects.*;
@@ -12,7 +14,9 @@ public class LevelEditor {
 	public static Button isWeak = new Button(240, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "is weak", "rect");
 	public static Button editing = new Button(350, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "editing", "rect");
 	public static Button printCode = new Button(460, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "print code", "rect");
+	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "check solvability", "rect");
 	public static Level level = new Level();
+	public static List tree = new ArrayList(); // for checking whether it is solvable or not
 	public static void update() {
 		if(MouseClick.mouseIsPressed && MousePos.x > 100 && MousePos.x < 700 && MousePos.y > 100 && MousePos.y < 700 && editing.text == "editing") {
 			int x = MousePos.x;
@@ -112,6 +116,23 @@ public class LevelEditor {
 				}
 			}
 			System.out.println(code);
+		}
+		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
+			boolean solved = false;
+			while(!solved) {
+				for(int i = 0; i < tree.size(); i ++) {
+					Level level = (Level) tree.get(i);
+					for(int x = 0; x < level.width; x ++) {
+						yLoop: for(int y = 0; y < level.height; y ++) {
+							Thing thing = (Thing) level.getAtPos(i);
+							if(thing == null || thing instanceof Player || thing instanceof Goal) {
+								continue yLoop;
+							}
+							
+						}
+					}
+				}
+			}
 		}
 	}
 	public static void display(Graphics g) {
