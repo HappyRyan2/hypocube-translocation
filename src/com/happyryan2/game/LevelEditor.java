@@ -18,6 +18,7 @@ public class LevelEditor {
 	public static Level level = new Level();
 	public static List tree = new ArrayList(); // for checking whether it is solvable or not
 	public static void update() {
+		System.out.println("level size: " + level.content.size());
 		if(MouseClick.mouseIsPressed && MousePos.x > 100 && MousePos.x < 700 && MousePos.y > 100 && MousePos.y < 700 && editing.text == "editing") {
 			int x = MousePos.x;
 			int y = MousePos.y;
@@ -158,7 +159,7 @@ public class LevelEditor {
 							boolean canDoSomething = false;
 							for(int j = 0; j < currentLevel.content.size(); j ++) {
 								Thing thing2 = (Thing) currentLevel.content.get(j);
-								if((thing2.extension != 0 && thing2.extension != 1) || thing2.moveDir != "none") {
+								if(thing.extending || thing.retracting) {
 									canDoSomething = true;
 								}
 								if(thing2.extending) {
@@ -204,9 +205,24 @@ public class LevelEditor {
 					if(currentLevel.depth % 5 == 0) {
 						System.out.println("the level cannot be solved in under " + level.depth + " moves.");
 						System.out.println("progress so far:");
-						for(int i = 0; i < tree.size(); i ++) {
-							Level currentLevel = (Level) tree.get(i);
-							System.out.println("Item at index " + i + ", depth " + currentLevel.depth);
+						for(int j = 0; j < tree.size(); j ++) {
+							currentLevel = (Level) tree.get(j);
+							System.out.println("Item at index " + j + ", depth " + currentLevel.depth);
+							for(int k = 0; k < currentLevel.content.size(); k ++) {
+								Thing thing = (Thing) currentLevel.content.get(k);
+								if(thing instanceof Extender) {
+									System.out.println("an extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
+								}
+								else if(thing instanceof Retractor) {
+									System.out.println("a retractor at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
+								}
+								else if(thing instanceof Player) {
+									System.out.println("a player at (" + thing.x + ", " + thing.y + ")");
+								}
+								else if(thing instanceof Goal) {
+									System.out.println("a goal at (" + thing.x + ", " + thing.y + ")");
+								}
+							}
 						}
 					}
 				}
