@@ -119,20 +119,35 @@ public class LevelEditor {
 			System.out.println(code);
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
-			Level depth0 = ((Level)level).clone();
-			depth0.depth = 0;
-			tree.add(depth0);
+			try {
+				Level depth0 = ( (Level) level ).clone();
+				depth0.depth = 0;
+				tree.add(depth0);
+			}
+			catch(CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
 			boolean solved = false;
 			while(!solved) {
-				for(int i = 0; i < tree.size(); i ++) {
-					Level level = (Level) tree.get(i);
-					for(int x = 0; x < level.width; x ++) {
-						yLoop: for(int y = 0; y < level.height; y ++) {
-							Thing thing = (Thing) level.getAtPos(x, y);
+				treeLoop: for(int i = 0; i < tree.size(); i ++) {
+					System.out.println("i is " + i + " and tree.size() is " + tree.size());
+					System.out.println(tree.size());
+					Level currentLevel = (Level) tree.get(i);
+					for(int x = 0; x < currentLevel.width; x ++) {
+						yLoop: for(int y = 0; y < currentLevel.height; y ++) {
+							Thing thing = (Thing) currentLevel.getAtPos(x, y);
 							if(!(thing instanceof Extender || thing instanceof Retractor)) {
 								continue yLoop;
 							}
+							Level beforeAction = new Level(); // this 'new Level()' will never be kept, just to appease compiler
+							try {
+								beforeAction = ( (Level) currentLevel ).clone();
+							}
+							catch(CloneNotSupportedException e) {
+								e.printStackTrace();
+							}
 							if(thing instanceof Extender) {
+								System.out.println("found an extender");
 								Extender extender = (Extender) thing;
 								extender.onClick();
 							}
@@ -141,8 +156,8 @@ public class LevelEditor {
 								retractor.onClick();
 							}
 							boolean canDoSomething = false;
-							for(int j = 0; j < level.content.size(); j ++) {
-								Thing thing2 = (Thing) level.content.get(j);
+							for(int j = 0; j < currentLevel.content.size(); j ++) {
+								Thing thing2 = (Thing) currentLevel.content.get(j);
 								if((thing2.extension != 0 && thing2.extension != 1) || thing2.moveDir != "none") {
 									canDoSomething = true;
 								}
@@ -163,11 +178,35 @@ public class LevelEditor {
 								}
 								else if(thing2.moveDir == "right") {
 									thing2.x = Math.round(thing2.x + 1);
+									System.out.println("the thing's new position is (" + thing2.x + ", " + thing2.y + ")");
 								}
+								thing2.moveDir = "none";
+							}
+							if(currentLevel.isComplete()) {
+								System.out.println("found a solution that takes " + currentLevel.depth + " moves!");
+								solved = true;
+								break treeLoop;
 							}
 							if(canDoSomething) {
-								
+								System.out.println("clicking at (" + thing.x + ", " + thing.y + ") will change the level's state");
+								try {
+									Level nextDepth = ( (Level) currentLevel ).clone();
+									nextDepth.depth = currentLevel.depth + 1;
+									tree.add(nextDepth);
+								}
+								catch(CloneNotSupportedException e) {
+									e.printStackTrace();
+								}
 							}
+							tree.set(i, beforeAction);
+						}
+					}
+					if(currentLevel.depth % 5 == 0) {
+						System.out.println("the level cannot be solved in under " + level.depth + " moves.");
+						System.out.println("progress so far:");
+						for(int i = 0; i < tree.size(); i ++) {
+							Level currentLevel = (Level) tree.get(i);
+							System.out.println("Item at index " + i + ", depth " + currentLevel.depth);
 						}
 					}
 				}

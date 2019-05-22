@@ -12,7 +12,7 @@ import com.happyryan2.utilities.Screen;
 import com.happyryan2.utilities.MouseClick;
 import com.happyryan2.game.Button;
 
-public class Level {
+public class Level implements java.lang.Cloneable {
 	public List content;
 	public boolean hasBeenCompleted = true;
 	public boolean completeNow = false;
@@ -38,6 +38,14 @@ public class Level {
 	public int left = 0;
 	public boolean manualSize = false;
 	public int depth = 0; // only for checking whether it is solvable or not
+	protected Level clone() throws CloneNotSupportedException {
+		Object obj = super.clone();
+		if(obj instanceof Level) {
+			Level level = (Level) obj;
+			return level;
+		}
+		return null;
+	}
 	public Level() {
 		this.content = new ArrayList();
 	}
