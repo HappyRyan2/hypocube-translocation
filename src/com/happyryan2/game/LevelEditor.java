@@ -120,14 +120,14 @@ public class LevelEditor {
 			System.out.println(code);
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
-			try {
-				Level depth0 = ( (Level) level ).clone();
+			// try {
+				Level depth0 = (Level) DeepCopy.copy(level);
 				depth0.depth = 0;
 				tree.add(depth0);
-			}
-			catch(CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
+			// }
+			// catch(CloneNotSupportedException e) {
+				// e.printStackTrace();
+			// }
 			boolean solved = false;
 			while(!solved) {
 				treeLoop: for(int i = 0; i < tree.size(); i ++) {
@@ -136,17 +136,18 @@ public class LevelEditor {
 					Level currentLevel = (Level) tree.get(i);
 					for(int x = 0; x < currentLevel.width; x ++) {
 						yLoop: for(int y = 0; y < currentLevel.height; y ++) {
+							System.out.println("checking the position of (" + x + ", " + y + ")");
 							Thing thing = (Thing) currentLevel.getAtPos(x, y);
 							if(!(thing instanceof Extender || thing instanceof Retractor)) {
 								continue yLoop;
 							}
 							Level beforeAction = new Level(); // this 'new Level()' will never be kept, just to appease compiler
-							try {
-								beforeAction = ( (Level) currentLevel ).clone();
-							}
-							catch(CloneNotSupportedException e) {
-								e.printStackTrace();
-							}
+							// try {
+								beforeAction = (Level) DeepCopy.copy(currentLevel);
+							// }
+							// catch(CloneNotSupportedException e) {
+								// e.printStackTrace();
+							// }
 							if(thing instanceof Extender) {
 								System.out.println("found an extender");
 								Extender extender = (Extender) thing;
@@ -190,16 +191,18 @@ public class LevelEditor {
 							}
 							if(canDoSomething) {
 								System.out.println("clicking at (" + thing.x + ", " + thing.y + ") will change the level's state");
-								try {
-									Level nextDepth = ( (Level) currentLevel ).clone();
+								System.out.println("is the thing at (" + thing.x + ", " + thing.y + ") extended? " + (thing.extension));
+								// try {
+									// Level nextDepth = ( (Level) currentLevel ).clone();
+									Level nextDepth = (Level) DeepCopy.copy(currentLevel);
 									nextDepth.depth = currentLevel.depth + 1;
 									tree.add(nextDepth);
-								}
-								catch(CloneNotSupportedException e) {
-									e.printStackTrace();
-								}
+								// }
+								// catch(CloneNotSupportedException e) {
+									// e.printStackTrace();
+								// }
 							}
-							tree.set(i, beforeAction);
+							tree.set(i, beforeAction); // reset action
 						}
 					}
 					if(currentLevel.depth % 5 == 0) {

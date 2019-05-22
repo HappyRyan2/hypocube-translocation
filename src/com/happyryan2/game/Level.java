@@ -12,7 +12,7 @@ import com.happyryan2.utilities.Screen;
 import com.happyryan2.utilities.MouseClick;
 import com.happyryan2.game.Button;
 
-public class Level implements java.lang.Cloneable {
+public class Level implements java.io.Serializable {
 	public List content;
 	public boolean hasBeenCompleted = true;
 	public boolean completeNow = false;
