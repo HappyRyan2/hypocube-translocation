@@ -12,7 +12,7 @@ import com.happyryan2.utilities.Screen;
 import com.happyryan2.utilities.MouseClick;
 import com.happyryan2.game.Button;
 
-public class Level implements java.io.Serializable {
+public class Level {
 	public List content;
 	public boolean hasBeenCompleted = true;
 	public boolean completeNow = false;
@@ -38,16 +38,32 @@ public class Level implements java.io.Serializable {
 	public int left = 0;
 	public boolean manualSize = false;
 	public int depth = 0; // only for checking whether it is solvable or not
-	protected Level clone() throws CloneNotSupportedException {
-		Object obj = super.clone();
-		if(obj instanceof Level) {
-			Level level = (Level) obj;
-			return level;
-		}
-		return null;
-	}
 	public Level() {
 		this.content = new ArrayList();
+	}
+	public Level copy() {
+		Level clone = new Level();
+		clone.width = this.width; clone.height = this.height;
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Extender) {
+				Extender extender = new Extender(thing.x, thing.y, thing.dir);
+				extender.extension = thing.extension;
+				clone.content.add(extender);
+			}
+			else if(thing instanceof Retractor) {
+				Retractor retractor = new Retractor(thing.x, thing.y, thing.dir);
+				retractor.extension = thing.extension;
+				clone.content.add(retractor);
+			}
+			else if(thing instanceof Player) {
+				clone.content.add(new Player(thing.x, thing.y));
+			}
+			else if(thing instanceof Goal) {
+				clone.content.add(new Goal(thing.x, thing.y));
+			}
+		}
+		return clone;
 	}
 	public void reset() {
 		this.completionY = -500;

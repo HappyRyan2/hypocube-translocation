@@ -120,14 +120,9 @@ public class LevelEditor {
 			System.out.println(code);
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
-			// try {
-				Level depth0 = (Level) DeepCopy.copy(level);
-				depth0.depth = 0;
-				tree.add(depth0);
-			// }
-			// catch(CloneNotSupportedException e) {
-				// e.printStackTrace();
-			// }
+			Level depth0 = level.copy();
+			depth0.depth = 0;
+			tree.add(depth0);
 			boolean solved = false;
 			while(!solved) {
 				treeLoop: for(int i = 0; i < tree.size(); i ++) {
@@ -141,13 +136,7 @@ public class LevelEditor {
 							if(!(thing instanceof Extender || thing instanceof Retractor)) {
 								continue yLoop;
 							}
-							Level beforeAction = new Level(); // this 'new Level()' will never be kept, just to appease compiler
-							// try {
-								beforeAction = (Level) DeepCopy.copy(currentLevel);
-							// }
-							// catch(CloneNotSupportedException e) {
-								// e.printStackTrace();
-							// }
+							Level beforeAction = currentLevel.copy();
 							if(thing instanceof Extender) {
 								System.out.println("found an extender");
 								Extender extender = (Extender) thing;
@@ -194,7 +183,7 @@ public class LevelEditor {
 								System.out.println("is the thing at (" + thing.x + ", " + thing.y + ") extended? " + (thing.extension));
 								// try {
 									// Level nextDepth = ( (Level) currentLevel ).clone();
-									Level nextDepth = (Level) DeepCopy.copy(currentLevel);
+									Level nextDepth = currentLevel.copy();
 									nextDepth.depth = currentLevel.depth + 1;
 									tree.add(nextDepth);
 								// }
@@ -206,6 +195,7 @@ public class LevelEditor {
 						}
 					}
 					if(currentLevel.depth % 5 == 0) {
+						System.out.println("------------------------------------------");
 						System.out.println("the level cannot be solved in under " + level.depth + " moves.");
 						System.out.println("progress so far:");
 						for(int j = 0; j < tree.size(); j ++) {
@@ -227,8 +217,10 @@ public class LevelEditor {
 								}
 							}
 						}
+						System.out.println("------------------------------------------");
 					}
 				}
+				solved = true;
 			}
 		}
 	}
