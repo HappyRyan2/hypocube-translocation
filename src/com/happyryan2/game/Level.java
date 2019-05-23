@@ -85,6 +85,7 @@ public class Level {
 		}
 	}
 	public void update() {
+		// this.fastForward();
 		// Stack.resetStack();
 		// initialize
 		if(!resized) {
@@ -393,5 +394,31 @@ public class Level {
 			}
 		}
 		return true;
+	}
+	public void fastForward() {
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if((thing instanceof Extender || thing instanceof Retractor) && thing.extending) {
+				thing.extension = 1;
+				thing.extending = false;
+			}
+			if((thing instanceof Extender || thing instanceof Retractor) && thing.retracting) {
+				thing.extension = 0;
+				thing.retracting = false;
+			}
+			if(thing.moveDir == "up") {
+				thing.y = Math.round(thing.y - 1);
+			}
+			else if(thing.moveDir == "down") {
+				thing.y = Math.round(thing.y + 1);
+			}
+			else if(thing.moveDir == "right") {
+				thing.x = Math.round(thing.x + 1);
+			}
+			else if(thing.moveDir == "left") {
+				thing.x = Math.round(thing.x - 1);
+			}
+			thing.moveDir = "none";
+		}
 	}
 }

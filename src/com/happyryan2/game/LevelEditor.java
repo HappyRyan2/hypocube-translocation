@@ -158,13 +158,17 @@ public class LevelEditor {
 								else if(thing2.retracting) {
 									thing2.extension = 0;
 								}
+								System.out.println(thing.moveDir);
 								if(thing2.moveDir == "up") {
+									System.out.println("the thing's new position is (" + thing2.x + ", " + thing2.y + ")");
 									thing2.y = Math.round(thing2.y - 1);
 								}
 								else if(thing2.moveDir == "down") {
+									System.out.println("the thing's new position is (" + thing2.x + ", " + thing2.y + ")");
 									thing2.y = Math.round(thing2.y + 1);
 								}
 								else if(thing2.moveDir == "left") {
+									System.out.println("the thing's new position is (" + thing2.x + ", " + thing2.y + ")");
 									thing2.x = Math.round(thing2.x - 1);
 								}
 								else if(thing2.moveDir == "right") {
