@@ -17,8 +17,9 @@ public class LevelEditor {
 	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "check solvability", "rect");
 	public static Level level = new Level();
 	public static List tree = new ArrayList(); // for checking whether it is solvable or not
+	public static List solutionTree = new ArrayList();
 	public static void update() {
-		System.out.println("level size: " + level.content.size());
+		// System.out.println("level size: " + level.content.size());
 		if(MouseClick.mouseIsPressed && MousePos.x > 100 && MousePos.x < 700 && MousePos.y > 100 && MousePos.y < 700 && editing.text == "editing") {
 			int x = MousePos.x;
 			int y = MousePos.y;
@@ -120,6 +121,7 @@ public class LevelEditor {
 			System.out.println(code);
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
+			tree = new ArrayList();
 			Level depth0 = level.copy();
 			depth0.depth = 0;
 			tree.add(depth0);
@@ -127,104 +129,124 @@ public class LevelEditor {
 			while(!solved) {
 				treeLoop: for(int i = 0; i < tree.size(); i ++) {
 					System.out.println("i is " + i + " and tree.size() is " + tree.size());
-					System.out.println(tree.size());
 					Level currentLevel = (Level) tree.get(i);
 					for(int x = 0; x < currentLevel.width; x ++) {
 						yLoop: for(int y = 0; y < currentLevel.height; y ++) {
-							System.out.println("checking the position of (" + x + ", " + y + ")");
+							System.out.println("searching position (" + x + ", " + y + ")");
 							Thing thing = (Thing) currentLevel.getAtPos(x, y);
-							if(!(thing instanceof Extender || thing instanceof Retractor)) {
+							if(!(thing instanceof Extender || thing instanceof Retractor) || thing == null) {
+								// System.out.println("found a player / goal / empty space, skipping to next iteration");
 								continue yLoop;
 							}
 							Level beforeAction = currentLevel.copy();
+							Game.currentLevel = currentLevel;
 							if(thing instanceof Extender) {
-								System.out.println("found an extender");
-								Extender extender = (Extender) thing;
-								extender.onClick();
+								Extender thing2 = (Extender) thing;
+								if(!thing2.canDoSomething()) {
+									// System.out.println("this one can't move, skipping to next iteration");
+									continue yLoop;
+								}
+								thing2.onClick();
+								currentLevel.fastForward();
 							}
-							else if(thing instanceof Retractor) {
-								Retractor retractor = (Retractor) thing;
-								retractor.onClick();
+							else {
+								Retractor thing2 = (Retractor) thing;
+								System.out.println("this one can't move, skipping to next iteration");
+								if(!thing2.canDoSomething()) {
+									continue yLoop;
+								}
+								thing2.onClick();
+								currentLevel.fastForward();
 							}
-							boolean canDoSomething = false;
-							for(int j = 0; j < currentLevel.content.size(); j ++) {
-								Thing thing2 = (Thing) currentLevel.content.get(j);
-								if(thing.extending || thing.retracting) {
-									canDoSomething = true;
+							for(short j = 0; j < tree.size(); j ++) {
+								Level previousState = (Level) tree.get(i);
+								Level previousStateCopy = previousState.copy();
+								if(previousStateCopy.equals(currentLevel)) {
+									System.out.println("this move will take you to a previous position");
+									tree.set(i, beforeAction);
+									continue yLoop;
 								}
-								if(thing2.extending) {
-									thing2.extension = 1;
-								}
-								else if(thing2.retracting) {
-									thing2.extension = 0;
-								}
-								System.out.println(thing.moveDir);
-								if(thing2.moveDir == "up") {
-									System.out.println("the thing's new position is (" + thing2.x + ", " + thing2.y + ")");
-									thing2.y = Math.round(thing2.y - 1);
-								}
-								else if(thing2.moveDir == "down") {
-									System.out.println("the thing's new position is (" + thing2.x + ", " + thing2.y + ")");
-									thing2.y = Math.round(thing2.y + 1);
-								}
-								else if(thing2.moveDir == "left") {
-									System.out.println("the thing's new position is (" + thing2.x + ", " + thing2.y + ")");
-									thing2.x = Math.round(thing2.x - 1);
-								}
-								else if(thing2.moveDir == "right") {
-									thing2.x = Math.round(thing2.x + 1);
-									System.out.println("the thing's new position is (" + thing2.x + ", " + thing2.y + ")");
-								}
-								thing2.moveDir = "none";
 							}
-							if(currentLevel.isComplete()) {
-								System.out.println("found a solution that takes " + currentLevel.depth + " moves!");
+							Level nextDepth = currentLevel.copy();
+							nextDepth.depth ++;
+							nextDepth.preX = x;
+							nextDepth.preY = y;
+							nextDepth.parentIndex = i;
+							tree.add(nextDepth);
+							tree.set(i, beforeAction);
+							currentLevel = beforeAction;
+							if(nextDepth.isComplete()) {
+								System.out.println("TREE:");
+								System.out.println("------------------------------------------");
+								printTree();
+								System.out.println("------------------------------------------");
+								System.out.println("FOUND A SOLUTION (takes " + nextDepth.depth + " moves)");
+								System.out.println("remember to read the next list backwards");
+								displayLevelMovePath(nextDepth);
+								// printTree();
+								System.out.println("------------------------------------------");
 								solved = true;
 								break treeLoop;
 							}
-							if(canDoSomething) {
-								System.out.println("clicking at (" + thing.x + ", " + thing.y + ") will change the level's state");
-								System.out.println("is the thing at (" + thing.x + ", " + thing.y + ") extended? " + (thing.extension));
-								// try {
-									// Level nextDepth = ( (Level) currentLevel ).clone();
-									Level nextDepth = currentLevel.copy();
-									nextDepth.depth = currentLevel.depth + 1;
-									tree.add(nextDepth);
-								// }
-								// catch(CloneNotSupportedException e) {
-									// e.printStackTrace();
-								// }
-							}
-							tree.set(i, beforeAction); // reset action
 						}
 					}
 					if(currentLevel.depth % 5 == 0) {
 						System.out.println("------------------------------------------");
 						System.out.println("the level cannot be solved in under " + level.depth + " moves.");
 						System.out.println("progress so far:");
-						for(int j = 0; j < tree.size(); j ++) {
-							currentLevel = (Level) tree.get(j);
-							System.out.println("Item at index " + j + ", depth " + currentLevel.depth);
-							for(int k = 0; k < currentLevel.content.size(); k ++) {
-								Thing thing = (Thing) currentLevel.content.get(k);
-								if(thing instanceof Extender) {
-									System.out.println("an extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
-								}
-								else if(thing instanceof Retractor) {
-									System.out.println("a retractor at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
-								}
-								else if(thing instanceof Player) {
-									System.out.println("a player at (" + thing.x + ", " + thing.y + ")");
-								}
-								else if(thing instanceof Goal) {
-									System.out.println("a goal at (" + thing.x + ", " + thing.y + ")");
-								}
-							}
-						}
+						printTree();
 						System.out.println("------------------------------------------");
 					}
 				}
 				solved = true;
+			}
+		}
+	}
+	// public static void addToList(Level solution) {
+	// 	if(solution.depth == 0) {
+	// 		System.out.println("found the beginning of time! return;");
+	// 		return;
+	// 	}
+	// 	solutionTree.add(solution);
+	// 	Level previousMove = (Level) tree.get(solution.parentIndex);
+	// 	System.out.println("checking index " + solution.parentIndex + ", depth " + previousMove.depth);
+	// 	solutionTree.add(previousMove);
+	// 	addToList(previousMove);
+	// }
+	// public static void displayMovePath(Level solution) {
+	// 	addToList(solution);
+	// 	System.out.println("just to check, I now believe that it takes " + solutionTree.size() + " moves");
+	// 	for(int i = solutionTree.size() - 1; i >= 0; i --) {
+	// 		Level solutionPath = (Level) solutionTree.get(i);
+	// 		System.out.println("click at (" + solutionPath.preX + ", " + solutionPath.preY + ")");
+	// 	}
+	// }
+	public static void displayLevelMovePath(Level solution) {
+		if(solution.depth == 0) {
+			return;
+		}
+		System.out.println("click at (" + solution.preX + ", " + solution.preY + ")");
+		Level parent = (Level) tree.get(solution.parentIndex);
+		displayLevelMovePath(parent);
+	}
+	public static void printTree() {
+		for(int j = 0; j < tree.size(); j ++) {
+			Level currentLevel = (Level) tree.get(j);
+			System.out.println("Item at index " + j + ", depth " + currentLevel.depth + ", which can be gotten to from index " + currentLevel.parentIndex + " by clicking at (" + currentLevel.preX + ", " + currentLevel.preY + ")");
+			for(int k = 0; k < currentLevel.content.size(); k ++) {
+				Thing thing = (Thing) currentLevel.content.get(k);
+				if(thing instanceof Extender) {
+					System.out.println("an extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
+				}
+				else if(thing instanceof Retractor) {
+					System.out.println("a retractor at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
+				}
+				else if(thing instanceof Player) {
+					System.out.println("a player at (" + thing.x + ", " + thing.y + ")");
+				}
+				else if(thing instanceof Goal) {
+					System.out.println("a goal at (" + thing.x + ", " + thing.y + ")");
+				}
 			}
 		}
 	}

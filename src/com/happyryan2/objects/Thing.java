@@ -20,7 +20,7 @@ public class Thing {
 	public boolean canExtend;
 	public boolean isWeak = false;
 	public boolean ignoring = false;
-	public boolean moved = false;
+	public boolean selected = false;
 	public String moveDir = "none";
 	public int timeMoving;
 	public int color;

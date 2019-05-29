@@ -53,7 +53,7 @@ public class Player extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		//debug
-		if(super.moved && false) {
+		if(super.selected && false) {
 			g.setColor(new Color(255, 0, 0));
 			g.fillRect(x, y, w, h);
 		}

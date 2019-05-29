@@ -38,11 +38,18 @@ public class Level {
 	public int left = 0;
 	public boolean manualSize = false;
 	public int depth = 0; // only for checking whether it is solvable or not
+	public int preX;
+	public int preY;
+	public int parentIndex;
+	public int index;
+
 	public Level() {
 		this.content = new ArrayList();
 	}
 	public Level copy() {
 		Level clone = new Level();
+		clone.index = this.index;
+		clone.depth = this.depth;
 		clone.width = this.width; clone.height = this.height;
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -65,6 +72,7 @@ public class Level {
 		}
 		return clone;
 	}
+
 	public void reset() {
 		this.completionY = -500;
 		for(short i = 0; i < this.content.size(); i ++) {
@@ -84,6 +92,65 @@ public class Level {
 			}
 		}
 	}
+	public void resize() {
+		if(this.width != 0 || this.height != 0) {
+			Game.levelSize = (width > height) ? width : height;
+			Game.tileSize = 600 / Game.levelSize;
+			if(this.width < this.height) {
+				this.visualHeight = 600;
+				this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
+			}
+			else {
+				this.visualWidth = 600;
+				this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
+			}
+			this.left = Math.round((800 - this.visualWidth) / 2.0f);
+			this.top = Math.round((800 - this.visualHeight) / 2.0f);
+			return;
+		}
+		resized = true;
+		float left = 0;
+		float right = 0;
+		float top = 0;
+		float bottom = 0;
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			float x = (float) thing.x;
+			float y = (float) thing.y;
+			if(x < left) {
+				left = x;
+			}
+			else if(x > right) {
+				right = x;
+			}
+			if(y < top) {
+				top = y;
+			}
+			else if(y > bottom) {
+				bottom = y;
+			}
+		}
+		// for(short i = 0; i < this.content.size(); i ++) {
+		// 	Thing thing = (Thing) this.content.get(i);
+		// 	thing.x -= left;
+		// 	thing.y -= top;
+		// }
+		Game.levelSize = (right - left > bottom - top) ? (right - left + 1) : (bottom - top + 1);
+		this.width = (int) (right - left + 1);
+		this.height = (int) (bottom - top + 1);
+		if(this.width < this.height) {
+			this.visualHeight = 600;
+			this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
+		}
+		else {
+			this.visualWidth = 600;
+			this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
+		}
+		this.left = Math.round((800 - this.visualWidth) / 2.0f);
+		this.top = Math.round((800 - this.visualHeight) / 2.0f);
+		Game.tileSize = 600 / Game.levelSize;
+	}
+
 	public void update() {
 		// this.fastForward();
 		// Stack.resetStack();
@@ -102,7 +169,7 @@ public class Level {
 			Game.canClick = false;
 		}
 		if(Game.startingLevel && !MouseClick.mouseIsPressed) {
-			System.out.println("clicking");
+			// System.out.println("clicking");
 			Game.canClick = true;
 		}
 		for(byte i = 0; i < this.content.size(); i ++) {
@@ -142,7 +209,7 @@ public class Level {
 		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			thing.moved = false;
+			thing.selected = false;
 		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -265,64 +332,7 @@ public class Level {
 		this.pause.display(g);
 		this.undo.display(g);
 	}
-	public void resize() {
-		if(this.width != 0 || this.height != 0) {
-			Game.levelSize = (width > height) ? width : height;
-			Game.tileSize = 600 / Game.levelSize;
-			if(this.width < this.height) {
-				this.visualHeight = 600;
-				this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
-			}
-			else {
-				this.visualWidth = 600;
-				this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
-			}
-			this.left = Math.round((800 - this.visualWidth) / 2.0f);
-			this.top = Math.round((800 - this.visualHeight) / 2.0f);
-			return;
-		}
-		resized = true;
-		float left = 0;
-		float right = 0;
-		float top = 0;
-		float bottom = 0;
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			float x = (float) thing.x;
-			float y = (float) thing.y;
-			if(x < left) {
-				left = x;
-			}
-			else if(x > right) {
-				right = x;
-			}
-			if(y < top) {
-				top = y;
-			}
-			else if(y > bottom) {
-				bottom = y;
-			}
-		}
-		// for(short i = 0; i < this.content.size(); i ++) {
-		// 	Thing thing = (Thing) this.content.get(i);
-		// 	thing.x -= left;
-		// 	thing.y -= top;
-		// }
-		Game.levelSize = (right - left > bottom - top) ? (right - left + 1) : (bottom - top + 1);
-		this.width = (int) (right - left + 1);
-		this.height = (int) (bottom - top + 1);
-		if(this.width < this.height) {
-			this.visualHeight = 600;
-			this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
-		}
-		else {
-			this.visualWidth = 600;
-			this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
-		}
-		this.left = Math.round((800 - this.visualWidth) / 2.0f);
-		this.top = Math.round((800 - this.visualHeight) / 2.0f);
-		Game.tileSize = 600 / Game.levelSize;
-	}
+
 	public Thing getAtPos(float x, float y) {
 		// return if there is an extender in that position
 		for(short i = 0; i < this.content.size(); i ++) {
@@ -349,12 +359,28 @@ public class Level {
 	};
 	public void setMoved(float x, float y, String dir) {
 		Thing thing = this.getAtPos(x, y);
-		if(thing == null || thing.moved || thing.ignoring || thing instanceof Goal) {
+		if(thing == null || thing.selected || thing.ignoring || thing instanceof Goal) {
 			return;
 		}
-		thing.moved = true;
+		thing.selected = true;
 		thing.checkMovement(dir);
 	}
+
+	public void moveSelected(String dir) {
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing.selected) {
+				thing.moveDir = dir;
+			}
+		}
+	}
+	public void clearSelected() {
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			thing.selected = false;
+		}
+	}
+
 	public boolean isComplete() {
 		boolean complete = true;
 		for(short i = 0; i < this.content.size(); i ++) {
@@ -395,6 +421,7 @@ public class Level {
 		}
 		return true;
 	}
+
 	public void fastForward() {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
