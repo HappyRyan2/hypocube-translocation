@@ -132,7 +132,7 @@ public class LevelEditor {
 					Level currentLevel = (Level) tree.get(i);
 					for(int x = 0; x < currentLevel.width; x ++) {
 						yLoop: for(int y = 0; y < currentLevel.height; y ++) {
-							System.out.println("searching position (" + x + ", " + y + ")");
+							// System.out.println("searching position (" + x + ", " + y + ")");
 							Thing thing = (Thing) currentLevel.getAtPos(x, y);
 							if(!(thing instanceof Extender || thing instanceof Retractor) || thing == null) {
 								// System.out.println("found a player / goal / empty space, skipping to next iteration");
@@ -158,6 +158,7 @@ public class LevelEditor {
 								thing2.onClick();
 								currentLevel.fastForward();
 							}
+							System.out.println("clicking at (" + x + ", " + y + ") will do something!");
 							for(short j = 0; j < tree.size(); j ++) {
 								Level previousState = (Level) tree.get(i);
 								Level previousStateCopy = previousState.copy();
@@ -173,6 +174,7 @@ public class LevelEditor {
 							nextDepth.preY = y;
 							nextDepth.parentIndex = i;
 							tree.add(nextDepth);
+							System.out.println("added a new branch. previous position: (" + nextDepth.preX + ", " + nextDepth.preY + "). depth: " + nextDepth.depth + ". parent index: " + nextDepth.parentIndex);
 							tree.set(i, beforeAction);
 							currentLevel = beforeAction;
 							if(nextDepth.isComplete()) {

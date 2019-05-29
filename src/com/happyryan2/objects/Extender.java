@@ -198,10 +198,13 @@ public class Extender extends Thing {
 		return true;
 	}
 	public boolean canDoSomething() {
-		if(this.extension == 0) {
+		if(super.dir == "none") {
+			return false;
+		}
+		if(super.extension == 0) {
 			return this.canExtendForward() || this.canExtendBackward();
 		}
-		else if(this.extension == 1) {
+		else if(super.extension == 1) {
 			return this.canRetractForward();
 		}
 		else {
