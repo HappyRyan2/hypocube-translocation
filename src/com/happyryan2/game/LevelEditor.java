@@ -162,6 +162,7 @@ public class LevelEditor {
 							for(short j = 0; j < tree.size(); j ++) {
 								Level previousState = (Level) tree.get(i);
 								Level previousStateCopy = previousState.copy();
+								previousStateCopy.depth = currentLevel.depth;
 								if(previousStateCopy.equals(currentLevel)) {
 									System.out.println("this move will take you to a previous position");
 									tree.set(i, beforeAction);
@@ -193,11 +194,11 @@ public class LevelEditor {
 						}
 					}
 					if(currentLevel.depth % 5 == 0) {
-						System.out.println("------------------------------------------");
-						System.out.println("the level cannot be solved in under " + level.depth + " moves.");
-						System.out.println("progress so far:");
-						printTree();
-						System.out.println("------------------------------------------");
+						// System.out.println("------------------------------------------");
+						// System.out.println("the level cannot be solved in under " + level.depth + " moves.");
+						// System.out.println("progress so far:");
+						// printTree();
+						// System.out.println("------------------------------------------");
 					}
 				}
 				solved = true;

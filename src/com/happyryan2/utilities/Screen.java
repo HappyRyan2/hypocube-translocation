@@ -42,11 +42,6 @@ public class Screen extends JPanel {
         frame.setVisible(true);
 		canvas.setFocusable(true);
 
-		//schedule framerate interval function
-		Delay delay = new Delay();
-		Timer timer = new Timer(true); // true = asynchronous
-		timer.scheduleAtFixedRate(delay, 0, 1000 / 60);
-
 		//listen for user inputs
 		canvas.addKeyListener(new KeyInputs());
 		canvas.addMouseListener(new MouseClick());
@@ -72,6 +67,11 @@ public class Screen extends JPanel {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		//schedule framerate interval function
+		Delay delay = new Delay();
+		Timer timer = new Timer(true); // true = asynchronous
+		timer.scheduleAtFixedRate(delay, 0, 1000 / 60);
     }
 
 	public void paint(Graphics g) {
