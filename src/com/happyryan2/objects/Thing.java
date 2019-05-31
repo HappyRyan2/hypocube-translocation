@@ -30,4 +30,5 @@ public class Thing {
 	public void update() { }
 	public void checkMovement(String dir) {}
 	public boolean canBePushed(String dir) { return false; }
+	public boolean canDoSomething() { return false; }
 }

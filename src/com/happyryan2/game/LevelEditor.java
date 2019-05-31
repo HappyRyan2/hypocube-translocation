@@ -121,111 +121,149 @@ public class LevelEditor {
 			System.out.println(code);
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
-			tree = new ArrayList();
-			Level depth0 = level.copy();
-			depth0.depth = 0;
-			tree.add(depth0);
-			boolean solved = false;
-			while(!solved) {
-				treeLoop: for(int i = 0; i < tree.size(); i ++) {
-					System.out.println("i is " + i + " and tree.size() is " + tree.size());
-					Level currentLevel = (Level) tree.get(i);
-					for(int x = 0; x < currentLevel.width; x ++) {
-						yLoop: for(int y = 0; y < currentLevel.height; y ++) {
+			checkSolution();
+			// tree = new ArrayList();
+			// Level depth0 = level.copy();
+			// depth0.depth = 0;
+			// tree.add(depth0);
+			// boolean solved = false;
+			// while(!solved) {
+				// treeLoop: for(int i = 0; i < tree.size(); i ++) {
+					// System.out.println("i is " + i + " and tree.size() is " + tree.size());
+					// Level currentLevel = (Level) tree.get(i);
+					// for(int x = 0; x < currentLevel.width; x ++) {
+						// yLoop: for(int y = 0; y < currentLevel.height; y ++) {
 							// System.out.println("searching position (" + x + ", " + y + ")");
-							Thing thing = (Thing) currentLevel.getAtPos(x, y);
-							if(!(thing instanceof Extender || thing instanceof Retractor) || thing == null) {
+							// Thing thing = (Thing) currentLevel.getAtPos(x, y);
+							// if(!(thing instanceof Extender || thing instanceof Retractor) || thing == null) {
 								// System.out.println("found a player / goal / empty space, skipping to next iteration");
-								continue yLoop;
-							}
-							Level beforeAction = currentLevel.copy();
-							Game.currentLevel = currentLevel;
-							if(thing instanceof Extender) {
-								Extender thing2 = (Extender) thing;
-								if(!thing2.canDoSomething()) {
+								// continue yLoop;
+							// }
+							// Level beforeAction = currentLevel.copy();
+							// Game.currentLevel = currentLevel;
+							// if(thing instanceof Extender) {
+								// Extender thing2 = (Extender) thing;
+								// if(!thing2.canDoSomething()) {
 									// System.out.println("this one can't move, skipping to next iteration");
-									continue yLoop;
-								}
-								thing2.onClick();
-								currentLevel.fastForward();
-							}
-							else {
-								Retractor thing2 = (Retractor) thing;
-								System.out.println("this one can't move, skipping to next iteration");
-								if(!thing2.canDoSomething()) {
-									continue yLoop;
-								}
-								thing2.onClick();
-								currentLevel.fastForward();
-							}
-							System.out.println("clicking at (" + x + ", " + y + ") will do something!");
-							for(short j = 0; j < tree.size(); j ++) {
-								Level previousState = (Level) tree.get(i);
-								Level previousStateCopy = previousState.copy();
-								previousStateCopy.depth = currentLevel.depth;
-								if(previousStateCopy.equals(currentLevel)) {
-									System.out.println("this move will take you to a previous position");
-									tree.set(i, beforeAction);
-									continue yLoop;
-								}
-							}
-							Level nextDepth = currentLevel.copy();
-							nextDepth.depth ++;
-							nextDepth.preX = x;
-							nextDepth.preY = y;
-							nextDepth.parentIndex = i;
-							tree.add(nextDepth);
-							System.out.println("added a new branch. previous position: (" + nextDepth.preX + ", " + nextDepth.preY + "). depth: " + nextDepth.depth + ". parent index: " + nextDepth.parentIndex);
-							tree.set(i, beforeAction);
-							currentLevel = beforeAction;
-							if(nextDepth.isComplete()) {
-								System.out.println("TREE:");
-								System.out.println("------------------------------------------");
-								printTree();
-								System.out.println("------------------------------------------");
-								System.out.println("FOUND A SOLUTION (takes " + nextDepth.depth + " moves)");
-								System.out.println("remember to read the next list backwards");
-								displayLevelMovePath(nextDepth);
+									// continue yLoop;
+								// }
+								// thing2.onClick();
+								// currentLevel.fastForward();
+							// }
+							// else {
+								// Retractor thing2 = (Retractor) thing;
+								// System.out.println("this one can't move, skipping to next iteration");
+								// if(!thing2.canDoSomething()) {
+									// continue yLoop;
+								// }
+								// thing2.onClick();
+								// currentLevel.fastForward();
+							// }
+							// System.out.println("clicking at (" + x + ", " + y + ") will do something!");
+							// for(short j = 0; j < tree.size(); j ++) {
+								// Level previousState = (Level) tree.get(i);
+								// Level previousStateCopy = previousState.copy();
+								// previousStateCopy.depth = currentLevel.depth;
+								// if(previousStateCopy.equals(currentLevel)) {
+									// System.out.println("this move will take you to a previous position");
+									// tree.set(i, beforeAction);
+									// continue yLoop;
+								// }
+							// }
+							// Level nextDepth = currentLevel.copy();
+							// nextDepth.depth ++;
+							// nextDepth.preX = x;
+							// nextDepth.preY = y;
+							// nextDepth.parentIndex = i;
+							// tree.add(nextDepth);
+							// Level nextDepth2 = (Level) tree.get(tree.size() - 1);
+							// System.out.println("added a new branch. previous position: (" + nextDepth2.preX + ", " + nextDepth2.preY + "). depth: " + nextDepth2.depth + ". parent index: " + nextDepth2.parentIndex);
+							// tree.set(i, beforeAction);
+							// currentLevel = beforeAction;
+							// if(nextDepth.isComplete()) {
+								// System.out.println("TREE:");
+								// System.out.println("------------------------------------------");
 								// printTree();
-								System.out.println("------------------------------------------");
-								solved = true;
-								break treeLoop;
-							}
-						}
-					}
-					if(currentLevel.depth % 5 == 0) {
+								// System.out.println("------------------------------------------");
+								// System.out.println("FOUND A SOLUTION (takes " + nextDepth.depth + " moves)");
+								// System.out.println("remember to read the next list backwards");
+								// displayLevelMovePath(nextDepth);
+								// printTree();
+								// System.out.println("------------------------------------------");
+								// solved = true;
+								// break treeLoop;
+							// }
+						// }
+					// }
+					// if(currentLevel.depth % 5 == 0) {
 						// System.out.println("------------------------------------------");
 						// System.out.println("the level cannot be solved in under " + level.depth + " moves.");
 						// System.out.println("progress so far:");
 						// printTree();
 						// System.out.println("------------------------------------------");
+					// }
+				// }
+				// solved = true;
+			// }
+		}
+	}
+	public static void checkSolution() {
+		/* First, clear the tree and set the root to be the current state */
+		tree.clear();
+		Level depth0 = level.copy();
+		depth0.depth = 0;
+		tree.add(depth0);
+		
+		for(int i = 0; i < tree.size(); i ++) {
+			Level currentLevel = (Level) tree.get(i);
+			Game.currentLevel = currentLevel;
+			for(short x = 0; x < currentLevel.width; x ++) {
+				yLoop: for(short y = 0; y < currentLevel.height; y ++) {
+					/* Get the item at this position and verify that it exists and can do something when clicked */
+					Thing thing = (Thing) currentLevel.getAtPos(x, y);
+					if(thing instanceof Player) { System.out.println("player at (" + x + ", " + y + ")"); }
+					if(thing == null || !thing.canDoSomething()) {
+						continue yLoop;
 					}
+					/* Pretend that the user clicked on that item */
+					Level beforeAction = currentLevel.copy(); // save state so we can revert it later
+					if(thing instanceof Extender) {
+						System.out.println("found an extender");
+						Extender extender = (Extender) thing;
+						extender.onClick();
+					}
+					else if(thing instanceof Retractor) {
+						Retractor retractor = (Retractor) thing;
+						retractor.onClick();
+					}
+					System.out.println("clicked at (" + x + ", " + y + ")");
+					currentLevel.fastForward(); // skip animations
+					
+					/* Add the modified level state to the tree */
+					Level nextDepth = currentLevel.copy();
+					nextDepth.depth = currentLevel.depth + 1;
+					nextDepth.parentIndex = i;
+					nextDepth.preX = x;
+					nextDepth.preY = y;
+					tree.add(nextDepth);
+					
+					/* If the level has been won, terminate the algorithm and print the solution. */
+					if(nextDepth.isComplete()) {
+						printTree();
+						System.out.println("------------------------------------------");
+						displayLevelMovePath(nextDepth);
+						System.out.println("------------------------------------------");
+						return;
+					}
+					
+					tree.set(i, beforeAction); // revert back to before we clicked an extender
 				}
-				solved = true;
 			}
 		}
 	}
-	// public static void addToList(Level solution) {
-	// 	if(solution.depth == 0) {
-	// 		System.out.println("found the beginning of time! return;");
-	// 		return;
-	// 	}
-	// 	solutionTree.add(solution);
-	// 	Level previousMove = (Level) tree.get(solution.parentIndex);
-	// 	System.out.println("checking index " + solution.parentIndex + ", depth " + previousMove.depth);
-	// 	solutionTree.add(previousMove);
-	// 	addToList(previousMove);
-	// }
-	// public static void displayMovePath(Level solution) {
-	// 	addToList(solution);
-	// 	System.out.println("just to check, I now believe that it takes " + solutionTree.size() + " moves");
-	// 	for(int i = solutionTree.size() - 1; i >= 0; i --) {
-	// 		Level solutionPath = (Level) solutionTree.get(i);
-	// 		System.out.println("click at (" + solutionPath.preX + ", " + solutionPath.preY + ")");
-	// 	}
-	// }
 	public static void displayLevelMovePath(Level solution) {
 		if(solution.depth == 0) {
+			System.out.println("teminating recursive printing algorithm");
 			return;
 		}
 		System.out.println("click at (" + solution.preX + ", " + solution.preY + ")");
