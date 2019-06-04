@@ -380,7 +380,8 @@ public class Level {
 			thing.selected = false;
 		}
 	}
-
+	public int numSelected() {}
+	
 	public boolean isComplete() {
 		boolean complete = true;
 		for(short i = 0; i < this.content.size(); i ++) {

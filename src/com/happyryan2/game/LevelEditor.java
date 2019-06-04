@@ -226,7 +226,6 @@ public class LevelEditor {
 						continue yLoop;
 					}
 					/* Pretend that the user clicked on that item */
-					Level beforeAction = currentLevel.copy(); // save state so we can revert it later
 					if(thing instanceof Extender) {
 						System.out.println("found an extender");
 						Extender extender = (Extender) thing;
@@ -237,15 +236,19 @@ public class LevelEditor {
 						retractor.onClick();
 					}
 					System.out.println("clicked at (" + x + ", " + y + ")");
-					currentLevel.fastForward(); // skip animations
+					Stack.addAction();
+					currentLevel.fastForward();
 					
-					/* Add the modified level state to the tree */
+					/* Add the modified state to the tree */
 					Level nextDepth = currentLevel.copy();
 					nextDepth.depth = currentLevel.depth + 1;
 					nextDepth.parentIndex = i;
 					nextDepth.preX = x;
 					nextDepth.preY = y;
 					tree.add(nextDepth);
+					
+					Stack.undoAction();
+					currentLevel.fastForward();
 					
 					/* If the level has been won, terminate the algorithm and print the solution. */
 					if(nextDepth.isComplete()) {
@@ -255,8 +258,6 @@ public class LevelEditor {
 						System.out.println("------------------------------------------");
 						return;
 					}
-					
-					tree.set(i, beforeAction); // revert back to before we clicked an extender
 				}
 			}
 		}

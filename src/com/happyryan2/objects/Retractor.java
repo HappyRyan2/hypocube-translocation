@@ -273,22 +273,22 @@ public class Retractor extends Thing {
 		}
 		Game.currentLevel.clearSelected();
 		if(super.extension == 0) {
-			if(this.canExtendForward()) {
+			if(this.canExtendForward()) { // push something forward
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
 			}
-			else if(this.canExtendBackward()) {
+			else if(this.canExtendBackward()) { // push itself backward
 				super.extending = true;
 				super.moveDir = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
 				Game.currentLevel.moveSelected(super.moveDir);
 			}
 		}
 		else if(super.extension == 1) {
-			if(this.canRetractForward()) {
+			if(this.canRetractForward()) { // pull something towards itself
 				super.retracting = true;
 				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
 			}
-			else if(this.canExtendBackward()) {
+			else if(this.canRetractBackward()) { // pull itself towards something
 				super.retracting = true;
 				super.moveDir = super.dir;
 			}
@@ -311,11 +311,19 @@ public class Retractor extends Thing {
 				Game.currentLevel.setMoved(super.x + 1, super.y, "right");
 				break;
 		}
+		boolean foundOne = false;
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
-			if(thing.selected && !thing.canBePushed(super.dir)) {
-				super.ignoring = false;
-				return false;
+			if(thing.selected) {
+				if(foundOne && super.isWeak) {
+					super.ignoring = false;
+					return false;
+				}
+				foundOne = true;
+				if(!thing.canBePushed(super.dir)) {
+					super.ignoring = false;
+					return false;
+				}
 			}
 		}
 		if((super.x == 0 && super.dir == "left") || (super.x == Game.currentLevel.width - 1 && super.dir == "right") || (super.y == 0 && super.dir == "up") || (super.y == Game.currentLevel.height - 1 && super.dir == "down")) {
@@ -342,15 +350,24 @@ public class Retractor extends Thing {
 				Game.currentLevel.setMoved(super.x + 2, super.y, "left");
 				break;
 		}
+		boolean foundOne = false;
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
-			if(thing.selected && !thing.canBePushed((super.dir == "up" || super.dir == "down") ? ((super.dir == "up") ? "down" : "up") : ((super.dir == "left") ? "right" : "left"))) {
-				super.ignoring = false;
-				return false;
+			if(thing.selected) {
+				if(foundOne && super.isWeak) {
+					super.ignoring = false;
+					return false;
+				}
+				foundOne = true;
+				if(!thing.canBePushed((super.dir == "up" || super.dir == "down") ? ((super.dir == "up") ? "down" : "up") : ((super.dir == "left") ? "right" : "left"))) {
+					super.ignoring = false;
+					return false;
+				}
 			}
 		}
 		if((super.x == 1 && super.dir == "left") || (super.x == Game.currentLevel.width - 2 && super.dir == "right") || (super.y == 1 && super.dir == "up") || (super.y == Game.currentLevel.height - 2 && super.dir == "down")) {
 			super.ignoring = false;
+			System.out.println("cannot pull something forward");
 			return false;
 		}
 		return true;
