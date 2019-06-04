@@ -289,7 +289,8 @@ public class Retractor extends Thing {
 				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
 			}
 			else if(this.canExtendBackward()) {
-
+				super.retracting = true;
+				super.moveDir = super.dir;
 			}
 		}
 	}
