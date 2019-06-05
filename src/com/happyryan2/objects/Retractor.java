@@ -275,6 +275,7 @@ public class Retractor extends Thing {
 		if(super.extension == 0) {
 			if(this.canExtendForward()) { // push something forward
 				super.extending = true;
+				System.out.println("about to move " + Game.currentLevel.numSelected() + " objects");
 				Game.currentLevel.moveSelected(super.dir);
 			}
 			else if(this.canExtendBackward()) { // push itself backward
@@ -297,6 +298,7 @@ public class Retractor extends Thing {
 	public boolean canExtendForward() {
 		Game.currentLevel.clearSelected();
 		super.ignoring = true;
+		System.out.println("super.dir is " + super.dir);
 		switch(super.dir) {
 			case "up":
 				Game.currentLevel.setMoved(super.x, super.y - 1, "up");
@@ -308,9 +310,11 @@ public class Retractor extends Thing {
 				Game.currentLevel.setMoved(super.x - 1, super.y, "left");
 				break;
 			case "right":
+				System.out.println("moving (" + (super.x + 1) + ", " + super.y + ") to the right");
 				Game.currentLevel.setMoved(super.x + 1, super.y, "right");
 				break;
 		}
+		System.out.println("just selected " + Game.currentLevel.numSelected() + " objects");
 		boolean foundOne = false;
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);

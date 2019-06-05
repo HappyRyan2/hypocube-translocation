@@ -355,13 +355,16 @@ public class Level {
 			}
 		}
 		// if you haven't found anything by now, there must not be anything there
+		System.out.println("the position (" + x + ", " + y + ") is empty");
 		return null;
 	};
 	public void setMoved(float x, float y, String dir) {
 		Thing thing = this.getAtPos(x, y);
 		if(thing == null || thing.selected || thing.ignoring || thing instanceof Goal) {
+			System.out.println("the position (" + x + ", " + y + ") is empty. (from inside setMoved() )");
 			return;
 		}
+		System.out.println("found something at (" + x + ", " + y + ")");
 		thing.selected = true;
 		thing.checkMovement(dir);
 	}
@@ -380,7 +383,16 @@ public class Level {
 			thing.selected = false;
 		}
 	}
-	public int numSelected() {}
+	public int numSelected() {
+		int num = 0;
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing.selected) {
+				num ++;
+			}
+		}
+		return num;
+	}
 	
 	public boolean isComplete() {
 		boolean complete = true;
