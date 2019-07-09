@@ -14,13 +14,20 @@ public class LevelEditor {
 	public static Button isWeak = new Button(240, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "is weak", "rect");
 	public static Button editing = new Button(350, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "editing", "rect");
 	public static Button printCode = new Button(460, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "print code", "rect");
-	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "check solvability", "rect");
+	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "solve", "rect");
+	public static Button crop = new Button(130, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "crop", "rect");
+	public static Button uncrop = new Button(240, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "uncrop", "rect");
 	public static Level level = new Level();
+	public static boolean initialized = false;
 	public static List tree = new ArrayList(); // for checking whether it is solvable or not
 	public static List solutionTree = new ArrayList();
+	public static int solutionStep = -1;
+	public static int cropX = 0;
+	public static int cropY = 0;
+	public static boolean cropping = false;
 	public static void update() {
 		// System.out.println("level size: " + level.content.size());
-		if(MouseClick.mouseIsPressed && MousePos.x > 100 && MousePos.x < 700 && MousePos.y > 100 && MousePos.y < 700 && editing.text == "editing") {
+		if(MouseClick.mouseIsPressed && MousePos.x > 100 && MousePos.x < 700 && MousePos.y > 100 && MousePos.y < 700 && editing.text == "editing" && crop.text == "crop") {
 			int x = MousePos.x;
 			int y = MousePos.y;
 			x -= 100;
@@ -36,17 +43,19 @@ public class LevelEditor {
 			}
 			String dir = (KeyInputs.keyA || KeyInputs.keyD) ? (KeyInputs.keyA ? "left" : "right") : ((KeyInputs.keyW || KeyInputs.keyS) ? (KeyInputs.keyW ? "up" : "down") : "none");
 			if(mode.text == "extend") {
-				System.out.println("adding an extender");
+				solutionTree.clear();
 				level.content.add(new Extender(x, y, dir, (isWeak.text == "is weak")));
 			}
 			else if(mode.text == "retract") {
-				System.out.println("adding a retractor");
+				solutionTree.clear();
 				level.content.add(new Retractor(x, y, dir, (isWeak.text == "is weak")));
 			}
 			else if(mode.text == "player") {
+				solutionTree.clear();
 				level.content.add(new Player(x, y));
 			}
 			else if(mode.text == "goal") {
+				solutionTree.clear();
 				level.content.add(new Goal(x, y));
 			}
 		}
@@ -55,13 +64,16 @@ public class LevelEditor {
 			Game.tileSize = 200;
 		}
 		Game.currentLevel = level;
-		Game.tileSize = 60;
-		Game.levelSize = 10;
-		level.isForTesting = true;
-		level.width = 10;
-		level.height = 10;
-		level.left = 100;
-		level.top = 100;
+		if(!initialized) {
+			Game.tileSize = 60;
+			Game.levelSize = 10;
+			level.isForTesting = true;
+			level.width = 10;
+			level.height = 10;
+			level.left = 100;
+			level.top = 100;
+			initialized = true;
+		}
 		if(editing.text == "playing") {
 			level.update();
 		}
@@ -73,6 +85,8 @@ public class LevelEditor {
 		editing.update();
 		printCode.update();
 		checkSolvable.update();
+		crop.update();
+		uncrop.update();
 		if(isWeak.pressed && !isWeak.pressedBefore) {
 			isWeak.text = (isWeak.text == "is weak") ? "is not weak" : "is weak";
 		}
@@ -121,90 +135,83 @@ public class LevelEditor {
 			System.out.println(code);
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
-			checkSolution();
-			// tree = new ArrayList();
-			// Level depth0 = level.copy();
-			// depth0.depth = 0;
-			// tree.add(depth0);
-			// boolean solved = false;
-			// while(!solved) {
-				// treeLoop: for(int i = 0; i < tree.size(); i ++) {
-					// System.out.println("i is " + i + " and tree.size() is " + tree.size());
-					// Level currentLevel = (Level) tree.get(i);
-					// for(int x = 0; x < currentLevel.width; x ++) {
-						// yLoop: for(int y = 0; y < currentLevel.height; y ++) {
-							// System.out.println("searching position (" + x + ", " + y + ")");
-							// Thing thing = (Thing) currentLevel.getAtPos(x, y);
-							// if(!(thing instanceof Extender || thing instanceof Retractor) || thing == null) {
-								// System.out.println("found a player / goal / empty space, skipping to next iteration");
-								// continue yLoop;
-							// }
-							// Level beforeAction = currentLevel.copy();
-							// Game.currentLevel = currentLevel;
-							// if(thing instanceof Extender) {
-								// Extender thing2 = (Extender) thing;
-								// if(!thing2.canDoSomething()) {
-									// System.out.println("this one can't move, skipping to next iteration");
-									// continue yLoop;
-								// }
-								// thing2.onClick();
-								// currentLevel.fastForward();
-							// }
-							// else {
-								// Retractor thing2 = (Retractor) thing;
-								// System.out.println("this one can't move, skipping to next iteration");
-								// if(!thing2.canDoSomething()) {
-									// continue yLoop;
-								// }
-								// thing2.onClick();
-								// currentLevel.fastForward();
-							// }
-							// System.out.println("clicking at (" + x + ", " + y + ") will do something!");
-							// for(short j = 0; j < tree.size(); j ++) {
-								// Level previousState = (Level) tree.get(i);
-								// Level previousStateCopy = previousState.copy();
-								// previousStateCopy.depth = currentLevel.depth;
-								// if(previousStateCopy.equals(currentLevel)) {
-									// System.out.println("this move will take you to a previous position");
-									// tree.set(i, beforeAction);
-									// continue yLoop;
-								// }
-							// }
-							// Level nextDepth = currentLevel.copy();
-							// nextDepth.depth ++;
-							// nextDepth.preX = x;
-							// nextDepth.preY = y;
-							// nextDepth.parentIndex = i;
-							// tree.add(nextDepth);
-							// Level nextDepth2 = (Level) tree.get(tree.size() - 1);
-							// System.out.println("added a new branch. previous position: (" + nextDepth2.preX + ", " + nextDepth2.preY + "). depth: " + nextDepth2.depth + ". parent index: " + nextDepth2.parentIndex);
-							// tree.set(i, beforeAction);
-							// currentLevel = beforeAction;
-							// if(nextDepth.isComplete()) {
-								// System.out.println("TREE:");
-								// System.out.println("------------------------------------------");
-								// printTree();
-								// System.out.println("------------------------------------------");
-								// System.out.println("FOUND A SOLUTION (takes " + nextDepth.depth + " moves)");
-								// System.out.println("remember to read the next list backwards");
-								// displayLevelMovePath(nextDepth);
-								// printTree();
-								// System.out.println("------------------------------------------");
-								// solved = true;
-								// break treeLoop;
-							// }
-						// }
-					// }
-					// if(currentLevel.depth % 5 == 0) {
-						// System.out.println("------------------------------------------");
-						// System.out.println("the level cannot be solved in under " + level.depth + " moves.");
-						// System.out.println("progress so far:");
-						// printTree();
-						// System.out.println("------------------------------------------");
-					// }
-				// }
-				// solved = true;
-			// }
+			if(solutionTree.size() == 0) {
+				checkSolution();
+			}
+			solutionStep = solutionTree.size() - 1;
+		}
+		if(crop.pressed && !crop.pressedBefore) {
+			crop.text = (crop.text == "crop") ? "cancel" : "crop";
+			cropX = 0;
+			cropY = 0;
+			if(crop.text == "crop") {
+				cropping = false;
+			}
+		}
+		if(crop.text == "cancel") {
+			if(MouseClick.mouseIsPressed && !crop.pressed) {
+				if(!cropping) {
+					cropX = MousePos.x;
+					cropY = MousePos.y;
+				}
+				cropping = true;
+			}
+			else if(cropping) {
+				cropping = false;
+				crop.text = "crop";
+				int left = (int) Math.ceil((cropX - level.left) / Game.tileSize);
+				int right = (int) Math.floor((MousePos.x - level.left) / Game.tileSize);
+				int top = (int) Math.ceil((cropY - level.top) / Game.tileSize);
+				int bottom = (int) Math.floor((MousePos.y - level.top) / Game.tileSize);
+				if(right < left) {
+					int previousRight = right;
+					right = left;
+					left = previousRight;
+				}
+				if(bottom < top) {
+					int previousBottom = bottom;
+					bottom = top;
+					top = previousBottom;
+				}
+				for(short i = 0; i < level.content.size(); i ++) {
+					Thing thing = (Thing) level.content.get(i);
+					if(thing.x < left || thing.y < top || thing.x > right || thing.y > bottom) {
+						System.out.println("removed something at (" + thing.x + ", " + thing.y + ")");
+						level.content.remove(i);
+						i --;
+						continue;
+					}
+					// System.out.println("not cropping out something");
+					thing.x -= left;
+					thing.y -= top;
+					thing.origX -= left;
+					thing.origY -= top;
+				}
+				level.manualSize = true;
+				level.width = right - left;
+				level.height = bottom - top;
+				level.resize();
+			}
+		}
+		if(uncrop.pressed && !uncrop.pressedBefore) {
+			level.width = 10;
+			level.height = 10;
+			level.resize();
+		}
+		if(solutionStep != -1 && !level.transitioning()) {
+			editing.text = "playing";
+			Game.currentLevel = level;
+			Level currentStep = (Level) solutionTree.get(solutionStep);
+			Thing thing = (Thing) level.getAtPos(currentStep.preX, currentStep.preY);
+			if(thing instanceof Extender) {
+				Extender extender = (Extender) thing;
+				extender.onClick();
+			}
+			else if(thing instanceof Retractor) {
+				Retractor retractor = (Retractor) thing;
+				retractor.onClick();
+			}
+			solutionStep --;
 		}
 	}
 	public static void checkSolution() {
@@ -213,7 +220,7 @@ public class LevelEditor {
 		Level depth0 = level.copy();
 		depth0.depth = 0;
 		tree.add(depth0);
-		
+
 		for(int i = 0; i < tree.size(); i ++) {
 			Level currentLevel = (Level) tree.get(i);
 			Game.currentLevel = currentLevel;
@@ -221,13 +228,12 @@ public class LevelEditor {
 				yLoop: for(short y = 0; y < currentLevel.height; y ++) {
 					/* Get the item at this position and verify that it exists and can do something when clicked */
 					Thing thing = (Thing) currentLevel.getAtPos(x, y);
-					if(thing instanceof Player) { System.out.println("player at (" + x + ", " + y + ")"); }
 					if(thing == null || !thing.canDoSomething()) {
 						continue yLoop;
 					}
 					/* Pretend that the user clicked on that item */
 					if(thing instanceof Extender) {
-						System.out.println("found an extender");
+						// System.out.println("found an extender");
 						Extender extender = (Extender) thing;
 						extender.onClick();
 					}
@@ -235,43 +241,62 @@ public class LevelEditor {
 						Retractor retractor = (Retractor) thing;
 						retractor.onClick();
 					}
-					System.out.println("clicked at (" + x + ", " + y + ")");
+					// System.out.println("clicked at (" + x + ", " + y + ")");
 					Stack.addAction();
 					currentLevel.fastForward();
-					
+
 					/* Add the modified state to the tree */
 					Level nextDepth = currentLevel.copy();
 					nextDepth.depth = currentLevel.depth + 1;
 					nextDepth.parentIndex = i;
 					nextDepth.preX = x;
 					nextDepth.preY = y;
+
+					/* But first, check to make sure it isn't a duplicate */
+					for(int j = 0; j < tree.size(); j ++) {
+						Level duplicate = (Level) tree.get(j);
+						if(nextDepth.equals(duplicate) && i != j) {
+							System.out.println("clicking at (" + x + ", " + y + ") will take you to a previous state");
+							Stack.undoAction();
+							currentLevel.fastForward();
+							continue yLoop;
+						}
+					}
 					tree.add(nextDepth);
-					
+
 					Stack.undoAction();
 					currentLevel.fastForward();
-					
+
 					/* If the level has been won, terminate the algorithm and print the solution. */
 					if(nextDepth.isComplete()) {
 						printTree();
 						System.out.println("------------------------------------------");
+						System.out.println("FOUND THE SOLUTION (read the list backwards)");
 						displayLevelMovePath(nextDepth);
 						System.out.println("------------------------------------------");
 						return;
 					}
+					else if(currentLevel.depth % 5 == 0 || true) {
+						System.out.println("looking " + currentLevel.depth + " moves into the future");
+					}
 				}
 			}
 		}
+		System.out.println("---------------------");
+		System.out.println("the level cannot be solved.");
+		System.out.println("---------------------");
 	}
 	public static void displayLevelMovePath(Level solution) {
 		if(solution.depth == 0) {
-			System.out.println("teminating recursive printing algorithm");
 			return;
 		}
 		System.out.println("click at (" + solution.preX + ", " + solution.preY + ")");
+		solutionTree.add(solution);
 		Level parent = (Level) tree.get(solution.parentIndex);
 		displayLevelMovePath(parent);
 	}
 	public static void printTree() {
+		if(true) { return; }
 		for(int j = 0; j < tree.size(); j ++) {
 			Level currentLevel = (Level) tree.get(j);
 			System.out.println("Item at index " + j + ", depth " + currentLevel.depth + ", which can be gotten to from index " + currentLevel.parentIndex + " by clicking at (" + currentLevel.preX + ", " + currentLevel.preY + ")");
@@ -299,5 +324,14 @@ public class LevelEditor {
 		editing.display(g);
 		printCode.display(g);
 		checkSolvable.display(g);
+		crop.display(g);
+		uncrop.display(g);
+		if(cropping) {
+			g.setColor(new Color(100, 100, 100, 100));
+			g.fillRect(level.left, level.top, 800 - (level.left * 2), cropY - level.top); // top
+			g.fillRect(level.left, level.top, cropX - level.left, 800 - (level.top * 2)); // left
+			g.fillRect(level.left, MousePos.y, 800 - (level.left * 2), 800 - level.top - MousePos.y); // bottom
+			g.fillRect(MousePos.x, level.top, 800 - level.left - MousePos.x, 800 - (level.top * 2)); // right
+		}
 	}
 }

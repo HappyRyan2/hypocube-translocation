@@ -54,12 +54,12 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing instanceof Extender) {
-				Extender extender = new Extender(thing.x, thing.y, thing.dir);
+				Extender extender = new Extender(thing.x, thing.y, thing.dir, thing.isWeak);
 				extender.extension = thing.extension;
 				clone.content.add(extender);
 			}
 			else if(thing instanceof Retractor) {
-				Retractor retractor = new Retractor(thing.x, thing.y, thing.dir);
+				Retractor retractor = new Retractor(thing.x, thing.y, thing.dir, thing.isWeak);
 				retractor.extension = thing.extension;
 				clone.content.add(retractor);
 			}
@@ -71,6 +71,58 @@ public class Level {
 			}
 		}
 		return clone;
+	}
+	public boolean equals(Level level) {
+		/*
+		Return true if this level equals the other level. (Only checks items in level, not buttons, win animation, etc.)
+		*/
+		if(this.content.size() != level.content.size()) {
+			return false;
+		}
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			boolean hasCopy = false;
+			if(thing instanceof Player) {
+				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
+					Thing thing2 = (Thing) level.content.get(j);
+					if(thing2 instanceof Player && thing2.x == thing.x && thing2.y == thing.y) {
+						hasCopy = true;
+						break copyLoop;
+					}
+				}
+			}
+			else if(thing instanceof Goal) {
+				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
+					Thing thing2 = (Thing) level.content.get(j);
+					if(thing2 instanceof Goal && thing2.x == thing.x && thing2.y == thing.y) {
+						hasCopy = true;
+						break copyLoop;
+					}
+				}
+			}
+			else if(thing instanceof Extender) {
+				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
+					Thing thing2 = (Thing) level.content.get(j);
+					if(thing2 instanceof Extender && thing2.x == thing.x && thing2.y == thing.y && thing2.dir == thing.dir && thing2.extension == thing.extension) {
+						hasCopy = true;
+						break copyLoop;
+					}
+				}
+			}
+			else if(thing instanceof Retractor) {
+				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
+					Thing thing2 = (Thing) level.content.get(j);
+					if(thing2 instanceof Retractor && thing2.x == thing.x && thing2.y == thing.y && thing2.dir == thing.dir && thing2.extension == thing.extension) {
+						hasCopy = true;
+						break copyLoop;
+					}
+				}
+			}
+			if(!hasCopy) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public void reset() {
@@ -355,16 +407,13 @@ public class Level {
 			}
 		}
 		// if you haven't found anything by now, there must not be anything there
-		System.out.println("the position (" + x + ", " + y + ") is empty");
 		return null;
 	};
-	public void setMoved(float x, float y, String dir) {
+	public void select(float x, float y, String dir) {
 		Thing thing = this.getAtPos(x, y);
 		if(thing == null || thing.selected || thing.ignoring || thing instanceof Goal) {
-			System.out.println("the position (" + x + ", " + y + ") is empty. (from inside setMoved() )");
 			return;
 		}
-		System.out.println("found something at (" + x + ", " + y + ")");
 		thing.selected = true;
 		thing.checkMovement(dir);
 	}
@@ -381,6 +430,7 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.selected = false;
+			thing.ignoring = false;
 		}
 	}
 	public int numSelected() {
@@ -393,8 +443,11 @@ public class Level {
 		}
 		return num;
 	}
-	
+
 	public boolean isComplete() {
+		/*
+		Returns true if each goal has a player on it.
+		*/
 		boolean complete = true;
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -426,6 +479,9 @@ public class Level {
 		return complete;
 	}
 	public boolean winAnimationDone() {
+		/*
+		Returns true if all goals are done with their color-changing animation.
+		*/
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing instanceof Goal && thing.color < 255) {
@@ -460,5 +516,14 @@ public class Level {
 			}
 			thing.moveDir = "none";
 		}
+	}
+	public boolean transitioning() {
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing.moveDir != "none" || thing.extending || thing.retracting) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

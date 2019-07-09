@@ -117,16 +117,16 @@ public class Player extends Thing {
 		if(super.deleted) { return; }
 		switch(dir) {
 			case "up":
-				Game.currentLevel.setMoved(super.x, super.y - 1, dir);
+				Game.currentLevel.select(super.x, super.y - 1, dir);
 				break;
 			case "down":
-				Game.currentLevel.setMoved(super.x, super.y + 1, dir);
+				Game.currentLevel.select(super.x, super.y + 1, dir);
 				break;
 			case "left":
-				Game.currentLevel.setMoved(super.x - 1, super.y, dir);
+				Game.currentLevel.select(super.x - 1, super.y, dir);
 				break;
 			case "right":
-				Game.currentLevel.setMoved(super.x + 1, super.y, dir);
+				Game.currentLevel.select(super.x + 1, super.y, dir);
 				break;
 		}
 	}

@@ -14,6 +14,8 @@ com/happyryan2/levels/Intro1.java
 com/happyryan2/levels/Intro2.java
 com/happyryan2/levels/Challenge1.java
 com/happyryan2/levels/Challenge2.java
+com/happyryan2/levels/Challenge3.java
+com/happyryan2/levels/Challenge4.java
 com/happyryan2/levels/Micro1.java
 com/happyryan2/levels/Micro2.java
 com/happyryan2/levels/Micro3.java

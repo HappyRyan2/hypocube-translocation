@@ -42,20 +42,12 @@ public class Retractor extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
-		boolean transitioning = false;
-		for(int i = 0; i < Game.currentLevel.content.size(); i ++) {
-			Thing thing = (Thing) Game.currentLevel.content.get(i);
-			if((thing instanceof Extender || thing instanceof Retractor) && thing.extension != 0 && thing.extension != 1) {
-				transitioning = true;
-				break;
-			}
-		}
-		if(this.cursorHovered() && !transitioning && !Game.currentLevel.isComplete()) {
+		if(this.cursorHovered() && !Game.currentLevel.transitioning() && !Game.currentLevel.isComplete()) {
 			Screen.cursor = "hand";
 			if(MouseClick.mouseIsPressed) {
 				this.onClick();
 			}
-			if(super.hoverY < Game.tileSize * super.height && false) {
+			if(super.hoverY < Game.tileSize * super.height) {
 				super.hoverY ++;
 			}
 		}
@@ -268,73 +260,70 @@ public class Retractor extends Thing {
 	}
 
 	public void onClick() {
-		if(!Game.canClick) {
+		if(!Game.canClick || Game.currentLevel.transitioning()) {
 			return;
 		}
 		Game.currentLevel.clearSelected();
 		if(super.extension == 0) {
 			if(this.canExtendForward()) { // push something forward
 				super.extending = true;
-				System.out.println("about to move " + Game.currentLevel.numSelected() + " objects");
 				Game.currentLevel.moveSelected(super.dir);
+				Stack.addAction();
 			}
 			else if(this.canExtendBackward()) { // push itself backward
 				super.extending = true;
 				super.moveDir = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
 				Game.currentLevel.moveSelected(super.moveDir);
+				Stack.addAction();
 			}
 		}
 		else if(super.extension == 1) {
 			if(this.canRetractForward()) { // pull something towards itself
 				super.retracting = true;
 				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
+				Stack.addAction();
 			}
 			else if(this.canRetractBackward()) { // pull itself towards something
 				super.retracting = true;
 				super.moveDir = super.dir;
+				Stack.addAction();
 			}
 		}
 	}
 	public boolean canExtendForward() {
 		Game.currentLevel.clearSelected();
 		super.ignoring = true;
-		System.out.println("super.dir is " + super.dir);
 		switch(super.dir) {
 			case "up":
-				Game.currentLevel.setMoved(super.x, super.y - 1, "up");
+				Game.currentLevel.select(super.x, super.y - 1, "up");
 				break;
 			case "down":
-				Game.currentLevel.setMoved(super.x, super.y + 1, "down");
+				Game.currentLevel.select(super.x, super.y + 1, "down");
 				break;
 			case "left":
-				Game.currentLevel.setMoved(super.x - 1, super.y, "left");
+				Game.currentLevel.select(super.x - 1, super.y, "left");
 				break;
 			case "right":
-				System.out.println("moving (" + (super.x + 1) + ", " + super.y + ") to the right");
-				Game.currentLevel.setMoved(super.x + 1, super.y, "right");
+				// System.out.println("moving (" + (super.x + 1) + ", " + super.y + ") to the right");
+				Game.currentLevel.select(super.x + 1, super.y, "right");
 				break;
 		}
-		System.out.println("just selected " + Game.currentLevel.numSelected() + " objects");
 		boolean foundOne = false;
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
 			if(thing.selected) {
 				if(foundOne && super.isWeak) {
-					super.ignoring = false;
 					return false;
 				}
 				foundOne = true;
 				if(!thing.canBePushed(super.dir)) {
-					super.ignoring = false;
 					return false;
 				}
 			}
 		}
 		if((super.x == 0 && super.dir == "left") || (super.x == Game.currentLevel.width - 1 && super.dir == "right") || (super.y == 0 && super.dir == "up") || (super.y == Game.currentLevel.height - 1 && super.dir == "down")) {
-			super.ignoring = false;
 			return false;
 		}
-		super.ignoring = false;
 		return true;
 	}
 	public boolean canRetractForward() {
@@ -342,16 +331,16 @@ public class Retractor extends Thing {
 		super.ignoring = true;
 		switch(super.dir) {
 			case "up":
-				Game.currentLevel.setMoved(super.x, super.y - 2, "down");
+				Game.currentLevel.select(super.x, super.y - 2, "down");
 				break;
 			case "down":
-				Game.currentLevel.setMoved(super.x, super.y + 2, "up");
+				Game.currentLevel.select(super.x, super.y + 2, "up");
 				break;
 			case "left":
-				Game.currentLevel.setMoved(super.x - 2, super.y, "right");
+				Game.currentLevel.select(super.x - 2, super.y, "right");
 				break;
 			case "right":
-				Game.currentLevel.setMoved(super.x + 2, super.y, "left");
+				Game.currentLevel.select(super.x + 2, super.y, "left");
 				break;
 		}
 		boolean foundOne = false;
@@ -359,19 +348,16 @@ public class Retractor extends Thing {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
 			if(thing.selected) {
 				if(foundOne && super.isWeak) {
-					super.ignoring = false;
 					return false;
 				}
 				foundOne = true;
 				if(!thing.canBePushed((super.dir == "up" || super.dir == "down") ? ((super.dir == "up") ? "down" : "up") : ((super.dir == "left") ? "right" : "left"))) {
-					super.ignoring = false;
 					return false;
 				}
 			}
 		}
 		if((super.x == 1 && super.dir == "left") || (super.x == Game.currentLevel.width - 2 && super.dir == "right") || (super.y == 1 && super.dir == "up") || (super.y == Game.currentLevel.height - 2 && super.dir == "down")) {
-			super.ignoring = false;
-			System.out.println("cannot pull something forward");
+			// System.out.println("cannot pull something forward");
 			return false;
 		}
 		return true;
@@ -381,22 +367,34 @@ public class Retractor extends Thing {
 		super.ignoring = true;
 		switch(super.dir) {
 			case "up":
-				Game.currentLevel.setMoved(super.x, super.y + 1, "down");
+				Game.currentLevel.select(super.x, super.y + 1, "down");
 				break;
 			case "down":
-				Game.currentLevel.setMoved(super.x, super.y - 1, "up");
+				Game.currentLevel.select(super.x, super.y - 1, "up");
 				break;
 			case "left":
-				Game.currentLevel.setMoved(super.x + 1, super.y, "right");
+				Game.currentLevel.select(super.x + 1, super.y, "right");
 				break;
 			case "right":
-				Game.currentLevel.setMoved(super.x - 1, super.y, "left");
+				Game.currentLevel.select(super.x - 1, super.y, "left");
 				break;
 		}
 		if((super.x == 0 && super.dir == "right") || (super.x == Game.currentLevel.width - 1 && super.dir == "left") || (super.y == 0 && super.dir == "down") || (super.y == Game.currentLevel.height - 1 && super.dir == "up")) {
 			return false;
 		}
-		super.ignoring = false;
+		boolean foundOne = false;
+		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+			Thing thing = (Thing) Game.currentLevel.content.get(i);
+			if(thing.selected) {
+				if(foundOne && super.isWeak) {
+					return false;
+				}
+				foundOne = true;
+				if(!thing.canBePushed((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"))) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 	public boolean canRetractBackward() {
@@ -466,27 +464,27 @@ public class Retractor extends Thing {
 		if(super.extension == 0) {
 			switch(dir) {
 				case "up":
-					Game.currentLevel.setMoved(super.x, super.y - 1, dir);
+					Game.currentLevel.select(super.x, super.y - 1, dir);
 					if(super.dir == "down") {
-						Game.currentLevel.setMoved(super.x, super.y + 1, dir);
+						Game.currentLevel.select(super.x, super.y + 1, dir);
 					}
 					break;
 				case "down":
-					Game.currentLevel.setMoved(super.x, super.y + 1, dir);
+					Game.currentLevel.select(super.x, super.y + 1, dir);
 					if(super.dir == "up") {
-						Game.currentLevel.setMoved(super.x, super.y - 1, dir);
+						Game.currentLevel.select(super.x, super.y - 1, dir);
 					}
 					break;
 				case "left":
-					Game.currentLevel.setMoved(super.x - 1, super.y, dir);
+					Game.currentLevel.select(super.x - 1, super.y, dir);
 					if(super.dir == "right") {
-						Game.currentLevel.setMoved(super.x + 1, super.y, dir);
+						Game.currentLevel.select(super.x + 1, super.y, dir);
 					}
 					break;
 				case "right":
-					Game.currentLevel.setMoved(super.x + 1, super.y, dir);
+					Game.currentLevel.select(super.x + 1, super.y, dir);
 					if(super.dir == "left") {
-						Game.currentLevel.setMoved(super.x - 1, super.y, dir);
+						Game.currentLevel.select(super.x - 1, super.y, dir);
 					}
 					break;
 			}
@@ -496,76 +494,76 @@ public class Retractor extends Thing {
 				case "up":
 					switch(super.dir) {
 						case "up":
-							Game.currentLevel.setMoved(super.x, super.y - 2, dir);
+							Game.currentLevel.select(super.x, super.y - 2, dir);
 							break;
 						case "down":
-							Game.currentLevel.setMoved(super.x, super.y - 1, dir);
-							Game.currentLevel.setMoved(super.x, super.y + 2, dir);
+							Game.currentLevel.select(super.x, super.y - 1, dir);
+							Game.currentLevel.select(super.x, super.y + 2, dir);
 							break;
 						case "left":
-							Game.currentLevel.setMoved(super.x, super.y - 1, dir);
-							Game.currentLevel.setMoved(super.x - 1, super.y - 1, dir);
+							Game.currentLevel.select(super.x, super.y - 1, dir);
+							Game.currentLevel.select(super.x - 1, super.y - 1, dir);
 							break;
 						case "right":
-							Game.currentLevel.setMoved(super.x, super.y - 1, dir);
-							Game.currentLevel.setMoved(super.x + 1, super.y - 1, dir);
+							Game.currentLevel.select(super.x, super.y - 1, dir);
+							Game.currentLevel.select(super.x + 1, super.y - 1, dir);
 							break;
 						}
 					break;
 				case "down":
 					switch(super.dir) {
 						case "up":
-							Game.currentLevel.setMoved(super.x, super.y + 1, dir);
-							Game.currentLevel.setMoved(super.x, super.y - 2, dir);
+							Game.currentLevel.select(super.x, super.y + 1, dir);
+							Game.currentLevel.select(super.x, super.y - 2, dir);
 							break;
 						case "down":
-							Game.currentLevel.setMoved(super.x, super.y + 2, dir);
+							Game.currentLevel.select(super.x, super.y + 2, dir);
 							break;
 						case "left":
-							Game.currentLevel.setMoved(super.x, super.y + 1, dir);
-							Game.currentLevel.setMoved(super.x - 1, super.y + 1, dir);
+							Game.currentLevel.select(super.x, super.y + 1, dir);
+							Game.currentLevel.select(super.x - 1, super.y + 1, dir);
 							break;
 						case "right":
-							Game.currentLevel.setMoved(super.x, super.y + 1, dir);
-							Game.currentLevel.setMoved(super.x + 1, super.y + 1, dir);
+							Game.currentLevel.select(super.x, super.y + 1, dir);
+							Game.currentLevel.select(super.x + 1, super.y + 1, dir);
 							break;
 						}
 					break;
 				case "left":
 					switch(super.dir) {
 						case "up":
-							Game.currentLevel.setMoved(super.x - 1, super.y, dir);
-							Game.currentLevel.setMoved(super.x - 1, super.y - 1, dir);
+							Game.currentLevel.select(super.x - 1, super.y, dir);
+							Game.currentLevel.select(super.x - 1, super.y - 1, dir);
 							break;
 						case "down":
-							Game.currentLevel.setMoved(super.x - 1, super.y, dir);
-							Game.currentLevel.setMoved(super.x - 1, super.y + 1, dir);
+							Game.currentLevel.select(super.x - 1, super.y, dir);
+							Game.currentLevel.select(super.x - 1, super.y + 1, dir);
 							break;
 						case "left":
-							Game.currentLevel.setMoved(super.x - 2, super.y, dir);
+							Game.currentLevel.select(super.x - 2, super.y, dir);
 							break;
 						case "right":
-							Game.currentLevel.setMoved(super.x - 1, super.y, dir);
-							Game.currentLevel.setMoved(super.x + 2, super.y, dir);
+							Game.currentLevel.select(super.x - 1, super.y, dir);
+							Game.currentLevel.select(super.x + 2, super.y, dir);
 							break;
 						}
 					break;
 				case "right":
 					switch(super.dir) {
 						case "up":
-							Game.currentLevel.setMoved(super.x + 1, super.y, dir);
-							Game.currentLevel.setMoved(super.x + 1, super.y - 1, dir);
+							Game.currentLevel.select(super.x + 1, super.y, dir);
+							Game.currentLevel.select(super.x + 1, super.y - 1, dir);
 							break;
 						case "down":
-							Game.currentLevel.setMoved(super.x + 1, super.y, dir);
-							Game.currentLevel.setMoved(super.x + 1, super.y + 1, dir);
+							Game.currentLevel.select(super.x + 1, super.y, dir);
+							Game.currentLevel.select(super.x + 1, super.y + 1, dir);
 							break;
 						case "left":
-							Game.currentLevel.setMoved(super.x - 1, super.y, dir);
-							Game.currentLevel.setMoved(super.x + 2, super.y, dir);
+							Game.currentLevel.select(super.x - 1, super.y, dir);
+							Game.currentLevel.select(super.x + 2, super.y, dir);
 							break;
 						case "right":
-							Game.currentLevel.setMoved(super.x + 2, super.y, dir);
+							Game.currentLevel.select(super.x + 2, super.y, dir);
 							break;
 					}
 					break;
