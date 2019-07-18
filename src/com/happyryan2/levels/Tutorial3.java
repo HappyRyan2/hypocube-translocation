@@ -9,6 +9,11 @@ import com.happyryan2.game.Level;
 public class Tutorial3 extends Level {
 	List content = new ArrayList();
 	public Tutorial3() {
+		super.requirements.add(2);
+		super.id = 3;
+		super.x = 200;
+		super.y = -200;
+
 		super.content.add(new Extender(1, 0, "down", false));
 		super.content.add(new Extender(2, 0, "left", false));
 		super.content.add(new Retractor(2, 1, "down", false));

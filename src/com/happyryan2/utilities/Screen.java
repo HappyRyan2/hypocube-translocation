@@ -16,7 +16,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.util.Timer;
-import java.lang.Math;
 import java.io.File;
 import java.net.URL;
 
@@ -30,9 +29,11 @@ public class Screen extends JPanel {
 	public static int screenH = 0;
 	public static String cursor = "default";
 	public static Font fontRighteous;
+	public static int frameCount = 0;
+	public static boolean loading = true;
 
     public static void main(String[] args) {
-		//create JFrame + canvas for graphics
+		/* create JFrame + canvas */
 		canvas.setDoubleBuffered(true);
         canvas.setSize(400, 400);
         frame.add(canvas);
@@ -42,13 +43,13 @@ public class Screen extends JPanel {
         frame.setVisible(true);
 		canvas.setFocusable(true);
 
-		//listen for user inputs
+		/* listen for input */
 		canvas.addKeyListener(new KeyInputs());
 		canvas.addMouseListener(new MouseClick());
 
-		//load resources
+		/* load resources */
 		try {
-			URL url = ClassLoader.getSystemResource("res/graphics/icon.png");
+			URL url = ClassLoader.getSystemResource("res/graphics/objects/player.png");
 			Toolkit kit = Toolkit.getDefaultToolkit();
 			Image img = kit.createImage(url);
 			frame.setIconImage(img);
@@ -68,7 +69,7 @@ public class Screen extends JPanel {
 			e.printStackTrace();
 		}
 
-		//schedule framerate interval function
+		/* schedule framerate interval function */
 		Delay delay = new Delay();
 		Timer timer = new Timer(true); // true = asynchronous
 		timer.scheduleAtFixedRate(delay, 0, 1000 / 60);
@@ -76,19 +77,32 @@ public class Screen extends JPanel {
 
 	public void paint(Graphics g) {
 		//clear background
-		g.setColor(new Color(255, 255, 255));
+		g.setColor(new Color(200, 200, 200));
 		g.fillRect(0, 0, 800, 800);
+		if(loading) {
+			g.setFont(new Font("Monospace", Font.PLAIN, 30));
+			g.setColor(new Color(150, 150, 150));
+			centerText(g, 400, 400, "loading...");
+		}
 		//draw game graphics
 		Game.display(g);
+		loading = false;
 	}
 
 	public static void centerText(Graphics g, float x, float y, String text) {
 		int width = g.getFontMetrics().stringWidth(text);
-		g.drawString(text, (int) x - (width / 2), (int) y);
+		// int height = g.getFontMetrics().getHeight();
+		g.drawString(text, (int) x - (width / 2), (int) y /* + (height / 2) */);
 	}
-
-	public static void resetTransform() {
-
+	public static void scaleImage(Graphics g, Image img, int w, int h) {
+		/*
+		Scales 'img' to fit in rectangle w/ dimensions ('w', 'h'). Assumes the rectangles are similar.
+		*/
+		Graphics2D g2 = (Graphics2D) g;
+		float ratioX = ((float) w) / img.getWidth(null);
+		float ratioY = ((float) h) / img.getHeight(null);
+		g2.scale(ratioX, ratioY);
+		g2.drawImage(img, 0, 0, null);
+		g2.scale(1 / ratioX, 1 / ratioY);
 	}
-
 }

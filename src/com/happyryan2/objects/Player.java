@@ -5,15 +5,21 @@ This class is the 'player' (the blue square that you push around).
 package com.happyryan2.objects;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Color;
+import java.awt.Polygon;
+import java.awt.Image;
+import java.awt.geom.AffineTransform;
 
 import com.happyryan2.game.Game;
 import com.happyryan2.game.Level;
 import com.happyryan2.game.LevelPack;
+import com.happyryan2.utilities.ImageLoader;
 
 public class Player extends Thing {
 	private Color darkBlue = new Color(0, 0, 255);
 	private Color lightBlue = new Color(0, 128, 255);
+	public Image img = ImageLoader.loadImage("res/graphics/objects/player.png");
 	public Player(float x, float y) {
 		super.x = x;
 		super.y = y;
@@ -48,50 +54,21 @@ public class Player extends Thing {
 		}
 	}
 	public void display(Graphics g) {
+		/* Calculate position */
 		int x = (int) (super.x * Game.tileSize);
 		int y = (int) (super.y * Game.tileSize);
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
-		//debug
-		if(super.selected && false) {
-			g.setColor(new Color(255, 0, 0));
-			g.fillRect(x, y, w, h);
-		}
-		g.setColor(darkBlue);
-		//horizontal
-		raisedRect(g, (double) x, (double) y, (double) w / 3, (double) h / 6);
-		raisedRect(g, (double) (x + w - (w / 3)), (double) y, (double) w / 3, (double) h / 6);
-		raisedRect(g, (double) x, (double) y + (h / 6 * 5), (double) w / 3, (double) h / 6);
-		raisedRect(g, (double) (x + w - (w / 3)), (double) y + (h / 6 * 5), (double) w / 3, (double) h / 6);
-		//vertical
-		raisedRect(g, (double) x, (double) y, (double) w / 6, (double) h / 3);
-		raisedRect(g, (double) x, (double) y + h - (h / 3), (double) w / 6, (double) h / 3);
-		raisedRect(g, (double) (x + (w / 6 * 5)), (double) y, (double) w / 6, (double) h / 3);
-		raisedRect(g, (double) (x + (w / 6 * 5)), (double) y + h - (h / 3), (double) w / 6, (double) h / 3);
-		//circle
-		for(short i = (short) Math.round(super.hoverY); i < Game.tileSize * super.height; i ++) {
-			g.setColor(lightBlue);
-			g.fillOval(x + (w / 3), y + (h / 3) + i, (w / 3), (h / 3));
-		}
-		g.setColor(darkBlue);
-		g.fillOval(x + (w / 3), (int) (y + (h / 3) + super.hoverY), (w / 3), (h / 3));
-		//win animation
-		darkBlue = new Color(super.color / 2, 0, 255);
-		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
-			Thing thing = (Thing) Game.currentLevel.content.get(i);
-			if(thing instanceof Goal && thing.x == super.x && thing.y == super.y) {
-				thing.winAnimation = true;
-				if(super.hoverY < h * super.height) {
-					super.hoverY ++;
-				}
-				else if(super.color < 255) {
-					super.color += 5;
-				}
-				else {
-					super.deleted = true;
-				}
-			}
-		}
+		/* Translate to position + scale to size */
+		Graphics2D g2 = (Graphics2D) g;
+		AffineTransform at = g2.getTransform();
+		g2.translate(x + (w / 2), y + (h / 2));
+		float xScale = ((float) w) / ((float) img.getWidth(null));
+		float yScale = ((float) h) / ((float) img.getHeight(null));
+		g2.scale(xScale, yScale);
+		/* Display + undo transformations */
+		g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+		g2.setTransform(at);
 	}
 	public void raisedRect(Graphics g, double x, double y, double w, double h) {
 		if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {

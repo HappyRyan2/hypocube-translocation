@@ -3,7 +3,6 @@ package com.happyryan2.game;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Polygon;
-import java.lang.Math;
 
 import com.happyryan2.utilities.MousePos;
 import com.happyryan2.utilities.MouseClick;

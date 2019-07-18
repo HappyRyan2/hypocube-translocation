@@ -9,10 +9,19 @@ import com.happyryan2.game.Level;
 public class Tutorial2 extends Level {
 	List content = new ArrayList();
 	public Tutorial2() {
-		super.infoTextTop = "green retractors can both push and pull";
-		super.infoTextBottom = "(grey ones don't move anything when they retract)";
-		super.content.add(new Retractor(2, 1, "left"));
-		super.content.add(new Player(0, 1));
-		super.content.add(new Goal(1, 1));
+		super.requirements.add(1);
+		super.id = 2;
+		super.x = 0;
+		super.y = -200;
+		
+		super.manualSize = true;
+		super.width = 3;
+		super.height = 3;
+
+		super.content.add(new Player(1, 1));
+		super.content.add(new Goal(2, 1));
+		super.content.add(new Retractor(0, 2, "right"));
+		super.content.add(new Retractor(1, 2, "up"));
+		super.content.add(new Retractor(0, 0, "right"));
 	}
 }

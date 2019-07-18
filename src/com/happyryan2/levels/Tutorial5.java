@@ -9,7 +9,11 @@ import com.happyryan2.game.Level;
 public class Tutorial5 extends Level {
 	List content = new ArrayList();
 	public Tutorial5() {
-		super.infoTextBottom = "when an object pulls / pushes against a stationary object, it can move itself in the opposite direction";
+		super.id = 5;
+		super.requirements.add(4);
+		super.x = 600;
+		super.y = -200;
+
 		super.content.add(new Retractor(1, 0, "down"));
 		super.content.add(new Goal(1, 1));
 		super.content.add(new Retractor(1, 2, "left"));

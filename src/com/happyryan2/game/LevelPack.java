@@ -32,7 +32,7 @@ public class LevelPack {
 		if(this.buttons.size() == 0) {
 			for(byte i = 0; i < this.levels.size(); i ++) {
 				Level level = (Level) this.levels.get(i);
-				this.buttons.add(new Button(200 + (i * (400 / 4) - 15), 400, 30, 30, new Color(100, 100, 100), new Color(150, 150, 150), "" + (i + 1), "rect", (level.hasBeenCompleted || true ? new Color(0, 255, 255) : new Color(150, 150, 150))));
+				this.buttons.add(new Button(200 + (i * (400 / 4) - 15), 400, 30, 30, new Color(100, 100, 100), new Color(150, 150, 150), "" + (i + 1), "rect", (level.completedBefore || true ? new Color(0, 255, 255) : new Color(150, 150, 150))));
 			}
 		}
 		for(byte i = 0; i < this.buttons.size(); i ++) {
@@ -43,14 +43,14 @@ public class LevelPack {
 			}
 			else {
 				Level previous = (Level) this.levels.get(i - 1);
-				canPlay = previous.hasBeenCompleted;
+				canPlay = previous.completedBefore;
 			}
 			Level level = (Level) this.levels.get(i);
 			if(!canPlay) {
 				// you haven't unlocked the level, so gray it out
 				button.textCol = new Color(150, 150, 150);
 			}
-			else if(level.hasBeenCompleted) {
+			else if(level.completedBefore) {
 				// you have already completed the level, so fill the text blue
 				button.textCol = new Color(0, 255, 255);
 			}
@@ -68,7 +68,7 @@ public class LevelPack {
 		for(byte i = 0; i < this.buttons.size(); i ++) {
 			if(i != 0) {
 				Level previous = (Level) this.levels.get(i - 1);
-				if(!previous.hasBeenCompleted) {
+				if(!previous.completedBefore) {
 					continue;
 				}
 			}
@@ -110,7 +110,7 @@ public class LevelPack {
 		int numComplete = 0;
 		for(byte i = 0; i < this.levels.size(); i ++) {
 			Level level = (Level) this.levels.get(i);
-			if(level.hasBeenCompleted) {
+			if(level.completedBefore) {
 				numComplete ++;
 			}
 		}

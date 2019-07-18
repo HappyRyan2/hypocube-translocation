@@ -9,10 +9,18 @@ import com.happyryan2.game.Level;
 public class Tutorial1 extends Level {
 	List content = new ArrayList();
 	public Tutorial1() {
-		super.infoTextTop = "your task: move the blue to the red";
-		super.infoTextBottom = "click an extender to apply force (push) in that direction";
+		super.discovered = true;
+		super.id = 1;
+		super.x = 0;
+		super.y = 0;
+
+		super.manualSize = true;
+		super.width = 3;
+		super.height = 3;
+
 		super.content.add(new Extender(0, 1, "right"));
+		super.content.add(new Extender(2, 0, "down"));
 		super.content.add(new Player(1, 1));
-		super.content.add(new Goal(2, 1));
+		super.content.add(new Goal(2, 2));
 	}
 }

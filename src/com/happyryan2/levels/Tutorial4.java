@@ -5,14 +5,19 @@ import com.happyryan2.objects.*;
 
 public class Tutorial4 extends Level {
 	public Tutorial4() {
+		super.requirements.add(3);
+		super.id = 4;
+		super.x = 400;
+		super.y = -200;
+
 		super.manualSize = true;
-		super.width = 4;
-		super.height = 4;
-		super.content.add(new Goal(2, 0));
-		super.content.add(new Extender(2, 2, "none", false));
-		super.content.add(new Extender(2, 3, "up", true));
-		super.content.add(new Extender(1, 3, "up", false));
-		super.content.add(new Extender(0, 3, "right", false));
-		super.content.add(new Player(2, 1));
+		super.width = 7;
+		super.height = 1;
+
+		super.content.add(new Extender(0, 0, "right", true));
+		super.content.add(new Extender(1, 0, "right", true));
+		super.content.add(new Extender(2, 0, "right", true));
+		super.content.add(new Player(3, 0));
+		super.content.add(new Goal(6, 0));
 	}
 }

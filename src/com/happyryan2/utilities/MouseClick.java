@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 
 public class MouseClick implements MouseListener {
 	public static boolean mouseIsPressed = false;
+	public static boolean pressedBefore = false;
 	public void mousePressed(MouseEvent event) {
 		mouseIsPressed = true;
 	}

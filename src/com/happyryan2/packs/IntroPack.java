@@ -7,5 +7,7 @@ public class IntroPack extends LevelPack {
 	public IntroPack() {
 		super.name = "Introductory Pack";
 		super.levels.add(new Intro1());
+		super.levels.add(new Intro2());
+		super.levels.add(new Intro5());
 	}
 }

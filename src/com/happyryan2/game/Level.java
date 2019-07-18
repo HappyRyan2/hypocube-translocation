@@ -1,25 +1,41 @@
 package com.happyryan2.game;
 
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 import java.util.ArrayList;
-import java.lang.Math;
 
 import com.happyryan2.objects.*;
 import com.happyryan2.utilities.Screen;
 import com.happyryan2.utilities.MouseClick;
+import com.happyryan2.utilities.MousePos;
+import com.happyryan2.utilities.ImageLoader;
 import com.happyryan2.game.Button;
+import com.happyryan2.game.LevelSelect;
+import com.happyryan2.game.LevelConnector;
 
 public class Level {
+	public static Color backgroundColor = new Color(200, 200, 200);
+	public static Color wallColor = new Color(150, 150, 150);
+
+	/* Level-dependent variables */
+	public int x, y; // coordinates on level select
+	public int id; // level number (1, 2, 3, etc.) used by "requirements" array
+	public List requirements = new ArrayList(); // which levels are required to gain access to this one
+	public boolean requireAll = false; // do you need to complete all the levels in "requirements", or just one? (AND vs OR)
+	public boolean manualSize = false;
+	public int width = 0;
+	public int height = 0;
 	public List content;
-	public boolean hasBeenCompleted = true;
+
+	public boolean completedBefore = false;
 	public boolean completeNow = false;
+	public boolean discovered = false;
 	private boolean resized = false;
-	public String infoTextTop = "";
-	public String infoTextBottom = "";
-	public int completionY = -500;
+	public int completionY = -800;
+	public float opacity = 0;
+
+	/* Buttons */
 	public Button next = new Button(500, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowright", "circle");
 	public Button menu = new Button(400, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:3rects", "circle");
 	public Button retry = new Button(300, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowleft", "circle"); // retry button that shows when you have completed the level
@@ -27,17 +43,19 @@ public class Level {
 	public Button restart = new Button(300, 325, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Restart", "rect"); // retry button that shows when you are on the pause screen
 	public Button exit = new Button(300, 400, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Exit", "rect");
 	public Button undo = new Button(100, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:arrowleft", "circle");
+
 	public boolean lastLevel = false;
 	public boolean paused = false;
-	public boolean isForTesting = false;
-	public int width = 0;
-	public int height = 0;
+
+	/* Visual size + location (in pixels) */
 	public int visualWidth = 0;
 	public int visualHeight = 0;
 	public int top = 0;
 	public int left = 0;
-	public boolean manualSize = false;
-	public int depth = 0; // only for checking whether it is solvable or not
+
+	/* Testing properties (mostly used for auto-solving algorithm) */
+	public boolean isForTesting = false;
+	public int depth = 0;
 	public int preX;
 	public int preY;
 	public int parentIndex;
@@ -126,7 +144,10 @@ public class Level {
 	}
 
 	public void reset() {
-		this.completionY = -500;
+		this.completeNow = false;
+		this.completionY = -800;
+		this.pause.y = 30;
+		this.undo.y = 30;
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.x = thing.origX;
@@ -204,13 +225,19 @@ public class Level {
 	}
 
 	public void update() {
-		// this.fastForward();
-		// Stack.resetStack();
+		// System.out.println("is (0, 1) empty? " + this.isEmpty(0, 1));
+		// for(short i = 0; i < this.content.size(); i ++) {
+		// 	Thing thing = (Thing) this.content.get(i);
+		// 	if(thing instanceof Wall) {
+		// 		System.out.println("wall at (" + thing.x + ", " + thing.y + ")");
+		// 		System.out.println("foo is: " + thing.foo);
+		// 	}
+		// }
 		// initialize
 		if(!resized) {
 			resize();
 		}
-		if(!this.isForTesting) {
+		if(!this.isForTesting && false) {
 			LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
 			int size = pack.levels.size();
 			if(Game.levelOpen == size - 1) {
@@ -254,7 +281,7 @@ public class Level {
 			if(this.exit.pressed) {
 				this.paused = false;
 				Game.transition = 255;
-				Game.state = "select-level";
+				Game.state = "level-select";
 				Game.canClick = false;
 				Game.startingLevel = true;
 			}
@@ -267,17 +294,25 @@ public class Level {
 			Thing thing = (Thing) this.content.get(i);
 			thing.update();
 		}
-		if(this.winAnimationDone()) {
-			hasBeenCompleted = true;
-			completeNow = true;
+		if(this.isComplete()) {
+			this.completedBefore = true;
+			this.completeNow = true;
 			this.retry.update();
 			this.menu.update();
+			this.pause.y -= 5;
+			this.undo.y -= 5;
 			if(!this.lastLevel) {
 				this.next.update();
 			}
 			if(this.menu.pressed) {
 				Game.transition = 255;
-				Game.state = "select-level";
+				Game.state = "level-select";
+				for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
+					LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
+					if(connector.previousLevel == this.id && connector.animationProgress == 0) {
+						connector.animationProgress = 1;
+					}
+				}
 			}
 			if(this.next.pressed && !this.lastLevel && !this.isForTesting) {
 				Game.transition = 255;
@@ -306,8 +341,14 @@ public class Level {
 		}
 	}
 	public void display(Graphics g) {
-		// System.out.println("level size: (" + this.width + ", " + this.height + ")");
-		// System.out.println("visual level size: (" + this.visualWidth + ", " + this.visualHeight + ")");
+		// walls + background
+		g.setColor(wallColor);
+		g.fillRect(0, 0, 800, 800);
+		for(byte x = 0; x < this.width; x ++) {
+			for(byte y = 0; y < this.height; y ++) {
+				this.fillArea(g, x, y);
+			}
+		}
 		// sort by y-value (display top ones first)
 		List sorted = new ArrayList();
 		List unsorted = new ArrayList();
@@ -336,21 +377,22 @@ public class Level {
 		}
 		g.translate(-this.left, -this.top);
 		//gui box for winning
-		if(this.winAnimationDone() && this.isComplete()) {
-			if(this.completionY < 100) {
-				this.completionY += Math.max((100 - this.completionY) / 15, 1);
+		if(this.isComplete()) {
+			// System.out.println("completionY: " + this.completionY);
+			if(this.completionY < 0) {
+				this.completionY += Math.max((0 - this.completionY) / 15, 1);
 			}
 			g.setColor(new Color(100, 100, 100, 150));
-			g.fillRect(200, this.completionY, 400, 600);
+			g.fillRect(200, this.completionY, 400, 800);
 			g.setFont(Screen.fontRighteous);
 			g.setColor(new Color(255, 255, 255));
-			Screen.centerText(g, 400, this.completionY + 200, "Level Complete");
-			this.retry.y = this.completionY + 400;
-			this.menu.y = this.completionY + 400;
-			this.next.y = this.completionY + 400;
+			Screen.centerText(g, 400, this.completionY + 266, "Level Complete");
+			this.retry.y = this.completionY + 533;
+			this.menu.y = this.completionY + 533;
+			this.next.y = this.completionY + 533;
 			this.retry.display(g);
 			this.menu.display(g);
-			if(!this.lastLevel) {
+			if(!this.lastLevel && false) {
 				this.next.display(g);
 			}
 			else {
@@ -367,22 +409,129 @@ public class Level {
 			this.restart.display(g);
 			this.exit.display(g);
 		}
-		// border
-		g.setColor(new Color(200, 200, 200));
-		g.fillRect(0, 0, 800, this.top);
-		g.fillRect(0, 0, this.left, 800);
-		g.fillRect(800 - this.left, 0, this.left, 800);
-		g.fillRect(0, 800 - this.top, 800, this.top);
-		// text for tutorials
-		if(this.infoTextBottom != "" && !this.isComplete()) {
-			g.setColor(new Color(200, 200, 200));
-			g.setFont(Screen.fontRighteous.deriveFont(15f));
-			Screen.centerText(g, 400, 725, this.infoTextTop);
-			Screen.centerText(g, 400, 750, this.infoTextBottom);
-		}
 		// pause button
 		this.pause.display(g);
 		this.undo.display(g);
+	}
+	public void displayLevelSelect(Graphics g) {
+		if(!this.discovered) {
+			// System.out.println("undiscovered level");
+			return;
+		}
+		if(this.opacity == 0) {
+			boolean playingAnimation = false;
+			for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
+				LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
+				if(connector.animationProgress < connector.size && connector.animationProgress != 0) {
+					return;
+				}
+			}
+		}
+		this.opacity += 0.05;
+		Image img = (this.completedBefore) ? LevelSelect.completeLevel : LevelSelect.incompleteLevel;
+		Graphics2D g2 = (Graphics2D) g;
+		if(this.opacity < 1) {
+			AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.opacity);
+			g2.setComposite(composite);
+		}
+		g2.translate(this.x, this.y);
+		Screen.scaleImage(g2, img, 100, 100);
+		if(this.completedBefore) {
+			g2.setColor(new Color(66, 139, 255));
+		}
+		else {
+			g2.setColor(new Color(191, 54, 255));
+		}
+		g2.setFont(Screen.fontRighteous.deriveFont(40f));
+		Screen.centerText(g, 50, 65, "" + this.id);
+		g2.translate(-this.x, -this.y);
+		AlphaComposite composite2 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1);
+		g2.setComposite(composite2);
+	}
+	public void updateLevelSelect() {
+		/* Detect clicks */
+		if(MousePos.x > x + LevelSelect.scrollX && MousePos.x < x + LevelSelect.scrollX + 100 && MousePos.y > y + LevelSelect.scrollY && MousePos.y < y + LevelSelect.scrollY + 100 && this.opacity >= 1) {
+			Screen.cursor = "hand";
+			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
+				Game.levelOpen = this.id;
+				Game.currentLevel = this;
+				Game.canClick = true;
+				Game.startingLevel = true;
+				Game.state = "play";
+				Game.transition = 255;
+				this.reset();
+				this.resize();
+			}
+		}
+		/* Update whether it has been discovered or not */
+		if(this.requireAll) {
+			this.discovered = true;
+			loop1: for(short i = 0; i < Game.levels.size(); i ++) {
+				Level level = (Level) Game.levels.get(i);
+				boolean required = false;
+				loop2: for(short j = 0; j < this.requirements.size(); j ++) {
+					int req = (int) this.requirements.get(i);
+					if(req == level.id) {
+						required = true;
+						break loop2;
+					}
+				}
+				if(required && !level.completedBefore) {
+					this.discovered = false;
+					break loop1;
+				}
+			}
+		}
+		else {
+			this.discovered = false;
+			loop1: for(short i = 0; i < Game.levels.size(); i ++) {
+				Level level = (Level) Game.levels.get(i);
+				boolean required = false;
+				loop2: for(short j = 0; j < this.requirements.size(); j ++) {
+					int req = (int) this.requirements.get(j);
+					if(req == level.id) {
+						required = true;
+						break loop2;
+					}
+				}
+				if(required && level.completedBefore) {
+					this.discovered = true;
+					break loop1;
+				}
+			}
+		}
+		if(this.id == 1) {
+			this.discovered = true;
+		}
+	}
+	public boolean canPlay() {
+		if(!this.discovered) {
+			return false;
+		}
+		if(this.requireAll) {
+			for(short i = 0; i < Game.levels.size(); i ++) {
+				Level level = (Level) Game.levels.get(i);
+				for(short j = 0; j < this.requirements.size(); j ++) {
+					int req = (int) this.requirements.get(j);
+					if(level.id == req && !level.completedBefore) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		else {
+			for(short i = 0; i < Game.levels.size(); i ++) {
+				Level level = (Level) Game.levels.get(i);
+				for(short j = 0; j < this.requirements.size(); j ++) {
+					int req = (int) this.requirements.get(j);
+					if(level.id == req && level.completedBefore) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 
 	public Thing getAtPos(float x, float y) {
@@ -480,7 +629,7 @@ public class Level {
 	}
 	public boolean winAnimationDone() {
 		/*
-		Returns true if all goals are done with their color-changing animation.
+		Returns true if all goals are done with their color-changing animation. Unused
 		*/
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -525,5 +674,71 @@ public class Level {
 			}
 		}
 		return false;
+	}
+
+	public boolean isEmpty(int x, int y) {
+		if(x < 0 || y < 0 || x >= width || y >= height) {
+			return false;
+		}
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Wall && thing.x == x && thing.y == y) {
+				return false;
+			}
+		}
+		return true;
+	}
+	public void fillArea(Graphics g, int x, int y) {
+		/*
+		Fills an area the correct color + with rounded corners where necessary.
+		(Walls = 200, Background = 150)
+		*/
+		Graphics2D g2 = (Graphics2D) g;
+		if(this.isEmpty(x, y)) {
+			g2.setColor(backgroundColor);
+			RoundRectangle2D rect = new RoundRectangle2D.Float();
+			rect.setRoundRect(x * Game.tileSize + this.left, y * Game.tileSize + this.top, Game.tileSize, Game.tileSize, 30 * (Game.tileSize / 300) * 2, 30 * (Game.tileSize / 300) * 2);
+			g2.fill(rect);
+			int visualX = Math.round(x * Game.tileSize + this.left);
+			int visualY = Math.round(y * Game.tileSize + this.top);
+			int tileSize = Math.round(Game.tileSize);
+			int tileSize2 = Math.round(Game.tileSize / 2);
+			if(isEmpty(x + 1, y)) {
+				g2.fillRect(visualX + tileSize2, visualY, tileSize2, tileSize);
+			}
+			if(isEmpty(x - 1, y)) {
+				g2.fillRect(visualX, visualY, tileSize2, tileSize);
+			}
+			if(isEmpty(x, y + 1)) {
+				g2.fillRect(visualX, visualY + tileSize2, tileSize, tileSize2);
+			}
+			if(isEmpty(x, y - 1)) {
+				g2.fillRect(visualX, visualY, tileSize, tileSize2);
+			}
+		}
+		else {
+			int visualX = Math.round(x * Game.tileSize + this.left);
+			int visualY = Math.round(y * Game.tileSize + this.top);
+			int tileSize = Math.round(Game.tileSize);
+			int tileSize2 = Math.round(Game.tileSize / 2);
+			g2.setColor(backgroundColor);
+			g2.fillRect(visualX, visualY, tileSize, tileSize);
+			g2.setColor(wallColor);
+			RoundRectangle2D rect = new RoundRectangle2D.Float();
+			rect.setRoundRect(x * Game.tileSize + this.left, y * Game.tileSize + this.top, Game.tileSize, Game.tileSize, 30 * (Game.tileSize / 300) * 2, 30 * (Game.tileSize / 300) * 2);
+			g2.fill(rect);
+			if(!isEmpty(x + 1, y)) {
+				g2.fillRect(visualX + tileSize2, visualY, tileSize2, tileSize);
+			}
+			if(!isEmpty(x - 1, y)) {
+				g2.fillRect(visualX, visualY, tileSize2, tileSize);
+			}
+			if(!isEmpty(x, y + 1)) {
+				g2.fillRect(visualX, visualY + tileSize2, tileSize, tileSize2);
+			}
+			if(!isEmpty(x, y - 1)) {
+				g2.fillRect(visualX, visualY, tileSize, tileSize2);
+			}
+		}
 	}
 }

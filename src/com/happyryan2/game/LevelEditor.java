@@ -2,7 +2,6 @@ package com.happyryan2.game;
 
 import java.awt.Graphics;
 import java.awt.Color;
-import java.lang.Math;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -58,6 +57,11 @@ public class LevelEditor {
 				solutionTree.clear();
 				level.content.add(new Goal(x, y));
 			}
+			else if(mode.text == "wall") {
+				System.out.println("adding a wall");
+				solutionTree.clear();
+				level.content.add(new Wall(x, y));
+			}
 		}
 		if(Game.levelSize < 3) {
 			Game.levelSize = 3;
@@ -65,7 +69,7 @@ public class LevelEditor {
 		}
 		Game.currentLevel = level;
 		if(!initialized) {
-			Game.tileSize = 60;
+			Game.tileSize = (800 - (level.top * 2)) / Game.levelSize;
 			Game.levelSize = 10;
 			level.isForTesting = true;
 			level.width = 10;
@@ -101,6 +105,9 @@ public class LevelEditor {
 				mode.text = "goal";
 			}
 			else if(mode.text == "goal") {
+				mode.text = "wall";
+			}
+			else if(mode.text == "wall") {
 				mode.text = "eraser";
 			}
 			else if(mode.text == "eraser") {
@@ -130,6 +137,9 @@ public class LevelEditor {
 				}
 				else if(thing instanceof Retractor) {
 					code += "super.content.add(new Retractor(" + (int) thing.x + ", " + (int) thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
+				}
+				else if(thing instanceof Wall) {
+					code += "super.content.add(new Wall(" + (int) thing.x + ", " + (int) thing.y + "));";
 				}
 			}
 			System.out.println(code);

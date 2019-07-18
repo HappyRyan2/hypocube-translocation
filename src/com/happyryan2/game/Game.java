@@ -12,8 +12,9 @@ import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "level-editor";
+	public static String state = "level-select";
 	public static List levelPacks = new ArrayList();
+	public static List levels = new ArrayList();
 	public static int packOpen = 0;
 	public static int levelOpen = 0;
 	public static float levelSize = 0;
@@ -23,17 +24,25 @@ public class Game {
 	public static boolean canClick = true;
 	public static boolean startingLevel = false;
 	public static Level currentLevel;
-	public static int transition = 0;
+	public static int transition = 255;
 	public static int scrollY = 0;
 	public static void run() {
 		// System.out.println("can you click? " + canClick);
 		// System.out.println("undo stack size: " + Stack.stack.size());
 		if(!initialized) {
 			initialized = true;
-			levelPacks.add(new TutorialPack());
-			levelPacks.add(new IntroPack());
-			levelPacks.add(new ChallengePack());
-			levelPacks.add(new MicroPack());
+			// levelPacks.add(new TutorialPack());
+			// levelPacks.add(new IntroPack());
+			// levelPacks.add(new ChallengePack());
+			// levelPacks.add(new MicroPack());
+			levels.add(new Tutorial1());
+			levels.add(new Tutorial2());
+			levels.add(new Tutorial3());
+			levels.add(new Tutorial4());
+			levels.add(new Tutorial5());
+			levels.add(new Intro1());
+			levels.add(new Intro2());
+			levels.add(new Intro3());
 		}
 		if(state == "home") {
 			// display the home page
@@ -50,15 +59,22 @@ public class Game {
 			}
 		}
 		else if(state == "select-level") {
-			// display the level selection screen
+			/* Old level select menu */
 			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
 			pack.updateLevelSelect();
 		}
+		else if(state == "level-select") {
+			/* New level select menu */
+			LevelSelect.update();
+		}
 		else if(state == "play") {
-			// display the world
-			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
-			currentLevel = (Level) pack.levels.get(levelOpen);
-			currentLevel.update();
+			for(short i = 0; i < levels.size(); i ++) {
+				Level level = (Level) levels.get(i);
+				if(level.id == levelOpen) {
+					currentLevel = level;
+					level.update();
+				}
+			}
 		}
 		else if(state == "level-editor") {
 			LevelEditor.update();
@@ -80,13 +96,21 @@ public class Game {
 			}
 		}
 		else if(state == "select-level") {
+			/* Old level select menu */
 			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
 			pack.displayLevelSelect(g);
 		}
+		else if(state == "level-select") {
+			/* New level select menu */
+			LevelSelect.display(g);
+		}
 		else if(state == "play") {
-			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
-			Level level = (Level) pack.levels.get(levelOpen);
-			level.display(g);
+			for(short i = 0; i < levels.size(); i ++) {
+				Level level = (Level) levels.get(i);
+				if(level.id == levelOpen) {
+					level.display(g);
+				}
+			}
 		}
 		else if(state == "level-editor") {
 			LevelEditor.display(g);

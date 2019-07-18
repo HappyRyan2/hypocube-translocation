@@ -8,10 +8,19 @@ import java.util.TimerTask;
 import java.awt.Cursor;
 
 import com.happyryan2.game.Game;
+import com.happyryan2.game.Level;
+import com.happyryan2.utilities.MouseClick;
 
 public class Delay extends TimerTask {
+	private boolean workingOnFrame = false;
 
 	public void run() {
+		if(workingOnFrame) {
+			System.out.println("A frame is taking too long to render.");
+			return;
+		}
+		workingOnFrame = true;
+		Screen.frameCount ++;
 		Screen.cursor = "default";
 
 		//update screen size
@@ -34,6 +43,10 @@ public class Delay extends TimerTask {
 		else {
 			Screen.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
+		if(true) {
+			workingOnFrame = false;
+		}
+		MouseClick.pressedBefore = MouseClick.mouseIsPressed;
 	}
 
 }

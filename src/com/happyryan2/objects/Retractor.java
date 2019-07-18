@@ -1,9 +1,11 @@
 package com.happyryan2.objects;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Polygon;
-import java.lang.Math;
+import java.awt.Image;
+import java.awt.geom.AffineTransform;
 
 import com.happyryan2.game.Game;
 import com.happyryan2.game.Stack;
@@ -12,10 +14,14 @@ import com.happyryan2.game.LevelPack;
 import com.happyryan2.utilities.MousePos;
 import com.happyryan2.utilities.MouseClick;
 import com.happyryan2.utilities.Screen;
+import com.happyryan2.utilities.ImageLoader;
 
 public class Retractor extends Thing {
 	private static Color darkGreen = new Color(0, 128, 50);
 	private static Color lightGreen = new Color(50, 200, 150);
+	public static Image img = ImageLoader.loadImage("res/graphics/objects/retractor.png");
+	public static Image img2 = ImageLoader.loadImage("res/graphics/objects/retractor2.png");
+	public static Image img3 = ImageLoader.loadImage("res/graphics/objects/retractor3.png");
 
 	public Retractor(float x, float y, String dir) {
 		super.x = x;
@@ -43,7 +49,9 @@ public class Retractor extends Thing {
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
 		if(this.cursorHovered() && !Game.currentLevel.transitioning() && !Game.currentLevel.isComplete()) {
-			Screen.cursor = "hand";
+			if(this.canDoSomething()) {
+				Screen.cursor = "hand";
+			}
 			if(MouseClick.mouseIsPressed) {
 				this.onClick();
 			}
@@ -97,166 +105,89 @@ public class Retractor extends Thing {
 			}
 		}
 		// debug
-		if(super.retracting) {
-			// System.out.println("retracting!");
-		}
 	}
 	public void display(Graphics g) {
+		/* Calculate position */
 		int x = (int) (super.x * Game.tileSize);
 		int y = (int) (super.y * Game.tileSize);
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
-		//debug
-		if(super.selected && false) {
-			g.setColor(new Color(255, 0, 0));
-			g.fillRect(x, y, w, h);
-		}
-		g.setColor(darkGreen);
-		//horizontal
-		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y - (super.dir == "up" ? super.extension * h : 0), (double) w / 3, (double) h / 6);
-		raisedRect(g, (double) (x + w - (w / 3) + (super.dir == "right" ? super.extension * w : 0)), (double) y - (super.dir == "up" ? super.extension * Game.tileSize : 0), (double) w / 3, (double) h / 6);
-		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y + (h / 6 * 5) + (super.dir == "down" ? super.extension * h : 0), (double) w / 3, (double) h / 6);
-		raisedRect(g, (double) (x + w - (w / 3) + (super.dir == "right" ? super.extension * Game.tileSize : 0)), (double) y + (h / 6 * 5) + (super.dir == "down" ? super.extension * h : 0), (double) w / 3, (double) h / 6);
-		//vertical
-		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y - (super.dir == "up" ? super.extension * Game.tileSize : 0), (double) w / 6, (double) h / 3);
-		raisedRect(g, (double) x - (super.dir == "left" ? super.extension * h : 0), (double) y + h - (h / 3) + (super.dir == "down" ? super.extension * h : 0), (double) w / 6, (double) h / 3);
-		raisedRect(g, (double) (x + (w / 6 * 5) + (super.dir == "right" ? super.extension * Game.tileSize : 0)), (double) y - (super.dir == "up" ? super.extension * Game.tileSize : 0), (double) w / 6, (double) h / 3);
-		raisedRect(g, (double) (x + (w / 6 * 5) + (super.dir == "right" ? super.extension * Game.tileSize : 0)), (double) y + h - (h / 3) + (super.dir == "down" ? super.extension * h : 0), (double) w / 6, (double) h / 3);
-		//triangle
-		Polygon triangle = new Polygon();
-		if(super.dir == "up") {
-			triangle.addPoint((int) x + (w / 3), (int) ((y + h - (h / 3) + super.hoverY - (super.extension * Game.tileSize / 2)))); // left
-			triangle.addPoint((int) x + w - (w / 3), (int) ((y + h - (h / 3) + super.hoverY) - (super.extension * Game.tileSize / 2))); // right
-			triangle.addPoint((int) x + (w / 2), (int) ((y + (h / 3) + super.hoverY) - (super.extension * Game.tileSize / 2))); // middle
-			raisedRect(g, (double) x + (w / 3), (double) y + h - (h / 3) - (super.extension * Game.tileSize / 2), (double) w / 3, (double) 1.0);
-		}
-		else if(super.dir == "down") {
-			g.setColor(lightGreen);
-			Polygon side = new Polygon();
-			side.addPoint((int) x + (w / 3), (int) (y + h / 3 + super.hoverY + (super.extension * Game.tileSize / 2)));
-			side.addPoint((int) x + w - (w / 3), (int) (y + (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2)));
-			side.addPoint((int) x + w - (w / 3), (int) (y + (h / 3) + (super.extension * Game.tileSize / 2) + (Game.tileSize * super.height)));
-			side.addPoint((int) (x + (w / 2)), (int) (y + h - (h / 3) + (super.extension * Game.tileSize / 2) + (Game.tileSize * super.height)));
-			side.addPoint((int) x + (w / 3), (int) (y + (h / 3) + (super.extension * Game.tileSize / 2) + (Game.tileSize * super.height)));
-			// g.fillPolygon(side);
-			triangle.addPoint((int) x + (w / 3), (int) ((y + (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2)))); // left
-			triangle.addPoint((int) x + w - (w / 3), (int) ((y + (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2)))); // right
-			triangle.addPoint((int) x + (w / 2), (int) ((y + h - (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2)))); // middle
-		}
-		else if(super.dir == "right") {
-			g.setColor(lightGreen);
-			Polygon side = new Polygon();
-			side.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY));
-			side.addPoint((int) (x + w - (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY));
-			side.addPoint((int) (x + w - (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + (super.height * Game.tileSize)));
-			side.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + (super.height * Game.tileSize)));
-			g.fillPolygon(side);
-			triangle.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 3) + super.hoverY)); // top
-			triangle.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY)); // bottom
-			triangle.addPoint((int) (x + w - (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY)); // middle
+		/* Translate to position + scale to size */
+		Graphics2D g2 = (Graphics2D) g;
+		AffineTransform at = g2.getTransform();
+		g2.translate(x + (w / 2), y + (h / 2));
+		float xScale = ((float) w) / ((float) img.getWidth(null));
+		float yScale = ((float) h) / ((float) img.getHeight(null));
+		g2.scale(xScale, yScale);
+		/* Scale for when extended */
+		if(super.dir == "right") {
+			g2.translate(w / -2 / xScale, 0);
+			g2.scale(super.extension + 1, 1);
+			g2.translate(w / 2 / xScale, 0);
 		}
 		else if(super.dir == "left") {
-			g.setColor(lightGreen);
-			Polygon side = new Polygon();
-			side.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY));
-			side.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY));
-			side.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + (super.height * Game.tileSize)));
-			side.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + (super.height * Game.tileSize)));
-			g.fillPolygon(side);
-			triangle.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 3) + super.hoverY)); // top
-			triangle.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + h - (h / 3) + super.hoverY)); // bottom
-			triangle.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY)); // middle
+			g2.translate(w / 2 / xScale, 0);
+			g2.scale(super.extension + 1, 1);
+			g2.translate(w / -2 / xScale, 0);
 		}
+		else if(super.dir == "up") {
+			g2.translate(0, h / 2 / yScale);
+			g2.scale(1, super.extension + 1);
+			g2.translate(0, h / -2 / yScale);
+		}
+		else if(super.dir == "down") {
+			g2.translate(0, h / -2 / yScale);
+			g2.scale(1, super.extension + 1);
+			g2.translate(0, h / 2 / yScale);
+		}
+		/* Rotate for different orientations */
+		if(super.dir == "right") {
+			g2.rotate(Math.toRadians(90));
+		}
+		else if(super.dir == "left") {
+			g2.rotate(Math.toRadians(-90));
+		}
+		else if(super.dir == "down") {
+			g2.rotate(Math.toRadians(180));
+		}
+		/* Display + undo transformations */
+		g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+		g2.setTransform(at);
+		/* Translate to position */
+		at = g2.getTransform();
+		g2.translate(x + (w / 2), y + (h / 2));
+		if(super.dir == "up") {
+			g2.translate(0, super.extension * h / -2);
+		}
+		else if(super.dir == "down") {
+			g2.translate(0, super.extension * h / 2);
+		}
+		else if(super.dir == "left") {
+			g2.translate(super.extension * w / -2, 0);
+		}
+		else if(super.dir == "right") {
+			g2.translate(super.extension * w / 2, 0);
+		}
+		/* Rotate for different orientations */
+		if(super.dir == "right") {
+			g2.rotate(Math.toRadians(90));
+		}
+		else if(super.dir == "down") {
+			g2.rotate(Math.toRadians(180));
+		}
+		else if(super.dir == "left") {
+			g2.rotate(Math.toRadians(270));
+		}
+		/* Scale to correct size */
+		g2.scale(xScale, yScale);
+		/* Display + undo transformations */
 		if(super.isWeak) {
-			if(super.dir == "up") {
-				triangle.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + (h / 3) + (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2))); // middle
-				triangle.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY) - (super.extension * Game.tileSize / 2))); // right
-				triangle.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY - (super.extension * Game.tileSize / 2)))); // left
-				triangle.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + (h / 3) + (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2))); // middle
-				triangle.addPoint((int) x + (w / 2), (int) ((y + (h / 3) + super.hoverY) - (super.extension * Game.tileSize / 2))); // middle
-				triangle.addPoint((int) x + (w / 3), (int) ((y + h - (h / 3) + super.hoverY - (super.extension * Game.tileSize / 2)))); // left
-			}
-			else if(super.dir == "down") {
-				triangle.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + h - (h / 3) - (h / 9) + super.hoverY) + (super.extension * Game.tileSize / 2))); // middle
-				triangle.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + (h / 3) + (h / 36) + super.hoverY) + (super.extension * Game.tileSize / 2))); // right
-				triangle.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + (h / 3) + (h / 36) + super.hoverY + (super.extension * Game.tileSize / 2)))); // left
-				triangle.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + h - (h / 3) - (h / 9) + super.hoverY) + (super.extension * Game.tileSize / 2))); // middle
-				triangle.addPoint((int) x + (w / 2), (int) ((y + h - (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2)))); // middle
-				triangle.addPoint((int) x + (w / 3), (int) ((y + (h / 3) + super.hoverY + (super.extension * Game.tileSize / 2)))); // left
-			}
-			else if(super.dir == "left") {
-				triangle.addPoint((int) Math.round(x + (w / 3) + (w / 9) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY)); // middle
-				triangle.addPoint((int) Math.round(x + w - (w / 3) - (w / 36) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + h - (h / 3) - (h / 18) + super.hoverY)); // bottom
-				triangle.addPoint((int) Math.round(x + w - (w / 3) - (w / 36) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + (h / 18) + super.hoverY)); // top
-				triangle.addPoint((int) Math.round(x + (w / 3) + (w / 9) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY)); // middle
-				triangle.addPoint((int) (x + (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY)); // middle
-				triangle.addPoint((int) (x + w - (w / 3) - (super.extension * Game.tileSize / 2)), (int) (y + (h / 3) + super.hoverY)); // top
-			}
-			else if(super.dir == "right") {
-				triangle.addPoint((int) Math.round(x + w - (w / 3) - (w / 9) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY)); // middle
-				triangle.addPoint((int) Math.round(x + (w / 3) + (w / 36) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + h - (h / 3) - (h / 18) + super.hoverY)); // bottom
-				triangle.addPoint((int) Math.round(x + (w / 3) + (w / 36) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + (h / 18) + super.hoverY)); // top
-				triangle.addPoint((int) Math.round(x + w - (w / 3) - (w / 9) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY)); // middle
-				triangle.addPoint((int) (x + w - (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 2) + super.hoverY)); // middle
-				triangle.addPoint((int) (x + (w / 3) + (super.extension * Game.tileSize / 2)), (int) (y + (h / 3) + super.hoverY)); // top
-			}
+			g2.drawImage(img3, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
 		}
-		g.setColor(darkGreen);
-		g.fillPolygon(triangle);
-		//cutout when on a single-tile extender
-		if(super.isWeak) {
-			Polygon cutout = new Polygon();
-			if(super.dir == "up") {
-				cutout.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY - (super.extension * Game.tileSize / 2)))); // left
-				cutout.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + (h / 3) + (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2))); // middle
-				cutout.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY) - (super.extension * Game.tileSize / 2))); // right
-			}
-			else if(super.dir == "down") {
-				cutout.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + (h / 3) + (h / 36) + super.hoverY + (super.extension * Game.tileSize / 2)))); // left
-				cutout.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + h - (h / 3) - (h / 9) + super.hoverY) + (super.extension * Game.tileSize / 2))); // middle
-				cutout.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + (h / 3) + (h / 36) + super.hoverY) + (super.extension * Game.tileSize / 2))); // right
-			}
-			else if(super.dir == "left") {
-				cutout.addPoint((int) Math.round(x + w - (w / 3) - (w / 36) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + h - (h / 3) - (h / 18) + super.hoverY)); // bottom
-				cutout.addPoint((int) Math.round(x + (w / 3) + (w / 9) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY)); // middle
-				cutout.addPoint((int) Math.round(x + w - (w / 3) - (w / 36) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + (h / 18) + super.hoverY)); // top
-			}
-			else if(super.dir == "right") {
-				cutout.addPoint((int) Math.round(x + (w / 3) + (w / 36) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + h - (h / 3) - (h / 18) + super.hoverY)); // bottom
-				cutout.addPoint((int) Math.round(x + w - (w / 3) - (w / 9) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY)); // middle
-				cutout.addPoint((int) Math.round(x + (w / 3) + (w / 36) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + (h / 18) + super.hoverY)); // top
-			}
-			g.setColor(new Color(255, 255, 255));
-			// g.fillPolygon(cutout);
-			g.setClip(cutout);
-			Polygon inside = new Polygon();
-			if(super.dir == "up") {
-				inside.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY - (super.extension * Game.tileSize / 2)))); // left
-				inside.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + (h / 3) + (h / 9) + super.hoverY) - (super.extension * Game.tileSize / 2))); // middle
-				inside.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + super.hoverY) - (super.extension * Game.tileSize / 2))); // right
-				inside.addPoint((int) Math.round(x + w - (w / 3) - (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + (Game.tileSize * super.height)) - (super.extension * Game.tileSize / 2))); // right bottom
-				inside.addPoint((int) Math.round(x + (w / 2)), (int) Math.round((y + (h / 3) + (h / 9) + (Game.tileSize * super.height)) - (super.extension * Game.tileSize / 2))); // middle
-				inside.addPoint((int) Math.round(x + (w / 3) + (w / 18)), (int) Math.round((y + h - (h / 3) - (h / 36) + (Game.tileSize * super.height) - (super.extension * Game.tileSize / 2)))); // left
-			}
-			else if(super.dir == "down") {
-				// raisedRect(g, x + (w / 3) + (w / 18), y + (h / 3) + (h / 36) + (super.extension * Game.tileSize / 2), (w / 3), 1);
-			}
-			else if(super.dir == "left") {
-				inside.addPoint((int) Math.round(x + (w / 3) + (w / 9) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY)); // middle
-				inside.addPoint((int) Math.round(x + w - (w / 3) - (w / 36) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + (h / 18) + super.hoverY)); // right
-				inside.addPoint((int) Math.round(x + w - (w / 3) - (w / 36) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + (h / 18) + (super.height * Game.tileSize))); // right
-				inside.addPoint((int) Math.round(x + (w / 3) + (w / 9) - (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + (super.height * Game.tileSize))); // middle
-			}
-			else if(super.dir == "right") {
-				inside.addPoint((int) Math.round(x + w - (w / 3) - (w / 9) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + super.hoverY)); // middle
-				inside.addPoint((int) Math.round(x + (w / 3) + (w / 36) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + (h / 18) + super.hoverY)); // right
-				inside.addPoint((int) Math.round(x + (w / 3) + (w / 36) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 3) + (h / 18) + (super.height * Game.tileSize))); // right
-				inside.addPoint((int) Math.round(x + w - (w / 3) - (w / 9) + (super.extension * Game.tileSize / 2)), (int) Math.round(y + (h / 2) + (super.height * Game.tileSize))); // middle
-			}
-			g.setColor(lightGreen);
-			// g.fillPolygon(inside);
-			g.setClip(null);
+		else {
+			g2.drawImage(img2, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
 		}
+		g2.setTransform(at);
 	}
 
 	public void onClick() {
@@ -304,7 +235,6 @@ public class Retractor extends Thing {
 				Game.currentLevel.select(super.x - 1, super.y, "left");
 				break;
 			case "right":
-				// System.out.println("moving (" + (super.x + 1) + ", " + super.y + ") to the right");
 				Game.currentLevel.select(super.x + 1, super.y, "right");
 				break;
 		}
@@ -357,7 +287,6 @@ public class Retractor extends Thing {
 			}
 		}
 		if((super.x == 1 && super.dir == "left") || (super.x == Game.currentLevel.width - 2 && super.dir == "right") || (super.y == 1 && super.dir == "up") || (super.y == Game.currentLevel.height - 2 && super.dir == "down")) {
-			// System.out.println("cannot pull something forward");
 			return false;
 		}
 		return true;
@@ -398,6 +327,7 @@ public class Retractor extends Thing {
 		return true;
 	}
 	public boolean canRetractBackward() {
+		Game.currentLevel.clearSelected();
 		return true;
 	}
 
