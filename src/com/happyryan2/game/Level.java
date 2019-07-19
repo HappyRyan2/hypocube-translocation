@@ -166,76 +166,58 @@ public class Level {
 		}
 	}
 	public void resize() {
-		if(this.width != 0 || this.height != 0) {
-			Game.levelSize = (width > height) ? width : height;
-			Game.tileSize = 600 / Game.levelSize;
-			if(this.width < this.height) {
-				this.visualHeight = 600;
-				this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
+		/* Calculate size in grid units */
+		if(!this.manualSize && this.width == 0 && this.height == 0) {
+			float left = 0;
+			float right = 0;
+			float top = 0;
+			float bottom = 0;
+			for(short i = 0; i < this.content.size(); i ++) {
+				Thing thing = (Thing) this.content.get(i);
+				float x = (float) thing.x;
+				float y = (float) thing.y;
+				if(x < left) {
+					left = x;
+				}
+				else if(x > right) {
+					right = x;
+				}
+				if(y < top) {
+					top = y;
+				}
+				else if(y > bottom) {
+					bottom = y;
+				}
 			}
-			else {
-				this.visualWidth = 600;
-				this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
-			}
-			this.left = Math.round((800 - this.visualWidth) / 2.0f);
-			this.top = Math.round((800 - this.visualHeight) / 2.0f);
-			return;
+			Game.levelSize = (right - left > bottom - top) ? (right - left + 1) : (bottom - top + 1);
+			this.width = (int) (right - left + 1);
+			this.height = (int) (bottom - top + 1);
 		}
-		resized = true;
-		float left = 0;
-		float right = 0;
-		float top = 0;
-		float bottom = 0;
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			float x = (float) thing.x;
-			float y = (float) thing.y;
-			if(x < left) {
-				left = x;
-			}
-			else if(x > right) {
-				right = x;
-			}
-			if(y < top) {
-				top = y;
-			}
-			else if(y > bottom) {
-				bottom = y;
-			}
-		}
-		// for(short i = 0; i < this.content.size(); i ++) {
-		// 	Thing thing = (Thing) this.content.get(i);
-		// 	thing.x -= left;
-		// 	thing.y -= top;
-		// }
-		Game.levelSize = (right - left > bottom - top) ? (right - left + 1) : (bottom - top + 1);
-		this.width = (int) (right - left + 1);
-		this.height = (int) (bottom - top + 1);
-		if(this.width < this.height) {
-			this.visualHeight = 600;
-			this.visualWidth = Math.round(600 * (float) ( (float) this.width / (float) this.height));
+		/* Calculate size available (subtract margins) */
+		int screenW = Screen.screenW / 4 * 3;
+		int screenH = Screen.screenH / 4 * 3;
+		if(this.width > this.height && screenW * ((float) (this.height) / this.width) < screenH) {
+			/* Wider than it is tall */
+			this.visualWidth = screenW;
+			this.visualHeight = (int) Math.round(screenW * ((float) (this.height) / this.width));
+			this.left = Screen.screenW / 8;
+			this.top = (int) Math.round((Screen.screenH - this.visualHeight) / 2);
+			Game.tileSize = this.visualHeight / this.height;
 		}
 		else {
-			this.visualWidth = 600;
-			this.visualHeight = Math.round(600 * ( (float) this.height / (float) this.width));
+			/* Taller than it is wide */
+			this.visualHeight = screenH;
+			this.visualWidth = (int) Math.round(screenH * ((float) (this.width) / this.height));
+			this.top = Screen.screenH / 8;
+			this.left = (int) Math.round((Screen.screenW - this.visualWidth) / 2);
+			Game.tileSize = this.visualWidth / this.width;
 		}
-		this.left = Math.round((800 - this.visualWidth) / 2.0f);
-		this.top = Math.round((800 - this.visualHeight) / 2.0f);
-		Game.tileSize = 600 / Game.levelSize;
 	}
 
 	public void update() {
-		// System.out.println("is (0, 1) empty? " + this.isEmpty(0, 1));
-		// for(short i = 0; i < this.content.size(); i ++) {
-		// 	Thing thing = (Thing) this.content.get(i);
-		// 	if(thing instanceof Wall) {
-		// 		System.out.println("wall at (" + thing.x + ", " + thing.y + ")");
-		// 		System.out.println("foo is: " + thing.foo);
-		// 	}
-		// }
-		// initialize
-		if(!resized) {
-			resize();
+		/* initialize */
+		if(!resized || true) {
+			this.resize();
 		}
 		if(!this.isForTesting && false) {
 			LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
@@ -314,16 +296,6 @@ public class Level {
 					}
 				}
 			}
-			if(this.next.pressed && !this.lastLevel && !this.isForTesting) {
-				Game.transition = 255;
-				Game.levelOpen ++;
-				Game.startingLevel = true;
-				// LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
-				LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
-				Level level = (Level) pack.levels.get(Game.levelOpen);
-				level.reset();
-				level.resize();
-			}
 			if(this.retry.pressed) {
 				Game.transition = 255;
 				Game.startingLevel = true;
@@ -343,7 +315,7 @@ public class Level {
 	public void display(Graphics g) {
 		// walls + background
 		g.setColor(wallColor);
-		g.fillRect(0, 0, 800, 800);
+		g.fillRect(0, 0, Screen.screenW, Screen.screenH);
 		for(byte x = 0; x < this.width; x ++) {
 			for(byte y = 0; y < this.height; y ++) {
 				this.fillArea(g, x, y);
@@ -383,29 +355,36 @@ public class Level {
 				this.completionY += Math.max((0 - this.completionY) / 15, 1);
 			}
 			g.setColor(new Color(100, 100, 100, 150));
-			g.fillRect(200, this.completionY, 400, 800);
+			g.fillRect(Screen.screenW / 2 - 200, this.completionY, 400, Screen.screenH);
 			g.setFont(Screen.fontRighteous);
 			g.setColor(new Color(255, 255, 255));
-			Screen.centerText(g, 400, this.completionY + 266, "Level Complete");
-			this.retry.y = this.completionY + 533;
-			this.menu.y = this.completionY + 533;
-			this.next.y = this.completionY + 533;
+			Screen.centerText(g, Screen.screenW / 2, this.completionY + 266, "Level Complete");
+			this.retry.y = this.completionY + Screen.screenH / 3 * 2;
+			this.menu.y = this.completionY + Screen.screenH / 3 * 2;
+			this.next.y = this.completionY + Screen.screenH / 3 * 2;
 			this.retry.display(g);
 			this.menu.display(g);
 			if(!this.lastLevel && false) {
 				this.next.display(g);
 			}
 			else {
-				this.retry.x = 350;
-				this.menu.x = 450;
+				this.retry.x = Screen.screenW / 2 - 50;
+				this.menu.x = Screen.screenW / 2 + 50;
 			}
 		}
+		else {
+			this.completionY = -Screen.screenH;
+		}
 		if(this.paused) {
+			this.restart.x = Screen.screenW / 2 - 75;
+			this.restart.y = Screen.screenH / 2 - 75;
+			this.exit.x = Screen.screenW / 2 - 75;
+			this.exit.y = Screen.screenH / 2;
 			g.setColor(new Color(100, 100, 100, 150));
-			g.fillRect(200, 0, 400, 800);
+			g.fillRect(Screen.screenW / 2 - 200, 0, 400, Screen.screenH);
 			g.setFont(Screen.fontRighteous);
 			g.setColor(new Color(255, 255, 255));
-			Screen.centerText(g, 400, 300, "Menu");
+			Screen.centerText(g, Screen.screenW / 2, Screen.screenH / 2 - 100, "Menu");
 			this.restart.display(g);
 			this.exit.display(g);
 		}

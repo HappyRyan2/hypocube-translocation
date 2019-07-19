@@ -36,13 +36,13 @@ public class LevelSelect {
 		/* animated noise background */
 		try {
 			double noiseZ = Screen.frameCount / 80.0f + 0.5;
-			for(int x = 0; x < 800; x += 4) {
-				for(int y = 0; y < 800; y += 4) {
+			for(float x = 0; x < Screen.width(); x += Screen.width() / 200) {
+				for(float y = 0; y < Screen.height(); y += Screen.height() / 200) {
 					double noise = PerlinNoise.noise0To1((x - scrollX) / 40.0f + 0.5, (y - scrollY) / 40.0f + 0.5, noiseZ) * 30 + 120;
 					int roundedNoise = (int) Math.round((double) noise);
 					Color col = new Color(roundedNoise, roundedNoise, roundedNoise);
 					g.setColor(col);
-					g.fillRect(x, y, 4, 4);
+					g.fillRect((int) x, (int) y, Screen.width() / 200, Screen.height() / 200);
 				}
 			}
 		}

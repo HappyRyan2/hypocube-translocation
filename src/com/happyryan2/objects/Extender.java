@@ -23,6 +23,7 @@ public class Extender extends Thing {
 	public static Image img = ImageLoader.loadImage("res/graphics/objects/extender.png");
 	public static Image img2 = ImageLoader.loadImage("res/graphics/objects/extender2.png");
 	public static Image img3 = ImageLoader.loadImage("res/graphics/objects/extender3.png");
+	public static Image img4 = ImageLoader.loadImage("res/graphics/objects/emptyExtender.png");
 	public Extender(float x, float y, String dir) {
 		super.x = x;
 		super.y = y;
@@ -55,7 +56,7 @@ public class Extender extends Thing {
 				break;
 			}
 		}
-		if(!transitioning && this.cursorHovered() && !Game.currentLevel.isComplete() && super.dir != "none") {
+		if(!transitioning && this.cursorHovered() && !Game.currentLevel.isComplete() && !Game.currentLevel.paused && super.dir != "none") {
 			if(MouseClick.mouseIsPressed) {
 				this.onClick();
 			}
@@ -291,7 +292,12 @@ public class Extender extends Thing {
 			g2.rotate(Math.toRadians(180));
 		}
 		/* Display + undo transformations */
-		g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+		if(super.dir != "none") {
+			g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+		}
+		else {
+			g2.drawImage(img4, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+		}
 		g2.setTransform(at);
 		if(super.dir == "none") {
 			return;

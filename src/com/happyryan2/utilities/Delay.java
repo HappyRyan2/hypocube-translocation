@@ -15,13 +15,15 @@ public class Delay extends TimerTask {
 	private boolean workingOnFrame = false;
 
 	public void run() {
-		if(workingOnFrame) {
+		if(workingOnFrame && false) {
 			System.out.println("A frame is taking too long to render.");
 			return;
 		}
 		workingOnFrame = true;
 		Screen.frameCount ++;
 		Screen.cursor = "default";
+		Screen.screenW = Screen.width();
+		Screen.screenH = Screen.height();
 
 		//update screen size
 		Screen.screenW = Screen.canvas.getWidth();

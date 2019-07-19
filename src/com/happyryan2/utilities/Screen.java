@@ -4,17 +4,10 @@ This file creates the screen that the game is played on, and is also the applica
 
 package com.happyryan2.utilities;
 
-import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
-// import java.awt.Color;
-// import java.awt.Cursor;
-// import java.awt.Font;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-// import javax.swing.JFrame;
-// import javax.swing.JPanel;
 import javax.swing.*;
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.util.Timer;
 import java.io.File;
 import java.net.URL;
@@ -39,7 +32,7 @@ public class Screen extends JPanel {
         frame.add(canvas);
         frame.pack();
 		frame.setSize(800, 800);
-		frame.setResizable(false);
+		frame.setResizable(true);
         frame.setVisible(true);
 		canvas.setFocusable(true);
 
@@ -75,10 +68,17 @@ public class Screen extends JPanel {
 		timer.scheduleAtFixedRate(delay, 0, 1000 / 60);
     }
 
+	public static int width() {
+		return frame.getSize().width;
+	}
+	public static int height() {
+		return frame.getSize().height;
+	}
+
 	public void paint(Graphics g) {
 		//clear background
 		g.setColor(new Color(200, 200, 200));
-		g.fillRect(0, 0, 800, 800);
+		g.fillRect(0, 0, screenW, screenH);
 		if(loading) {
 			g.setFont(new Font("Monospace", Font.PLAIN, 30));
 			g.setColor(new Color(150, 150, 150));

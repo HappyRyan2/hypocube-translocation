@@ -117,7 +117,7 @@ public class Game {
 		}
 		// transitions
 		g.setColor(new Color(255, 255, 255, transition));
-		g.fillRect(0, 0, 800, 800);
+		g.fillRect(0, 0, Screen.screenW, Screen.screenH);
 		transition -= (transition > 0) ? 10 : 0;
 		transition = (transition < 0) ? 0 : transition;
 	}
