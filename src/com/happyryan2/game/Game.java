@@ -6,16 +6,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.happyryan2.objects.*;
-import com.happyryan2.packs.*;
 import com.happyryan2.utilities.*;
 import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
 	public static String state = "level-select";
-	public static List levelPacks = new ArrayList();
 	public static List levels = new ArrayList();
-	public static int packOpen = 0;
 	public static int levelOpen = 0;
 	public static float levelSize = 0;
 	public static float tileSize = 0;
@@ -27,41 +24,19 @@ public class Game {
 	public static int transition = 255;
 	public static int scrollY = 0;
 	public static void run() {
-		// System.out.println("can you click? " + canClick);
-		// System.out.println("undo stack size: " + Stack.stack.size());
 		if(!initialized) {
 			initialized = true;
-			// levelPacks.add(new TutorialPack());
-			// levelPacks.add(new IntroPack());
-			// levelPacks.add(new ChallengePack());
-			// levelPacks.add(new MicroPack());
-			levels.add(new Tutorial1());
-			levels.add(new Tutorial2());
-			levels.add(new Tutorial3());
-			levels.add(new Tutorial4());
-			levels.add(new Tutorial5());
-			levels.add(new Intro1());
-			levels.add(new Intro2());
-			levels.add(new Intro3());
+			levels.add(new Level1());
+			levels.add(new Level2());
+			levels.add(new Level3());
+			levels.add(new Level4());
+			levels.add(new Level5());
+			levels.add(new Level6());
+			levels.add(new Level7());
+			levels.add(new Level8());
 		}
 		if(state == "home") {
 			// display the home page
-		}
-		else if(state == "select-levelpack") {
-			for(byte i = 0; i < levelPacks.size(); i ++) {
-				LevelPack pack = (LevelPack) levelPacks.get(i);
-				pack.updateLevelInfo((i * 125) + 100);
-				if(pack.playButton.pressed) {
-					transition = 255;
-					state = "select-level";
-					packOpen = i;
-				}
-			}
-		}
-		else if(state == "select-level") {
-			/* Old level select menu */
-			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
-			pack.updateLevelSelect();
 		}
 		else if(state == "level-select") {
 			/* New level select menu */
@@ -87,18 +62,6 @@ public class Game {
 		}
 		if(state == "home") {
 
-		}
-		else if(state == "select-levelpack") {
-			// display the level pack selection screen
-			for(byte i = 0; i < levelPacks.size(); i ++) {
-				LevelPack pack = (LevelPack) levelPacks.get(i);
-				pack.displayLevelInfo(g, (i * 125) + 100);
-			}
-		}
-		else if(state == "select-level") {
-			/* Old level select menu */
-			LevelPack pack = (LevelPack) levelPacks.get(packOpen);
-			pack.displayLevelSelect(g);
 		}
 		else if(state == "level-select") {
 			/* New level select menu */

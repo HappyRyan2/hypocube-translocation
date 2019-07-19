@@ -219,13 +219,6 @@ public class Level {
 		if(!resized || true) {
 			this.resize();
 		}
-		if(!this.isForTesting && false) {
-			LevelPack pack = (LevelPack) Game.levelPacks.get(Game.packOpen);
-			int size = pack.levels.size();
-			if(Game.levelOpen == size - 1) {
-				this.lastLevel = true;
-			}
-		}
 		if(this.isComplete() || Game.transition > 5) {
 			Game.canClick = false;
 		}

@@ -8,7 +8,6 @@ import java.awt.geom.AffineTransform;
 
 import com.happyryan2.game.Game;
 import com.happyryan2.game.Level;
-import com.happyryan2.game.LevelPack;
 import com.happyryan2.utilities.Screen;
 import com.happyryan2.utilities.ImageLoader;
 

@@ -10,7 +10,6 @@ import java.awt.geom.AffineTransform;
 import com.happyryan2.game.Game;
 import com.happyryan2.game.Stack;
 import com.happyryan2.game.Level;
-import com.happyryan2.game.LevelPack;
 import com.happyryan2.utilities.MousePos;
 import com.happyryan2.utilities.MouseClick;
 import com.happyryan2.utilities.Screen;
