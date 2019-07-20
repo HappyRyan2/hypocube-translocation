@@ -14,6 +14,7 @@ com/happyryan2/levels/Level5.java
 com/happyryan2/levels/Level6.java
 com/happyryan2/levels/Level7.java
 com/happyryan2/levels/Level8.java
+com/happyryan2/levels/Level9.java
 com/happyryan2/levels/Level10.java
 com/happyryan2/levels/Level11.java
 com/happyryan2/levels/Level12.java

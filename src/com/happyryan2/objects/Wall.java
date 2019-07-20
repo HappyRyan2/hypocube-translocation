@@ -6,8 +6,6 @@ public class Wall extends Thing {
 		super.y = y;
 		super.origX = x;
 		super.origY = y;
-		super.foo = "bar";
-		System.out.println("wall initialized at (" + super.x + ", " + super.y + ")");
 	}
 
 	public boolean canBePushed() {
@@ -15,5 +13,8 @@ public class Wall extends Thing {
 	}
 	public void checkMovement() {
 		return;
+	}
+	public boolean canDoSomething() {
+		return false;
 	}
 }

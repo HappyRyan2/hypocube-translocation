@@ -11,7 +11,7 @@ import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "level-select";
+	public static String state = "level-editor";
 	public static List levels = new ArrayList();
 	public static int levelOpen = 0;
 	public static float levelSize = 0;
@@ -34,6 +34,7 @@ public class Game {
 			levels.add(new Level6());
 			levels.add(new Level7());
 			levels.add(new Level8());
+			levels.add(new Level9());
 		}
 		if(state == "home") {
 			// display the home page

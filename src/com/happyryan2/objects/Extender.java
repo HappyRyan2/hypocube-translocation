@@ -125,6 +125,7 @@ public class Extender extends Thing {
 		if(super.extension == 0) {
 			boolean forwards = this.canExtendForward();
 			boolean backwards = this.canExtendBackward();
+			System.out.println("can it extend forwards? " + forwards);
 			if(this.canExtendForward()) {
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
@@ -162,6 +163,7 @@ public class Extender extends Thing {
 				Game.currentLevel.select(super.x + 1, super.y, "right");
 				break;
 		}
+		System.out.println("what is selected? this: " + Game.currentLevel.selectedToString());
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
 			if(thing.selected && !thing.canBePushed(super.dir)) {

@@ -14,7 +14,7 @@ public class Level7 extends Level {
 		super.width = 8;
 		super.height = 5;
 
-		super.content.add(new Retractor(2, 2, "up", false));
+		super.content.add(new Retractor(2, 3, "up", false));
 		super.content.add(new Wall(1, 3));
 		super.content.add(new Wall(2, 1));
 		super.content.add(new Wall(3, 3));

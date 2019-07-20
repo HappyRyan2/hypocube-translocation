@@ -87,6 +87,9 @@ public class Level {
 			else if(thing instanceof Goal) {
 				clone.content.add(new Goal(thing.x, thing.y));
 			}
+			else if(thing instanceof Wall) {
+				clone.content.add(new Wall(thing.x, thing.y));
+			}
 		}
 		return clone;
 	}
@@ -223,7 +226,6 @@ public class Level {
 			Game.canClick = false;
 		}
 		if(Game.startingLevel && !MouseClick.mouseIsPressed) {
-			// System.out.println("clicking");
 			Game.canClick = true;
 		}
 		for(byte i = 0; i < this.content.size(); i ++) {
@@ -343,7 +345,6 @@ public class Level {
 		g.translate(-this.left, -this.top);
 		//gui box for winning
 		if(this.isComplete()) {
-			// System.out.println("completionY: " + this.completionY);
 			if(this.completionY < 0) {
 				this.completionY += Math.max((0 - this.completionY) / 15, 1);
 			}
@@ -387,7 +388,6 @@ public class Level {
 	}
 	public void displayLevelSelect(Graphics g) {
 		if(!this.discovered) {
-			// System.out.println("undiscovered level");
 			return;
 		}
 		if(this.opacity == 0) {
@@ -712,5 +712,61 @@ public class Level {
 				g2.fillRect(visualX, visualY, tileSize, tileSize2);
 			}
 		}
+	}
+
+	public String toString() {
+		/*
+		Create a string representation of the level's content - used for debugging.
+		*/
+		String str = "";
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Player) {
+				str += "a player at (" + thing.x + ", " + thing.y + ")";
+			}
+			else if(thing instanceof Goal) {
+				str += "a goal at (" + thing.x + ", " + thing.y + ")";
+			}
+			else if(thing instanceof Extender) {
+				str += "a" + (thing.isWeak ? " weak" : "") + " extender at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended.";
+			}
+			else if(thing instanceof Retractor) {
+				str += "a" + (thing.isWeak ? " weak" : "") + " retractor at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended.";
+			}
+			else if(thing instanceof Wall) {
+				str += "a wall at (" + thing.x + ", " + thing.y + ")";
+			}
+			str += ", ";
+		}
+		return str;
+	}
+	public String selectedToString() {
+		/*
+		Create a string representation of the level's seleted content - used for debugging.
+		*/
+		String str = "";
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(!thing.selected) {
+				continue;
+			}
+			if(thing instanceof Player) {
+				str += "a player at (" + thing.x + ", " + thing.y + ")";
+			}
+			else if(thing instanceof Goal) {
+				str += "a goal at (" + thing.x + ", " + thing.y + ")";
+			}
+			else if(thing instanceof Extender) {
+				str += "a" + (thing.isWeak ? " weak" : "") + " extender at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended.";
+			}
+			else if(thing instanceof Retractor) {
+				str += "a" + (thing.isWeak ? " weak" : "") + " retractor at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended.";
+			}
+			else if(thing instanceof Wall) {
+				str += "a wall at (" + thing.x + ", " + thing.y + ")";
+			}
+			str += ", ";
+		}
+		return str;
 	}
 }

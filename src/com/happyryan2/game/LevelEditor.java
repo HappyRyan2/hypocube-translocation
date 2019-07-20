@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import com.happyryan2.utilities.*;
 import com.happyryan2.objects.*;
+import com.happyryan2.levels.*;
 
 public class LevelEditor {
 	public static Button mode = new Button(130, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "extend", "rect");
@@ -25,14 +26,13 @@ public class LevelEditor {
 	public static int cropY = 0;
 	public static boolean cropping = false;
 	public static void update() {
-		// System.out.println("level size: " + level.content.size());
-		if(MouseClick.mouseIsPressed && MousePos.x > 100 && MousePos.x < 700 && MousePos.y > 100 && MousePos.y < 700 && editing.text == "editing" && crop.text == "crop") {
+		if(MouseClick.mouseIsPressed && MousePos.x > level.left && MousePos.x < Screen.screenW - level.left && MousePos.y > level.top && MousePos.y < Screen.screenH - level.top && editing.text == "editing" && crop.text == "crop") {
 			int x = MousePos.x;
 			int y = MousePos.y;
-			x -= 100;
-			y -= 100;
-			x = Math.round(x / 60);
-			y = Math.round(y / 60);
+			x -= level.left;
+			y -= level.top;
+			x = (int) Math.floor((float) x / (float) Game.tileSize);
+			y = (int) Math.floor((float) y / (float) Game.tileSize);
 			for(byte i = 0; i < level.content.size(); i ++) {
 				Thing thing = (Thing) level.content.get(i);
 				if(thing.x == x && thing.y == y) {
@@ -58,7 +58,6 @@ public class LevelEditor {
 				level.content.add(new Goal(x, y));
 			}
 			else if(mode.text == "wall") {
-				System.out.println("adding a wall");
 				solutionTree.clear();
 				level.content.add(new Wall(x, y));
 			}
@@ -76,6 +75,7 @@ public class LevelEditor {
 			level.height = 10;
 			level.left = 100;
 			level.top = 100;
+			level.resize();
 			initialized = true;
 		}
 		if(editing.text == "playing") {
@@ -243,7 +243,6 @@ public class LevelEditor {
 					}
 					/* Pretend that the user clicked on that item */
 					if(thing instanceof Extender) {
-						// System.out.println("found an extender");
 						Extender extender = (Extender) thing;
 						extender.onClick();
 					}
@@ -266,7 +265,7 @@ public class LevelEditor {
 					for(int j = 0; j < tree.size(); j ++) {
 						Level duplicate = (Level) tree.get(j);
 						if(nextDepth.equals(duplicate) && i != j) {
-							System.out.println("clicking at (" + x + ", " + y + ") will take you to a previous state");
+							// System.out.println("clicking at (" + x + ", " + y + ") will take you to a previous state");
 							Stack.undoAction();
 							currentLevel.fastForward();
 							continue yLoop;
@@ -285,9 +284,6 @@ public class LevelEditor {
 						displayLevelMovePath(nextDepth);
 						System.out.println("------------------------------------------");
 						return;
-					}
-					else if(currentLevel.depth % 5 == 0 || true) {
-						System.out.println("looking " + currentLevel.depth + " moves into the future");
 					}
 				}
 			}

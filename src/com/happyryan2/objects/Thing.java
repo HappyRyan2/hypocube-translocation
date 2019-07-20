@@ -7,7 +7,6 @@ package com.happyryan2.objects;
 import java.awt.Graphics;
 
 public class Thing {
-	public String foo;
 	public float x;
 	public float y;
 	public float origX;
