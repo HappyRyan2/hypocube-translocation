@@ -35,6 +35,7 @@ public class Game {
 			levels.add(new Level7());
 			levels.add(new Level8());
 			levels.add(new Level9());
+			levels.add(new Level10());
 		}
 		if(state == "home") {
 			// display the home page

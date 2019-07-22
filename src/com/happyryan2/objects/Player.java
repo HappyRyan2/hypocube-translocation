@@ -58,6 +58,11 @@ public class Player extends Thing {
 		int y = (int) (super.y * Game.tileSize);
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
+		/* Debug */
+		if(super.selected && false) {
+			g.setColor(new Color(255, 0, 0));
+			g.fillRect(x, y, w, h);
+		}
 		/* Translate to position + scale to size */
 		Graphics2D g2 = (Graphics2D) g;
 		AffineTransform at = g2.getTransform();
@@ -90,20 +95,6 @@ public class Player extends Thing {
 		return !((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.currentLevel.width - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.currentLevel.height - 1));
 	}
 	public void checkMovement(String dir) {
-		if(super.deleted) { return; }
-		switch(dir) {
-			case "up":
-				Game.currentLevel.select(super.x, super.y - 1, dir);
-				break;
-			case "down":
-				Game.currentLevel.select(super.x, super.y + 1, dir);
-				break;
-			case "left":
-				Game.currentLevel.select(super.x - 1, super.y, dir);
-				break;
-			case "right":
-				Game.currentLevel.select(super.x + 1, super.y, dir);
-				break;
-		}
+		Game.currentLevel.moveTile(super.x, super.y, dir);
 	}
 }

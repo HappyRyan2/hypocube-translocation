@@ -442,7 +442,7 @@ public class Level {
 				Level level = (Level) Game.levels.get(i);
 				boolean required = false;
 				loop2: for(short j = 0; j < this.requirements.size(); j ++) {
-					int req = (int) this.requirements.get(i);
+					int req = (int) this.requirements.get(j);
 					if(req == level.id) {
 						required = true;
 						break loop2;
@@ -530,13 +530,70 @@ public class Level {
 		// if you haven't found anything by now, there must not be anything there
 		return null;
 	};
-	public void select(float x, float y, String dir) {
+	public void select(float x, float y) {
 		Thing thing = this.getAtPos(x, y);
-		if(thing == null || thing.selected || thing.ignoring || thing instanceof Goal) {
-			return;
+		if(thing != null && !thing.ignoring) {
+			thing.selected = true;
 		}
-		thing.selected = true;
-		thing.checkMovement(dir);
+	}
+	public void moveTile(float x, float y, String dir) {
+		/*
+		Selects the tile, as well as any other tiles that:
+		 - would be pushed by it moving
+		 - would be pulled by it moving
+		*/
+		Thing thing = this.getAtPos(x, y);
+		if(thing != null && !thing.ignoring) {
+			this.select(x, y);
+			if(dir == "left") {
+				/* Find things being pushed by this object */
+				this.moveObject(x - 1, y, dir);
+				/* Find things being pulled by this object */
+				Thing retractor = this.getAtPos(x + 1, y);
+				if(retractor != null && !retractor.selected && retractor instanceof Retractor && retractor.x - retractor.extension == x + 1 && retractor.dir == "left") {
+					this.moveObject(x + 1, y, "left");
+				}
+			}
+			else if(dir == "right") {
+				/* Find things being pushed by this object */
+				this.moveObject(x + 1, y, dir);
+				/* Find things being pulled by this object */
+				Thing retractor = (Thing) this.getAtPos(x - 1, y);
+				if(retractor != null && !retractor.selected && retractor instanceof Retractor && retractor.x + retractor.extension == x - 1 && retractor.dir == "right") {
+					this.moveObject(x - 1, y, "right");
+				}
+			}
+			else if(dir == "up") {
+				/* Find things being pushed by this object */
+				this.moveObject(x, y - 1, dir);
+				/* Find things being pulled by this object */
+				Thing retractor = this.getAtPos(x, y + 1);
+				if(retractor != null && !retractor.selected && retractor instanceof Retractor && retractor.y - retractor.extension == y + 1 && retractor.dir == "up") {
+					this.moveObject(x, y + 1, "up");
+				}
+			}
+			else if(dir == "down") {
+				/* Find things being pushed by this object */
+				this.moveObject(x, y + 1, dir);
+				/* Find things being pulled by this object */
+				Thing retractor = this.getAtPos(x, y - 1);
+				if(retractor != null && !retractor.selected && retractor instanceof Retractor && retractor.y + retractor.extension == y - 1 && retractor.dir == "down") {
+					this.moveObject(x, y + 1, "down");
+				}
+			}
+		}
+	}
+	public void moveObject(float x, float y, String dir) {
+		/*
+		Selects the object at that position, as well as any other objects that:
+		 - would be pushed by it moving
+		 - would be pulled by it moving
+		*/
+		Thing thing = this.getAtPos(x, y);
+		if(thing != null && !thing.ignoring && !thing.selected) {
+			this.select(x, y);
+			thing.checkMovement(dir);
+		}
 	}
 
 	public void moveSelected(String dir) {

@@ -111,6 +111,11 @@ public class Retractor extends Thing {
 		int y = (int) (super.y * Game.tileSize);
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
+		/* Debug */
+		if(super.selected && false) {
+			g.setColor(new Color(255, 0, 0));
+			g.fillRect(x, y, w, h);
+		}
 		/* Translate to position + scale to size */
 		Graphics2D g2 = (Graphics2D) g;
 		AffineTransform at = g2.getTransform();
@@ -221,22 +226,22 @@ public class Retractor extends Thing {
 		}
 	}
 	public boolean canExtendForward() {
+		/* Find out which tiles will be moved */
 		Game.currentLevel.clearSelected();
 		super.ignoring = true;
-		switch(super.dir) {
-			case "up":
-				Game.currentLevel.select(super.x, super.y - 1, "up");
-				break;
-			case "down":
-				Game.currentLevel.select(super.x, super.y + 1, "down");
-				break;
-			case "left":
-				Game.currentLevel.select(super.x - 1, super.y, "left");
-				break;
-			case "right":
-				Game.currentLevel.select(super.x + 1, super.y, "right");
-				break;
+		if(super.dir == "left") {
+			Game.currentLevel.moveObject(super.x - 1, super.y, "left");
 		}
+		else if(super.dir == "right") {
+			Game.currentLevel.moveObject(super.x + 1, super.y, "right");
+		}
+		else if(super.dir == "up") {
+			Game.currentLevel.moveObject(super.x, super.y - 1, "up");
+		}
+		else if(super.dir == "down") {
+			Game.currentLevel.moveObject(super.x, super.y + 1, "down");
+		}
+		/* Find out if any of the selected tiles cannot be moved */
 		boolean foundOne = false;
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -244,34 +249,41 @@ public class Retractor extends Thing {
 				if(foundOne && super.isWeak) {
 					return false;
 				}
-				foundOne = true;
 				if(!thing.canBePushed(super.dir)) {
 					return false;
 				}
+				foundOne = true;
 			}
 		}
-		if((super.x == 0 && super.dir == "left") || (super.x == Game.currentLevel.width - 1 && super.dir == "right") || (super.y == 0 && super.dir == "up") || (super.y == Game.currentLevel.height - 1 && super.dir == "down")) {
+		/* Find out if this is in front of a wall */
+		if(
+			(super.x == 0 && super.dir == "left") ||
+			(super.x == Game.currentLevel.width - 1 && super.dir == "right") ||
+			(super.y == 0 && super.dir == "up") ||
+			(super.y == Game.currentLevel.height - 1 && super.dir == "down")
+		) {
 			return false;
 		}
 		return true;
 	}
 	public boolean canRetractForward() {
+		/* Find out which tiles will be moved */
 		Game.currentLevel.clearSelected();
 		super.ignoring = true;
-		switch(super.dir) {
-			case "up":
-				Game.currentLevel.select(super.x, super.y - 2, "down");
-				break;
-			case "down":
-				Game.currentLevel.select(super.x, super.y + 2, "up");
-				break;
-			case "left":
-				Game.currentLevel.select(super.x - 2, super.y, "right");
-				break;
-			case "right":
-				Game.currentLevel.select(super.x + 2, super.y, "left");
-				break;
+		if(super.dir == "left") {
+			Game.currentLevel.moveObject(super.x - 2, super.y, "right");
 		}
+		else if(super.dir == "right") {
+			Game.currentLevel.moveObject(super.x + 2, super.y, "left");
+		}
+		else if(super.dir == "up") {
+			Game.currentLevel.moveObject(super.x, super.y - 2, "down");
+		}
+		else if(super.dir == "down") {
+			Game.currentLevel.moveObject(super.x, super.y + 2, "up");
+		}
+		/* Find out if any of the selected tiles cannot be moved */
+		String backward = (super.dir == "left" || super.dir == "right") ? (super.dir == "left" ? "right" : "left") : (super.dir == "up" ? "down" : "up");
 		boolean foundOne = false;
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -279,37 +291,71 @@ public class Retractor extends Thing {
 				if(foundOne && super.isWeak) {
 					return false;
 				}
-				foundOne = true;
-				if(!thing.canBePushed((super.dir == "up" || super.dir == "down") ? ((super.dir == "up") ? "down" : "up") : ((super.dir == "left") ? "right" : "left"))) {
+				if(!thing.canBePushed(backward)) {
 					return false;
 				}
+				foundOne = true;
 			}
 		}
-		if((super.x == 1 && super.dir == "left") || (super.x == Game.currentLevel.width - 2 && super.dir == "right") || (super.y == 1 && super.dir == "up") || (super.y == Game.currentLevel.height - 2 && super.dir == "down")) {
+		/* Find out if this is directly in front of a wall */
+		if(
+			(super.x == 1 && super.dir == "left") ||
+			(super.x == Game.currentLevel.width - 2 && super.dir == "right") ||
+			(super.y == 1 && super.dir == "up") ||
+			(super.y == Game.currentLevel.height - 2 && super.dir == "down")
+		) {
 			return false;
 		}
 		return true;
 	}
 	public boolean canExtendBackward() {
+		/* Find out which tiles will be moved */
 		Game.currentLevel.clearSelected();
 		super.ignoring = true;
-		switch(super.dir) {
-			case "up":
-				Game.currentLevel.select(super.x, super.y + 1, "down");
-				break;
-			case "down":
-				Game.currentLevel.select(super.x, super.y - 1, "up");
-				break;
-			case "left":
-				Game.currentLevel.select(super.x + 1, super.y, "right");
-				break;
-			case "right":
-				Game.currentLevel.select(super.x - 1, super.y, "left");
-				break;
+		if(super.dir == "left") {
+			Game.currentLevel.moveObject(super.x + 1, super.y, "right");
 		}
-		if((super.x == 0 && super.dir == "right") || (super.x == Game.currentLevel.width - 1 && super.dir == "left") || (super.y == 0 && super.dir == "down") || (super.y == Game.currentLevel.height - 1 && super.dir == "up")) {
+		else if(super.dir == "right") {
+			Game.currentLevel.moveObject(super.x - 1, super.y, "left");
+		}
+		else if(super.dir == "up") {
+			Game.currentLevel.moveObject(super.x, super.y + 1, "down");
+		}
+		else if(super.dir == "down") {
+			Game.currentLevel.moveObject(super.x, super.y - 1, "up");
+		}
+		/* Find out if any of the selected tiles cannot be moved */
+		String backward = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
+		boolean foundOne = false;
+		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+			Thing thing = (Thing) Game.currentLevel.content.get(i);
+			if(thing.selected) {
+				if(foundOne && super.isWeak) {
+					return false;
+				}
+				if(!thing.canBePushed(backward)) {
+					return false;
+				}
+				foundOne = true;
+			}
+		}
+		/* Find out if this is in front of a wall */
+		if(
+			(super.x == 0 && super.dir == "right") ||
+			(super.x == Game.currentLevel.width - 1 && super.dir == "left") ||
+			(super.y == 0 && super.dir == "down") ||
+			(super.y == Game.currentLevel.height - 1 && super.dir == "up")
+		) {
 			return false;
 		}
+		return true;
+	}
+	public boolean canRetractBackward() {
+		/* Find out which tiles will be moved by retracting backward */
+		Game.currentLevel.clearSelected();
+		super.ignoring = true;
+		Game.currentLevel.moveTile(super.x, super.y, super.dir);
+		/* Find out if any of the selected tiles cannot be moved */
 		boolean foundOne = false;
 		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -318,15 +364,8 @@ public class Retractor extends Thing {
 					return false;
 				}
 				foundOne = true;
-				if(!thing.canBePushed((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"))) {
-					return false;
-				}
 			}
 		}
-		return true;
-	}
-	public boolean canRetractBackward() {
-		Game.currentLevel.clearSelected();
 		return true;
 	}
 
@@ -388,116 +427,38 @@ public class Retractor extends Thing {
 	@Override
 	public void checkMovement(String dir) {
 		/*
-		This function sets all of the tiles that would be moved to be 'moved' depending on which direction it was pushed.
+		This function selects all the tiles that would be moved if this was pushed in a certain direction.
 		*/
-		if(super.extension == 0) {
-			switch(dir) {
-				case "up":
-					Game.currentLevel.select(super.x, super.y - 1, dir);
-					if(super.dir == "down") {
-						Game.currentLevel.select(super.x, super.y + 1, dir);
-					}
-					break;
-				case "down":
-					Game.currentLevel.select(super.x, super.y + 1, dir);
-					if(super.dir == "up") {
-						Game.currentLevel.select(super.x, super.y - 1, dir);
-					}
-					break;
-				case "left":
-					Game.currentLevel.select(super.x - 1, super.y, dir);
-					if(super.dir == "right") {
-						Game.currentLevel.select(super.x + 1, super.y, dir);
-					}
-					break;
-				case "right":
-					Game.currentLevel.select(super.x + 1, super.y, dir);
-					if(super.dir == "left") {
-						Game.currentLevel.select(super.x - 1, super.y, dir);
-					}
-					break;
+		Game.currentLevel.moveTile(super.x, super.y, dir);
+		if(super.extension != 0) {
+			if(super.dir == "left") {
+				Game.currentLevel.moveTile(super.x - 1, super.y, dir);
+			}
+			else if(super.dir == "right") {
+				Game.currentLevel.moveTile(super.x + 1, super.y, dir);
+			}
+			else if(super.dir == "up") {
+				Game.currentLevel.moveTile(super.x, super.y - 1, dir);
+			}
+			else if(super.dir == "down") {
+				Game.currentLevel.moveTile(super.x, super.y + 1, dir);
 			}
 		}
-		else {
-			switch(dir) {
-				case "up":
-					switch(super.dir) {
-						case "up":
-							Game.currentLevel.select(super.x, super.y - 2, dir);
-							break;
-						case "down":
-							Game.currentLevel.select(super.x, super.y - 1, dir);
-							Game.currentLevel.select(super.x, super.y + 2, dir);
-							break;
-						case "left":
-							Game.currentLevel.select(super.x, super.y - 1, dir);
-							Game.currentLevel.select(super.x - 1, super.y - 1, dir);
-							break;
-						case "right":
-							Game.currentLevel.select(super.x, super.y - 1, dir);
-							Game.currentLevel.select(super.x + 1, super.y - 1, dir);
-							break;
-						}
-					break;
-				case "down":
-					switch(super.dir) {
-						case "up":
-							Game.currentLevel.select(super.x, super.y + 1, dir);
-							Game.currentLevel.select(super.x, super.y - 2, dir);
-							break;
-						case "down":
-							Game.currentLevel.select(super.x, super.y + 2, dir);
-							break;
-						case "left":
-							Game.currentLevel.select(super.x, super.y + 1, dir);
-							Game.currentLevel.select(super.x - 1, super.y + 1, dir);
-							break;
-						case "right":
-							Game.currentLevel.select(super.x, super.y + 1, dir);
-							Game.currentLevel.select(super.x + 1, super.y + 1, dir);
-							break;
-						}
-					break;
-				case "left":
-					switch(super.dir) {
-						case "up":
-							Game.currentLevel.select(super.x - 1, super.y, dir);
-							Game.currentLevel.select(super.x - 1, super.y - 1, dir);
-							break;
-						case "down":
-							Game.currentLevel.select(super.x - 1, super.y, dir);
-							Game.currentLevel.select(super.x - 1, super.y + 1, dir);
-							break;
-						case "left":
-							Game.currentLevel.select(super.x - 2, super.y, dir);
-							break;
-						case "right":
-							Game.currentLevel.select(super.x - 1, super.y, dir);
-							Game.currentLevel.select(super.x + 2, super.y, dir);
-							break;
-						}
-					break;
-				case "right":
-					switch(super.dir) {
-						case "up":
-							Game.currentLevel.select(super.x + 1, super.y, dir);
-							Game.currentLevel.select(super.x + 1, super.y - 1, dir);
-							break;
-						case "down":
-							Game.currentLevel.select(super.x + 1, super.y, dir);
-							Game.currentLevel.select(super.x + 1, super.y + 1, dir);
-							break;
-						case "left":
-							Game.currentLevel.select(super.x - 1, super.y, dir);
-							Game.currentLevel.select(super.x + 2, super.y, dir);
-							break;
-						case "right":
-							Game.currentLevel.select(super.x + 2, super.y, dir);
-							break;
-					}
-					break;
-				}
+		String backward = (super.dir == "right" || super.dir == "left") ? (super.dir == "right" ? "left" : "right") : (super.dir == "up" ? "down" : "up");
+		if(dir == backward) {
+			if(dir == "left") {
+				Game.currentLevel.moveObject(super.x + super.extension + 1, super.y, "right");
 			}
+			else if(dir == "right") {
+				Game.currentLevel.moveObject(super.x - super.extension - 1, super.y, "left");
+			}
+			else if(dir == "up") {
+				Game.currentLevel.moveObject(super.x, super.y + super.extension + 1, "down");
+			}
+			else if(dir == "down") {
+				Game.currentLevel.moveObject(super.x, super.y - super.extension - 1, "up");
+			}
+		}
 	}
 	public boolean canBePushed(String dir) {
 		/*

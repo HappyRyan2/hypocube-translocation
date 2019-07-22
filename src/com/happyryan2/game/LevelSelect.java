@@ -32,6 +32,7 @@ public class LevelSelect {
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(710, 50), new Point(790, 50)}, 6));
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(850, -90), new Point(850, -10)}, 7));
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(910, -150), new Point(990, -150)}, 7));
+		levelConnectors.add(new LevelConnector(new Point[] {new Point(850, 110), new Point(850, 190)}, 8));
 	}
 	public static void display(Graphics g) {
 		/* animated noise background */
@@ -64,7 +65,7 @@ public class LevelSelect {
 		/* debug + hax */
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
-			if(level.id <= 7) {
+			if(level.id <= 8) {
 				level.completedBefore = true;
 			}
 		}

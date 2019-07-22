@@ -6,6 +6,7 @@ import com.happyryan2.objects.*;
 public class Level9 extends Level {
 	public Level9() {
 		super.id = 9;
+		super.requireAll = true;
 		super.requirements.add(7);
 		super.x = 1000;
 		super.y = -200;
