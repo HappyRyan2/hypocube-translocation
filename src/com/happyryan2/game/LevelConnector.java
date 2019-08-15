@@ -11,12 +11,21 @@ import com.happyryan2.utilities.Utils;
 public class LevelConnector {
 	public Point[] coords;
 	public int previousLevel; // level that needs to be completed for this to show
+	public int nextLevel;
 	public int animationProgress = 0;
 	public int size = 0;
 	public boolean initialized = false;
-	public LevelConnector(Point[] coords, int previousLevel) {
+	public String color = "white"; // "white" or "gray"
+	public LevelConnector(Point[] coords, int previousLevel, int nextLevel) {
 		this.coords = coords;
 		this.previousLevel = previousLevel;
+		this.nextLevel = nextLevel;
+	}
+	public LevelConnector(Point[] coords, int previousLevel, int nextLevel, String color) {
+		this.coords = coords;
+		this.previousLevel = previousLevel;
+		this.nextLevel = nextLevel;
+		this.color = color;
 	}
 	public void init() {
 		/* Calculate total length */
@@ -45,7 +54,12 @@ public class LevelConnector {
 		}
 		/* Draw the LevelConnector */
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setColor(new Color(255, 255, 255));
+		if(this.color == "white") {
+			g2.setColor(new Color(255, 255, 255));
+		}
+		else {
+			g2.setColor(new Color(170, 170, 170));
+		}
 		g2.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 		int lengthDrawn = 0;
 		for(byte i = 0; i < coords.length - 1; i ++) {
@@ -67,6 +81,15 @@ public class LevelConnector {
 				g2.drawLine(current.x, current.y, (int) (current.x + (dx * lengthRemaining / dist)), (int) (current.y + (dy * lengthRemaining / dist)));
 			}
 			lengthDrawn += dist;
+		}
+		/* Change color from gray to white */
+		for(short i = 0; i < Game.levels.size(); i ++) {
+			Level level = (Level) Game.levels.get(i);
+			if(level.id == this.nextLevel) {
+				if(level.requireAll && level.canPlay()) {
+					this.color = "white";
+				}
+			}
 		}
 	}
 }

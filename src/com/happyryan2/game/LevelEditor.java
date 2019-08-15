@@ -17,7 +17,7 @@ public class LevelEditor {
 	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "solve", "rect");
 	public static Button crop = new Button(130, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "crop", "rect");
 	public static Button uncrop = new Button(240, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "uncrop", "rect");
-	public static Level level = new Level11();
+	public static Level level = new Level20();
 	public static boolean initialized = false;
 	public static List tree = new ArrayList(); // for checking whether it is solvable or not
 	public static List solutionTree = new ArrayList();
@@ -42,25 +42,21 @@ public class LevelEditor {
 			}
 			String dir = (KeyInputs.keyA || KeyInputs.keyD) ? (KeyInputs.keyA ? "left" : "right") : ((KeyInputs.keyW || KeyInputs.keyS) ? (KeyInputs.keyW ? "up" : "down") : "none");
 			if(mode.text == "extend") {
-				solutionTree.clear();
 				level.content.add(new Extender(x, y, dir, (isWeak.text == "is weak")));
 			}
 			else if(mode.text == "retract") {
-				solutionTree.clear();
 				level.content.add(new Retractor(x, y, dir, (isWeak.text == "is weak")));
 			}
 			else if(mode.text == "player") {
-				solutionTree.clear();
 				level.content.add(new Player(x, y));
 			}
 			else if(mode.text == "goal") {
-				solutionTree.clear();
 				level.content.add(new Goal(x, y));
 			}
 			else if(mode.text == "wall") {
-				solutionTree.clear();
 				level.content.add(new Wall(x, y));
 			}
+			solutionTree.clear();
 		}
 		if(Game.levelSize < 3) {
 			Game.levelSize = 3;
@@ -71,14 +67,15 @@ public class LevelEditor {
 			Game.tileSize = (800 - (level.top * 2)) / Game.levelSize;
 			Game.levelSize = 10;
 			level.isForTesting = true;
-			level.width = 10;
-			level.height = 10;
+			if(level.width == 0 && level.height == 0) {
+				level.width = 10;
+				level.height = 10;
+			}
 			level.left = 100;
 			level.top = 100;
-			level.resize();
 			initialized = true;
 		}
-		if(editing.text == "playing") {
+		if(editing.text == "playing" && !cropping) {
 			level.update();
 		}
 		else {
@@ -146,7 +143,15 @@ public class LevelEditor {
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
 			if(solutionTree.size() == 0) {
-				checkSolution();
+				try {
+					checkSolution();
+				}
+				catch(OutOfMemoryError err) {
+					System.gc();
+					System.out.println("----------------------------------------");
+					System.out.println("Ran out of memory while solving.");
+					System.out.println("----------------------------------------");
+				}
 			}
 			solutionStep = solutionTree.size() - 1;
 		}
@@ -223,8 +228,9 @@ public class LevelEditor {
 			}
 			solutionStep --;
 		}
+		level.resize();
 	}
-	public static void checkSolution() {
+	public static void checkSolution() throws OutOfMemoryError {
 		/* First, clear the tree and set the root to be the current state */
 		tree.clear();
 		Level depth0 = level.copy();
@@ -283,6 +289,7 @@ public class LevelEditor {
 						System.out.println("FOUND THE SOLUTION (read the list backwards)");
 						displayLevelMovePath(nextDepth);
 						System.out.println("------------------------------------------");
+						System.out.println("level complexity: " + tree.size());
 						return;
 					}
 				}

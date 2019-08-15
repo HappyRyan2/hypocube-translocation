@@ -218,6 +218,7 @@ public class Level {
 	}
 
 	public void update() {
+		// System.out.println("level " + this.id + " is being updated");
 		/* initialize */
 		if(!resized || true) {
 			this.resize();
@@ -400,7 +401,7 @@ public class Level {
 			}
 		}
 		this.opacity += 0.05;
-		Image img = (this.completedBefore) ? LevelSelect.completeLevel : LevelSelect.incompleteLevel;
+		Image img = (this.completedBefore) ? LevelSelect.completeLevel : (this.canPlay() ? LevelSelect.incompleteLevel : LevelSelect.inaccessibleLevel);
 		Graphics2D g2 = (Graphics2D) g;
 		if(this.opacity < 1) {
 			AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.opacity);
@@ -411,8 +412,11 @@ public class Level {
 		if(this.completedBefore) {
 			g2.setColor(new Color(66, 139, 255));
 		}
-		else {
+		else if(this.canPlay()) {
 			g2.setColor(new Color(191, 54, 255));
+		}
+		else {
+			g2.setColor(new Color(150, 150, 150));
 		}
 		g2.setFont(Screen.fontRighteous.deriveFont(40f));
 		Screen.centerText(g, 50, 65, "" + this.id);
@@ -422,7 +426,7 @@ public class Level {
 	}
 	public void updateLevelSelect() {
 		/* Detect clicks */
-		if(MousePos.x > x + LevelSelect.scrollX && MousePos.x < x + LevelSelect.scrollX + 100 && MousePos.y > y + LevelSelect.scrollY && MousePos.y < y + LevelSelect.scrollY + 100 && this.opacity >= 1) {
+		if(MousePos.x > x + LevelSelect.scrollX && MousePos.x < x + LevelSelect.scrollX + 100 && MousePos.y > y + LevelSelect.scrollY && MousePos.y < y + LevelSelect.scrollY + 100 && this.opacity >= 1 && this.canPlay()) {
 			Screen.cursor = "hand";
 			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
 				Game.levelOpen = this.id;
@@ -436,7 +440,7 @@ public class Level {
 			}
 		}
 		/* Update whether it has been discovered or not */
-		if(this.requireAll) {
+		if(this.requireAll && false) {
 			this.discovered = true;
 			loop1: for(short i = 0; i < Game.levels.size(); i ++) {
 				Level level = (Level) Game.levels.get(i);
@@ -480,7 +484,11 @@ public class Level {
 		if(!this.discovered) {
 			return false;
 		}
+		if(this.id == 1) {
+			return true;
+		}
 		if(this.requireAll) {
+			/* Return false if some of the required levels have not been completed */
 			for(short i = 0; i < Game.levels.size(); i ++) {
 				Level level = (Level) Game.levels.get(i);
 				for(short j = 0; j < this.requirements.size(); j ++) {
@@ -488,6 +496,13 @@ public class Level {
 					if(level.id == req && !level.completedBefore) {
 						return false;
 					}
+				}
+			}
+			/* Return false if any of the lines are still showing the animation */
+			for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
+				LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
+				if(connector.nextLevel == this.id && connector.animationProgress < connector.size) {
+					return false;
 				}
 			}
 			return true;
@@ -543,7 +558,7 @@ public class Level {
 		 - would be pulled by it moving
 		*/
 		Thing thing = this.getAtPos(x, y);
-		if(thing != null && !thing.ignoring) {
+		if(thing != null && !(thing instanceof Goal)) {
 			this.select(x, y);
 			if(dir == "left") {
 				/* Find things being pushed by this object */
@@ -569,6 +584,7 @@ public class Level {
 				/* Find things being pulled by this object */
 				Thing retractor = this.getAtPos(x, y + 1);
 				if(retractor != null && !retractor.selected && retractor instanceof Retractor && retractor.y - retractor.extension == y + 1 && retractor.dir == "up") {
+					System.out.println("something is being pulled up");
 					this.moveObject(x, y + 1, "up");
 				}
 			}
@@ -578,12 +594,13 @@ public class Level {
 				/* Find things being pulled by this object */
 				Thing retractor = this.getAtPos(x, y - 1);
 				if(retractor != null && !retractor.selected && retractor instanceof Retractor && retractor.y + retractor.extension == y - 1 && retractor.dir == "down") {
-					this.moveObject(x, y + 1, "down");
+					this.moveObject(x, y - 1, "down");
 				}
 			}
 		}
 	}
 	public void moveObject(float x, float y, String dir) {
+		// System.out.println("moving object at (" + x + ", " + y + ") " + dir);
 		/*
 		Selects the object at that position, as well as any other objects that:
 		 - would be pushed by it moving
@@ -591,6 +608,7 @@ public class Level {
 		*/
 		Thing thing = this.getAtPos(x, y);
 		if(thing != null && !thing.ignoring && !thing.selected) {
+			System.out.println("moved object at (" + x + ", " + y + ") " + dir);
 			this.select(x, y);
 			thing.checkMovement(dir);
 		}
@@ -634,6 +652,7 @@ public class Level {
 				for(short j = 0; j < this.content.size(); j ++) {
 					Thing thing2 = (Thing) this.content.get(j);
 					if(thing2 instanceof Player && thing2.x == thing.x && thing2.y == thing.y) {
+						System.out.println("goal at (" + thing.x + ", " + thing.y + ") has a player on it");
 						occupied = true;
 						break;
 					}
@@ -652,6 +671,7 @@ public class Level {
 			}
 		}
 		if(!hasAGoal) {
+			System.out.println("the level does not have a goal");
 			return false; // level is under construction
 		}
 		return complete;
@@ -672,6 +692,9 @@ public class Level {
 	public void fastForward() {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Goal) {
+				continue;
+			}
 			if((thing instanceof Extender || thing instanceof Retractor) && thing.extending) {
 				thing.extension = 1;
 				thing.extending = false;
@@ -698,7 +721,16 @@ public class Level {
 	public boolean transitioning() {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			if(thing.moveDir != "none" || thing.extending || thing.retracting) {
+			if(thing.moveDir != "none") {
+				System.out.println("something at (" + thing.x + ", " + thing.y + ") is moving");
+			}
+			else if(thing.extending) {
+				System.out.println("something is extending");
+			}
+			else if(thing.retracting) {
+				System.out.println("something is retracting");
+			}
+			if(thing.moveDir != "none" || thing.extending || thing.retracting && !(thing instanceof Goal)) {
 				return true;
 			}
 		}
@@ -825,5 +857,26 @@ public class Level {
 			str += ", ";
 		}
 		return str;
+	}
+
+	public boolean canTileBePushed(int x, int y, String dir) {
+		/* Return false if it is being pushed into a border wall */
+		if((x == 0 && dir == "left") || (x == this.width - 1 && dir == "right") || (y == 0 && dir == "up") || (y == this.height - 1 && dir == "down")) {
+			return false;
+		}
+		/* Return false if it is being pushed into a regular wall */
+		if(dir == "left" && this.getAtPos(x - 1, y) instanceof Wall) {
+			return false;
+		}
+		else if(dir == "right" && this.getAtPos(x + 1, y) instanceof Wall) {
+			return false;
+		}
+		else if(dir == "up" && this.getAtPos(x, y - 1) instanceof Wall) {
+			return false;
+		}
+		else if(dir == "down" && this.getAtPos(x, y + 1) instanceof Wall) {
+			return false;
+		}
+		return true;
 	}
 }

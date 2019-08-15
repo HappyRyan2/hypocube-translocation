@@ -39,6 +39,7 @@ public class Retractor extends Thing {
 	}
 
 	public void update() {
+		// System.out.println("time moving: " + this.timeMoving + " and is it moving? " + (super.moveDir != "none"));
 		// calculate visual position for hitboxes
 		// super.height = Game.sizes[(int) Game.levelSize - 2];
 		super.height = 0.1;
@@ -47,8 +48,11 @@ public class Retractor extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
+		// System.out.println("is it transitioning? " + Game.currentLevel.transitioning());
 		if(this.cursorHovered() && !Game.currentLevel.transitioning() && !Game.currentLevel.isComplete()) {
-			if(this.canDoSomething()) {
+			// System.out.println("inside Retractor.update(), it works");
+			if(this.canDoSomething() && !Game.currentLevel.paused) {
+				// System.out.println("hovering over a retractor at (" + super.x + ", " + super.y + ")");
 				Screen.cursor = "hand";
 			}
 			if(MouseClick.mouseIsPressed) {
@@ -65,6 +69,7 @@ public class Retractor extends Thing {
 		if(super.extending) {
 			super.extension += 0.05;
 			if(super.extension >= 1) {
+				System.out.println("done extending");
 				Game.canClick = !Game.currentLevel.isComplete();
 				super.extending = false;
 				super.extension = 1;
@@ -97,6 +102,7 @@ public class Retractor extends Thing {
 		if(super.moveDir != "none") {
 			super.timeMoving ++;
 			if(super.timeMoving >= 20) {
+				// System.out.println("done moving");
 				super.x = Math.round(super.x);
 				super.y = Math.round(super.y);
 				super.moveDir = "none";
@@ -195,7 +201,7 @@ public class Retractor extends Thing {
 	}
 
 	public void onClick() {
-		if(!Game.canClick || Game.currentLevel.transitioning()) {
+		if(!Game.canClick || Game.currentLevel.transitioning() || Game.currentLevel.paused) {
 			return;
 		}
 		Game.currentLevel.clearSelected();
@@ -221,6 +227,7 @@ public class Retractor extends Thing {
 			else if(this.canRetractBackward()) { // pull itself towards something
 				super.retracting = true;
 				super.moveDir = super.dir;
+				Game.currentLevel.moveSelected(super.dir);
 				Stack.addAction();
 			}
 		}
@@ -461,12 +468,11 @@ public class Retractor extends Thing {
 		}
 	}
 	public boolean canBePushed(String dir) {
-		/*
-		Returns whether this can be pushed without colliding with a wall. Assumes no other extenders exist.
-		*/
+		/* Return false if it is directly next to a wall */
 		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.currentLevel.width - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.currentLevel.height - 1))) {
 			return false;
 		}
+		/* Return false if it is extending near a wall */
 		if(super.extension != 0) {
 			if(dir == "left" && super.dir == "left" && super.x <= 1) {
 				return false;
@@ -480,6 +486,19 @@ public class Retractor extends Thing {
 			if(dir == "down" && super.dir == "down" && super.y >= Game.currentLevel.height - 2) {
 				return false;
 			}
+		}
+		/* Return false if it is stuck to a wall */
+		if(dir == "right" && super.dir == "left" && super.x - super.extension == 0) {
+			return false;
+		}
+		if(dir == "left" && super.dir == "right" && super.x + super.extension == Game.levelSize - 1) {
+			return false;
+		}
+		if(dir == "down" && super.dir == "up" && super.y - super.extension == 0) {
+			return false;
+		}
+		if(dir == "up" && super.dir == "down" && super.y + super.extension == Game.levelSize - 1) {
+			return false;
 		}
 		return true;
 	}

@@ -13,7 +13,7 @@ public class Game {
 	private static boolean initialized = false;
 	public static String state = "level-editor";
 	public static List levels = new ArrayList();
-	public static int levelOpen = 0;
+	public static int levelOpen = 20;
 	public static float levelSize = 0;
 	public static float tileSize = 0;
 	public static double[] sizes = {0.0625, 0.08, 0.095, 0.1, 0.104, 0.108, 0.111, 0.113, 0.115, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116};
@@ -36,6 +36,12 @@ public class Game {
 			levels.add(new Level8());
 			levels.add(new Level9());
 			levels.add(new Level10());
+			levels.add(new Level11());
+			levels.add(new Level12());
+			levels.add(new Level13());
+			levels.add(new Level14());
+			levels.add(new Level15());
+			levels.add(new Level20());
 		}
 		if(state == "home") {
 			// display the home page

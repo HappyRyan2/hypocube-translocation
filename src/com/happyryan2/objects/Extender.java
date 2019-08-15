@@ -105,6 +105,7 @@ public class Extender extends Thing {
 		if(super.moveDir != "none") {
 			super.timeMoving ++;
 			if(super.timeMoving >= 20) {
+				System.out.println("done moving");
 				super.x = Math.round(super.x);
 				super.y = Math.round(super.y);
 				super.moveDir = "none";
@@ -114,7 +115,7 @@ public class Extender extends Thing {
 		// debug
 	}
 	public void onClick() {
-		if(!Game.canClick || Game.currentLevel.transitioning()) {
+		if(!Game.canClick || Game.currentLevel.transitioning() || Game.currentLevel.paused) {
 			return;
 		}
 		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
@@ -446,23 +447,24 @@ public class Extender extends Thing {
 		/*
 		Returns whether this can be pushed without colliding with a wall. Assumes no other extenders exist.
 		*/
-		if(((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.currentLevel.width - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.currentLevel.height - 1))) {
-			return false;
+		int x = (int) super.x;
+		int y = (int) super.y;
+		if(super.extension == 0 || super.dir == "none") {
+			return Game.currentLevel.canTileBePushed(x, y, dir);
 		}
-		if(super.extension != 0) {
-			if(dir == "left" && super.dir == "left" && super.x <= 1) {
-				return false;
+		else {
+			if(super.dir == "left") {
+				return Game.currentLevel.canTileBePushed(x, y, dir) && Game.currentLevel.canTileBePushed(x - 1, y, dir);
 			}
-			if(dir == "right" && super.dir == "right" && super.x >= Game.currentLevel.width - 2) {
-				return false;
+			else if(super.dir == "right") {
+				return Game.currentLevel.canTileBePushed(x, y, dir) && Game.currentLevel.canTileBePushed(x + 1, y, dir);
 			}
-			if(dir == "up" && super.dir == "up" && super.y <= 1) {
-				return false;
+			else if(super.dir == "up") {
+				return Game.currentLevel.canTileBePushed(x, y, dir) && Game.currentLevel.canTileBePushed(x, y - 1, dir);
 			}
-			if(dir == "down" && super.dir == "down" && super.y >= Game.currentLevel.height - 2) {
-				return false;
+			else {
+				return Game.currentLevel.canTileBePushed(x, y, dir) && Game.currentLevel.canTileBePushed(x, y + 1, dir);
 			}
 		}
-		return true;
 	}
 }

@@ -20,11 +20,14 @@ com/happyryan2/levels/Level11.java
 com/happyryan2/levels/Level12.java
 com/happyryan2/levels/Level13.java
 com/happyryan2/levels/Level14.java
+com/happyryan2/levels/Level15.java
+com/happyryan2/levels/Level20.java
 com/happyryan2/objects/Thing.java
 com/happyryan2/objects/Extender.java
 com/happyryan2/objects/Retractor.java
 com/happyryan2/objects/Player.java
 com/happyryan2/objects/Goal.java
+com/happyryan2/objects/Wall.java
 com/happyryan2/utilities/Screen.java
 com/happyryan2/utilities/Delay.java
 com/happyryan2/utilities/MousePos.java
@@ -32,3 +35,4 @@ com/happyryan2/utilities/MouseClick.java
 com/happyryan2/utilities/KeyInputs.java
 com/happyryan2/utilities/ImageLoader.java
 com/happyryan2/utilities/Utils.java
+com/happyryan2/utilities/PerlinNoise.java

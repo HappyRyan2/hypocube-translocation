@@ -21,7 +21,9 @@ public class Goal extends Thing {
 		super.origY = y;
 	}
 	public void update() {
-		// super.height = Game.sizes[(int) Game.levelSize - 2];
+		super.extending = false;
+		super.retracting = false;
+		super.moveDir = "none";
 	}
 	public void display(Graphics g) {
 		int x = (int) (super.x * Game.tileSize);

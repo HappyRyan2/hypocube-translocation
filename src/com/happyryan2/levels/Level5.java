@@ -14,10 +14,15 @@ public class Level5 extends Level {
 		super.x = 600;
 		super.y = -200;
 
-		super.content.add(new Retractor(1, 0, "down"));
-		super.content.add(new Goal(1, 1));
-		super.content.add(new Retractor(1, 2, "left"));
-		super.content.add(new Player(1, 3));
-		super.content.add(new Extender(1, 4, "down"));
+		super.content.add(new Retractor(2, 3, "up", false));
+		super.content.add(new Wall(0, 0));
+		super.content.add(new Wall(0, 4));
+		super.content.add(new Wall(3, 4));
+		super.content.add(new Player(1, 2));
+		super.content.add(new Extender(0, 2, "right", false));
+		super.content.add(new Retractor(2, 4, "up", false));
+		super.content.add(new Extender(3, 0, "left", false));
+		super.content.add(new Wall(3, 1));
+		super.content.add(new Goal(2, 4));
 	}
 }

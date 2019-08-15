@@ -5,13 +5,20 @@ import com.happyryan2.game.Level;
 
 public class Level13 extends Level {
 	public Level13() {
+		super.id = 13;
+		super.x = 1000;
+		super.y = 0;
+		super.requirements.add(11);
+
 		super.manualSize = true;
 		super.width = 3;
-		super.height = 5;
-		super.content.add(new Retractor(0, 1, "right"));
-		super.content.add(new Retractor(1, 3, "up"));
-		super.content.add(new Retractor(1, 4, "up", true));
-		super.content.add(new Player(1, 2));
-		super.content.add(new Goal(1, 0));
+		super.height = 3;
+		
+		super.content.add(new Player(0, 0));
+		super.content.add(new Goal(2, 2));
+		super.content.add(new Retractor(1, 2, "up", false));
+		super.content.add(new Retractor(2, 1, "left", false));
+		super.content.add(new Retractor(1, 1, "right", false));
+		super.content.add(new Extender(0, 1, "right", false));
 	}
 }
