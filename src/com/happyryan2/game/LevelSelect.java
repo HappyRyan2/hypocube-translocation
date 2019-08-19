@@ -72,7 +72,7 @@ public class LevelSelect {
 		/* debug + hax */
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
-			if(level.id <= 15 && false) {
+			if(level.id <= 15) {
 				level.completedBefore = true;
 			}
 		}
