@@ -428,7 +428,9 @@ public class Level {
 		/* Detect clicks */
 		if(MousePos.x > x + LevelSelect.scrollX && MousePos.x < x + LevelSelect.scrollX + 100 && MousePos.y > y + LevelSelect.scrollY && MousePos.y < y + LevelSelect.scrollY + 100 && this.opacity >= 1 && this.canPlay()) {
 			Screen.cursor = "hand";
+			System.out.println("hovering over a level");
 			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
+				System.out.println("starting a level!");
 				Game.levelOpen = this.id;
 				Game.currentLevel = this;
 				Game.canClick = true;

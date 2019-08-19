@@ -105,7 +105,7 @@ public class Extender extends Thing {
 		if(super.moveDir != "none") {
 			super.timeMoving ++;
 			if(super.timeMoving >= 20) {
-				System.out.println("done moving");
+				// System.out.println("done moving");
 				super.x = Math.round(super.x);
 				super.y = Math.round(super.y);
 				super.moveDir = "none";
@@ -126,7 +126,7 @@ public class Extender extends Thing {
 		if(super.extension == 0) {
 			boolean forwards = this.canExtendForward();
 			boolean backwards = this.canExtendBackward();
-			System.out.println("can it extend forwards? " + forwards);
+			// System.out.println("can it extend forwards? " + forwards);
 			if(this.canExtendForward()) {
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
