@@ -14,11 +14,14 @@ public class Level3 extends Level {
 		super.x = 200;
 		super.y = -200;
 
-		super.content.add(new Extender(1, 0, "down", false));
-		super.content.add(new Extender(2, 0, "left", false));
-		super.content.add(new Retractor(2, 1, "down", false));
-		super.content.add(new Retractor(2, 3, "left", false));
-		super.content.add(new Goal(1, 2));
-		super.content.add(new Player(0, 1));
+		super.manualSize = true;
+		super.width = 3;
+		super.height = 3;
+
+		super.content.add(new Player(1, 1));
+		super.content.add(new Goal(2, 1));
+		super.content.add(new Retractor(0, 2, "right"));
+		super.content.add(new Retractor(1, 2, "up"));
+		super.content.add(new Retractor(0, 0, "right"));
 	}
 }
