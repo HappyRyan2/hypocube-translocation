@@ -41,6 +41,10 @@ public class Game {
 		try {
 			out.println(progress);
 		}
+		catch(Exception e) {
+			System.out.println("Uh oh... something went wrong.");
+			e.printStackTrace();
+		}
 	}
 	public static void run() {
 		if(!initialized) {
