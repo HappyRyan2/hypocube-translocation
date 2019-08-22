@@ -4,10 +4,10 @@ import java.awt.Graphics;
 import java.awt.Color;
 import java.util.List;
 import java.util.ArrayList;
+
 import java.nio.file.Files;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import com.happyryan2.objects.*;
 import com.happyryan2.utilities.*;
@@ -45,32 +45,23 @@ public class Game {
 			levels.add(new Level13());
 			levels.add(new Level14());
 			levels.add(new Level15());
-			// levels.add(new Level20());
+			levels.add(new Level20());
 			try {
 				String path = "progress.txt";
-				String progress = Files.readString(Paths.get(path), StandardCharsets.US_ASCII);
+				byte[] encoded = Files.readAllBytes(Paths.get(path));
+				String progress = new String(encoded, StandardCharsets.US_ASCII);
 				System.out.println("user progress: " + progress);
-				for(int i = 0; i < progress.length(); i ++) {
-					/* Find a space */
-					if(progress.substring(i, i + 1) == " ") {
-						for(int j = i; i < progress.length(); j ++) {
-							if(progress.substring(j, j + 1) == " ") {
-								int levelId = Integer.parseInt(progress.substring(i, j));
-								System.out.println("user completed level " + levelId);
-								for(int k = 0; k < levels.size(); k ++) {
-									Level level = (Level) levels.get(k);
-									int levelNum = level.id;
-									if(levelNum == levelId) {
-										level.completedBefore = true;
-									}
-								}
-							}
-						}
+				for(short i = 0; i < progress.length(); i ++) {
+					System.out.println("progress[i]: \"" + progress.substring(i, i + 1) + "\"");
+					System.out.println("does it equal itself? " + (progress.substring(i, i + 1) == progress.substring(i, i + 1)));
+					/* Detecting spaces doesn't work for some reason, so this just assumes it is a space if it isn't a number */
+					if(!Utils.isANumber(progress.substring(i, i + 1))) {
+						System.out.println("beginning space found at " + i);
 					}
 				}
 			}
-			catch(IOException e) {
-				System.out.println("Could not find progress file");
+			catch(Exception e) {
+				System.out.println("Progress file not found.");
 			}
 		}
 		if(state == "home") {
