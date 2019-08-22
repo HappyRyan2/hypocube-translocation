@@ -11,6 +11,7 @@ public class Thing {
 	public float y;
 	public float origX;
 	public float origY;
+	public float origExtension;
 	public float hoverY = 0;
 	public String dir;
 	public double height;

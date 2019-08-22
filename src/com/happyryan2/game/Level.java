@@ -158,7 +158,7 @@ public class Level {
 			if(thing instanceof Extender || thing instanceof Retractor) {
 				thing.extending = false;
 				thing.retracting = false;
-				thing.extension = 0;
+				thing.extension = thing.origExtension;
 			}
 			else if(thing instanceof Player || thing instanceof Goal) {
 				thing.deleted = false;

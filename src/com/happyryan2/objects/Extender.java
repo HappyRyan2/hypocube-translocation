@@ -31,12 +31,13 @@ public class Extender extends Thing {
 		super.dir = dir;
 	}
 	public Extender(float x, float y, String dir, boolean isWeak) {
-		super.x = x;
-		super.y = y;
-		super.origX = x;
-		super.origY = y;
-		super.dir = dir;
+		this(x, y, dir);
 		super.isWeak = isWeak;
+	}
+	public Extender(float x, float y, String dir, boolean isWeak, boolean extended) {
+		this(x, y, dir, isWeak);
+		super.extension = extended ? 1 : 0;
+		super.origExtension = super.extension;
 	}
 	public void update() {
 		// calculate visual position for hitboxes
