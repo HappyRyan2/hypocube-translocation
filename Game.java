@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
+import java.io.PrintWriter;
 
 import com.happyryan2.objects.*;
 import com.happyryan2.utilities.*;
@@ -27,8 +28,23 @@ public class Game {
 	public static Level currentLevel;
 	public static int transition = 255;
 	public static int scrollY = 0;
+	public static void updateProgress() {
+		String progress = " ";
+		for(short i = 0; i < levels.size(); i ++) {
+			Level level = (Level) levels.get(i);
+			if(level.completedBefore) {
+				progress += level.id + " ";
+			}
+		}
+		progress = "something";
+		PrintWriter out = new PrintWriter("filename.txt");
+		try {
+			out.println(progress);
+		}
+	}
 	public static void run() {
 		if(!initialized) {
+			/* Initialize levels */
 			initialized = true;
 			levels.add(new Level1());
 			levels.add(new Level2());
@@ -46,22 +62,45 @@ public class Game {
 			levels.add(new Level14());
 			levels.add(new Level15());
 			levels.add(new Level20());
+			/* Load user progress from progress.txt */
 			try {
 				String path = "progress.txt";
 				byte[] encoded = Files.readAllBytes(Paths.get(path));
 				String progress = new String(encoded, StandardCharsets.US_ASCII);
 				System.out.println("user progress: " + progress);
-				for(short i = 0; i < progress.length(); i ++) {
-					System.out.println("progress[i]: \"" + progress.substring(i, i + 1) + "\"");
-					System.out.println("does it equal itself? " + (progress.substring(i, i + 1) == progress.substring(i, i + 1)));
-					/* Detecting spaces doesn't work for some reason, so this just assumes it is a space if it isn't a number */
-					if(!Utils.isANumber(progress.substring(i, i + 1))) {
-						System.out.println("beginning space found at " + i);
+				loop1: for(short i = 0; i < progress.length(); i ++) {
+					if(progress.substring(i, i + 1).equals(" ")) {
+						loop2: for(short j = (short) (i + 1); j < progress.length(); j ++) {
+							if(progress.substring(j, j + 1).equals(" ")) {
+								int num = Integer.parseInt(progress.substring(i + 1, j));
+								loop3: for(short k = 0; k < levels.size(); k ++) {
+									Level level = (Level) levels.get(k);
+									if(level.id == num) {
+										level.completedBefore = true;
+										continue loop1;
+									}
+								}
+							}
+						}
 					}
 				}
 			}
 			catch(Exception e) {
 				System.out.println("Progress file not found.");
+				e.printStackTrace();
+			}
+			/* Update level connectors */
+			LevelSelect.init();
+			for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
+				LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
+				connector.init();
+				for(short j = 0; j < levels.size(); j ++) {
+					Level level = (Level) levels.get(j);
+					if(level.id == connector.previousLevel && level.completedBefore) {
+						System.out.println("connector to level " + level.id + " has been completed");
+						connector.animationProgress = connector.size;
+					}
+				}
 			}
 		}
 		if(state == "home") {
