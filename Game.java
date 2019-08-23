@@ -39,8 +39,16 @@ public class Game {
 			}
 		}
 		System.out.println("writing to file: " + progress);
+		String path = System.getProperty("user.dir");
+		path += "\\HypocubeTranslocation.jar!\\progress.txt";
+		// System.out.println("path to .jar: " + path);
 		try {
-			Files.write( Paths.get("progress.txt"), progress.getBytes(), StandardOpenOption.CREATE);
+			if(Game.class.getResource("Game.class").toExternalForm().indexOf(".jar") != -1) {
+				Files.write( Paths.get(path), progress.getBytes(), StandardOpenOption.CREATE);
+			}
+			else {
+				Files.write( Paths.get("progress.txt"), progress.getBytes(), StandardOpenOption.CREATE);
+			}
 		}
 		catch(Exception e) {
 			System.out.println("unable to save progress.");
@@ -48,7 +56,7 @@ public class Game {
 	}
 	public static void run() {
 		if(!initialized) {
-			// updateProgress();
+			updateProgress();
 			/* Initialize levels */
 			initialized = true;
 			levels.add(new Level1());
