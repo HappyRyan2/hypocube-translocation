@@ -5,10 +5,11 @@ import java.awt.Color;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
-import java.io.PrintWriter;
+import java.nio.*;
+import java.nio.file.*;
+import java.io.*;
+
 
 import com.happyryan2.objects.*;
 import com.happyryan2.utilities.*;
@@ -16,7 +17,7 @@ import com.happyryan2.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "level-editor";
+	public static String state = "level-select";
 	public static List levels = new ArrayList();
 	public static int levelOpen = 20;
 	public static float levelSize = 0;
@@ -33,21 +34,21 @@ public class Game {
 		for(short i = 0; i < levels.size(); i ++) {
 			Level level = (Level) levels.get(i);
 			if(level.completedBefore) {
+				System.out.println("a level has been completed");
 				progress += level.id + " ";
 			}
 		}
-		progress = "something";
-		PrintWriter out = new PrintWriter("filename.txt");
+		System.out.println("writing to file: " + progress);
 		try {
-			out.println(progress);
+			Files.write( Paths.get("progress.txt"), progress.getBytes(), StandardOpenOption.CREATE);
 		}
 		catch(Exception e) {
-			System.out.println("Uh oh... something went wrong.");
-			e.printStackTrace();
+			System.out.println("unable to save progress.");
 		}
 	}
 	public static void run() {
 		if(!initialized) {
+			// updateProgress();
 			/* Initialize levels */
 			initialized = true;
 			levels.add(new Level1());
