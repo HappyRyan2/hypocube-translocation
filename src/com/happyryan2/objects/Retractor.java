@@ -30,12 +30,13 @@ public class Retractor extends Thing {
 		super.dir = dir;
 	}
 	public Retractor(float x, float y, String dir, boolean isWeak) {
-		super.x = x;
-		super.y = y;
-		super.origX = x;
-		super.origY = y;
-		super.dir = dir;
+		this(x, y, dir);
 		super.isWeak = isWeak;
+	}
+	public Retractor(float x, float y, String dir, boolean isWeak, boolean extended) {
+		this(x, y, dir, isWeak);
+		super.extension = extended ? 1 : 0;
+		super.origExtension = super.extension;
 	}
 
 	public void update() {
@@ -69,7 +70,7 @@ public class Retractor extends Thing {
 		if(super.extending) {
 			super.extension += 0.05;
 			if(super.extension >= 1) {
-				// System.out.println("done extending");
+				System.out.println("done extending");
 				Game.canClick = !Game.currentLevel.isComplete();
 				super.extending = false;
 				super.extension = 1;

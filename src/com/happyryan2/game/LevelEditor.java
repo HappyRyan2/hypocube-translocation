@@ -17,7 +17,7 @@ public class LevelEditor {
 	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "solve", "rect");
 	public static Button crop = new Button(130, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "crop", "rect");
 	public static Button uncrop = new Button(240, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "uncrop", "rect");
-	public static Level level = new Level11();
+	public static Level level = new Level20();
 	public static boolean initialized = false;
 	public static List tree = new ArrayList(); // for checking whether it is solvable or not
 	public static List solutionTree = new ArrayList();
@@ -191,7 +191,7 @@ public class LevelEditor {
 				for(short i = 0; i < level.content.size(); i ++) {
 					Thing thing = (Thing) level.content.get(i);
 					if(thing.x < left || thing.y < top || thing.x > right || thing.y > bottom) {
-						System.out.println("removed something at (" + thing.x + ", " + thing.y + ")");
+						// System.out.println("removed something at (" + thing.x + ", " + thing.y + ")");
 						level.content.remove(i);
 						i --;
 						continue;
@@ -348,30 +348,3 @@ public class LevelEditor {
 		}
 	}
 }
-/*
-super.content.add(new Extender(3, 2, "right", false));
-super.content.add(new Retractor(4, 2, "down", false));
-super.content.add(new Goal(4, 2));
-super.content.add(new Retractor(5, 4, "up", false));
-super.content.add(new Retractor(3, 4, "right", false));
-super.content.add(new Player(5, 5));
-super.content.add(new Wall(2, 1));
-super.content.add(new Wall(3, 1));
-super.content.add(new Wall(4, 1));
-super.content.add(new Wall(5, 1));
-super.content.add(new Wall(6, 1));
-super.content.add(new Wall(6, 2));
-super.content.add(new Wall(6, 3));
-super.content.add(new Wall(6, 4));
-super.content.add(new Wall(6, 5));
-super.content.add(new Wall(6, 6));
-super.content.add(new Wall(5, 6));
-super.content.add(new Wall(4, 6));
-super.content.add(new Wall(3, 6));
-super.content.add(new Wall(2, 6));
-super.content.add(new Wall(2, 5));
-super.content.add(new Wall(2, 4));
-super.content.add(new Wall(2, 3));
-super.content.add(new Wall(2, 2));
-super.content.add(new Wall(3, 5));
-*/

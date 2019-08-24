@@ -11,7 +11,10 @@ public class ImageLoader {
 			Image img = ImageIO.read(new File(pathStr));
 			return img;
 		}
-		catch(Exception e) { }
+		catch(Exception e) {
+			System.out.println("Image file not found.");
+			e.printStackTrace();
+		}
 		return null;
 	}
 }

@@ -55,7 +55,9 @@ public class LevelSelect {
 				}
 			}
 		}
-		catch(Exception e) { }
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 		/* display levels */
 		Graphics2D g2 = (Graphics2D) g;
 		g2.translate(scrollX, scrollY);
@@ -72,7 +74,7 @@ public class LevelSelect {
 		/* debug + hax */
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
-			if(level.id <= 15) {
+			if(level.id <= 15 && false) {
 				level.completedBefore = true;
 			}
 		}
