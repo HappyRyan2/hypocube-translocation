@@ -70,7 +70,6 @@ public class Retractor extends Thing {
 		if(super.extending) {
 			super.extension += 0.05;
 			if(super.extension >= 1) {
-				System.out.println("done extending");
 				Game.canClick = !Game.currentLevel.isComplete();
 				super.extending = false;
 				super.extension = 1;

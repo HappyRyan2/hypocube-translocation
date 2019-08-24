@@ -273,7 +273,10 @@ public class Level {
 			thing.update();
 		}
 		if(this.isComplete()) {
-			this.completedBefore = true;
+			if(!this.completedBefore) {
+				this.completedBefore = true;
+				Game.updateProgress();
+			}
 			this.completeNow = true;
 			this.retry.update();
 			this.menu.update();
@@ -584,7 +587,7 @@ public class Level {
 				/* Find things being pulled by this object */
 				Thing retractor = this.getAtPos(x, y + 1);
 				if(retractor != null && !retractor.selected && retractor instanceof Retractor && retractor.y - retractor.extension == y + 1 && retractor.dir == "up") {
-					System.out.println("something is being pulled up");
+					// System.out.println("something is being pulled up");
 					this.moveObject(x, y + 1, "up");
 				}
 			}
@@ -608,7 +611,7 @@ public class Level {
 		*/
 		Thing thing = this.getAtPos(x, y);
 		if(thing != null && !thing.ignoring && !thing.selected) {
-			System.out.println("moved object at (" + x + ", " + y + ") " + dir);
+			// System.out.println("moved object at (" + x + ", " + y + ") " + dir);
 			this.select(x, y);
 			thing.checkMovement(dir);
 		}
@@ -652,7 +655,7 @@ public class Level {
 				for(short j = 0; j < this.content.size(); j ++) {
 					Thing thing2 = (Thing) this.content.get(j);
 					if(thing2 instanceof Player && thing2.x == thing.x && thing2.y == thing.y) {
-						System.out.println("goal at (" + thing.x + ", " + thing.y + ") has a player on it");
+						// System.out.println("goal at (" + thing.x + ", " + thing.y + ") has a player on it");
 						occupied = true;
 						break;
 					}
@@ -671,7 +674,7 @@ public class Level {
 			}
 		}
 		if(!hasAGoal) {
-			System.out.println("the level does not have a goal");
+			// System.out.println("the level does not have a goal");
 			return false; // level is under construction
 		}
 		return complete;
@@ -722,13 +725,13 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing.moveDir != "none") {
-				System.out.println("something at (" + thing.x + ", " + thing.y + ") is moving");
+				// System.out.println("something at (" + thing.x + ", " + thing.y + ") is moving");
 			}
 			else if(thing.extending) {
-				System.out.println("something is extending");
+				// System.out.println("something is extending");
 			}
 			else if(thing.retracting) {
-				System.out.println("something is retracting");
+				// System.out.println("something is retracting");
 			}
 			if(thing.moveDir != "none" || thing.extending || thing.retracting && !(thing instanceof Goal)) {
 				return true;
