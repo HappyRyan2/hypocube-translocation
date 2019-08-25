@@ -43,7 +43,7 @@ public class Screen extends JPanel {
 
 		/* load resources */
 		try {
-			URL url = ClassLoader.getSystemResource("res/graphics/objects/player.png");
+			URL url = ClassLoader.getSystemResource("res/graphics/icon.png");
 			Toolkit kit = Toolkit.getDefaultToolkit();
 			Image img = kit.createImage(url);
 			frame.setIconImage(img);
