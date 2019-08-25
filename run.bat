@@ -1,1 +1,1 @@
-java com.happyryan2.utilities.Screen
+java io.github.happyryan2.puzzlegame.utilities.Screen
