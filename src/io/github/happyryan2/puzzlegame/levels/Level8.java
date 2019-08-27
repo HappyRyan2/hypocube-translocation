@@ -6,18 +6,15 @@ import io.github.happyryan2.puzzlegame.objects.*;
 public class Level8 extends Level {
 	public Level8() {
 		super.id = 8;
-		super.requirements.add(6);
+		super.requireAll = true;
 		super.requirements.add(7);
 		super.x = 800;
-		super.y = 0;
+		super.y = 200;
 
-		super.content.add(new Wall(0, 0));
-		super.content.add(new Wall(0, 1));
-		super.content.add(new Wall(4, 2));
-		super.content.add(new Extender(1, 0, "none"));
-		super.content.add(new Retractor(0, 2, "right"));
-		super.content.add(new Retractor(2, 1, "up"));
-		super.content.add(new Player(2, 0));
-		super.content.add(new Goal(4, 1));
+		super.content.add(new Retractor(0, 1, "right", false));
+		super.content.add(new Extender(1, 1, "left", false));
+		super.content.add(new Retractor(1, 0, "down", false));
+		super.content.add(new Player(3, 2));
+		super.content.add(new Goal(3, 1));
 	}
 }

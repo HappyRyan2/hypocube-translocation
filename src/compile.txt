@@ -20,7 +20,6 @@ io/github/happyryan2/puzzlegame/levels/Level11.java
 io/github/happyryan2/puzzlegame/levels/Level12.java
 io/github/happyryan2/puzzlegame/levels/Level13.java
 io/github/happyryan2/puzzlegame/levels/Level14.java
-io/github/happyryan2/puzzlegame/levels/Level15.java
 io/github/happyryan2/puzzlegame/levels/Level20.java
 io/github/happyryan2/puzzlegame/objects/Thing.java
 io/github/happyryan2/puzzlegame/objects/Extender.java

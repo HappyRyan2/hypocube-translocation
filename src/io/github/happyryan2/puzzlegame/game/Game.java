@@ -17,7 +17,7 @@ import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "level-select";
+	public static String state = "level-editor";
 	public static List levels = new ArrayList();
 	public static int levelOpen = 20;
 	public static float levelSize = 0;
@@ -84,7 +84,6 @@ public class Game {
 			levels.add(new Level12());
 			levels.add(new Level13());
 			levels.add(new Level14());
-			levels.add(new Level15());
 			levels.add(new Level20());
 			/* Load user progress from the file */
 			String progress = "";

@@ -12,7 +12,7 @@ public class Level1 extends Level {
 		super.discovered = true;
 		super.id = 1;
 		super.x = 0;
-		super.y = 0;
+		super.y = -200;
 
 		super.manualSize = true;
 		super.width = 3;
