@@ -17,7 +17,7 @@ public class LevelEditor {
 	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "solve", "rect");
 	public static Button crop = new Button(130, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "crop", "rect");
 	public static Button uncrop = new Button(240, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "uncrop", "rect");
-	public static Level level = new Level11();
+	public static Level level = new Level6();
 	public static boolean initialized = false;
 	public static List tree = new ArrayList(); // for checking whether it is solvable or not
 	public static List solutionTree = new ArrayList();

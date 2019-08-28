@@ -40,6 +40,9 @@ public class Retractor extends Thing {
 	}
 
 	public void update() {
+		if(super.dir == "none") {
+			throw new IllegalStateException("retractor.dir cannot be \"none\"");
+		}
 		// System.out.println("time moving: " + this.timeMoving + " and is it moving? " + (super.moveDir != "none"));
 		// calculate visual position for hitboxes
 		// super.height = Game.sizes[(int) Game.levelSize - 2];
@@ -51,9 +54,7 @@ public class Retractor extends Thing {
 		// detect hovering + clicks
 		// System.out.println("is it transitioning? " + Game.currentLevel.transitioning());
 		if(this.cursorHovered() && !Game.currentLevel.transitioning() && !Game.currentLevel.isComplete()) {
-			// System.out.println("inside Retractor.update(), it works");
 			if(this.canDoSomething() && !Game.currentLevel.paused) {
-				// System.out.println("hovering over a retractor at (" + super.x + ", " + super.y + ")");
 				Screen.cursor = "hand";
 			}
 			if(MouseClick.mouseIsPressed) {

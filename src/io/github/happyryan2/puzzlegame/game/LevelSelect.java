@@ -23,6 +23,10 @@ public class LevelSelect {
 	private static boolean initialized = false;
 
 	public static void init() {
+		if(initialized) {
+			return;
+		}
+		initialized = true;
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(110, -150), new Point(190, -150)}, 1, 2));
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(310, -150), new Point(390, -150)}, 2, 3));
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(510, -150), new Point(590, -150)}, 3, 4));
@@ -79,7 +83,6 @@ public class LevelSelect {
 	public static void update() {
 		if(!initialized) {
 			init();
-			initialized = true;
 		}
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
