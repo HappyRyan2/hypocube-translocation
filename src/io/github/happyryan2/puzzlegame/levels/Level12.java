@@ -15,10 +15,9 @@ public class Level12 extends Level {
 		super.height = 5;
 
 		super.content.add(new Retractor(0, 1, "down", true));
-		super.content.add(new Extender(0, 2, "right"));
+		super.content.add(new Retractor(0, 2, "right"));
 		super.content.add(new Retractor(1, 3, "up", true));
 		super.content.add(new Player(1, 1));
 		super.content.add(new Goal(2, 1));
-		super.content.add(new Extender(2, 3, "none"));
 	}
 }
