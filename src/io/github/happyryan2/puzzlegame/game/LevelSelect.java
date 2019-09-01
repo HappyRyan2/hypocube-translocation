@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
 
-import io.github.happyryan2.puzzlegame.utilities.ImageLoader;
+import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 import io.github.happyryan2.puzzlegame.utilities.PerlinNoise;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
 import io.github.happyryan2.puzzlegame.utilities.MouseClick;
@@ -14,9 +14,9 @@ public class LevelSelect {
 	public static int scrollX = 400;
 	public static int scrollY = 400;
 
-	public static Image completeLevel = ImageLoader.loadImage("res/graphics/levelselect/completeLevel.png");
-	public static Image incompleteLevel = ImageLoader.loadImage("res/graphics/levelselect/incompleteLevel.png");
-	public static Image inaccessibleLevel = ImageLoader.loadImage("res/graphics/levelselect/inaccessibleLevel.png");
+	public static Image completeLevel = ResourceLoader.loadImage("res/graphics/levelselect/completeLevel.png");
+	public static Image incompleteLevel = ResourceLoader.loadImage("res/graphics/levelselect/incompleteLevel.png");
+	public static Image inaccessibleLevel = ResourceLoader.loadImage("res/graphics/levelselect/inaccessibleLevel.png");
 
 	public static List levelConnectors = new ArrayList();
 
@@ -52,7 +52,7 @@ public class LevelSelect {
 			double noiseZ = Screen.frameCount / 80.0f + 0.5;
 			for(float x = 0; x < Screen.width(); x += Screen.width() / 200) {
 				for(float y = 0; y < Screen.height(); y += Screen.height() / 200) {
-					double noise = PerlinNoise.noise0To1((x - scrollX) / 40.0f + 0.5, (y - scrollY) / 40.0f + 0.5, noiseZ) * 30 + 120;
+					double noise = PerlinNoise.noise0To1((x - (scrollX + (Screen.screenW / 2))) / 40.0f + 0.5, (y - (scrollY + (Screen.screenH / 2))) / 40.0f + 0.5, noiseZ) * 30 + 120;
 					int roundedNoise = (int) Math.round((double) noise);
 					Color col = new Color(roundedNoise, roundedNoise, roundedNoise);
 					g.setColor(col);
@@ -63,7 +63,7 @@ public class LevelSelect {
 		catch(Exception e) { }
 		/* display levels */
 		Graphics2D g2 = (Graphics2D) g;
-		g2.translate(scrollX, scrollY);
+		g2.translate(scrollX + (Screen.screenW / 2), scrollY + (Screen.screenH / 2));
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
 			level.displayLevelSelect(g);
@@ -73,7 +73,7 @@ public class LevelSelect {
 			LevelConnector connector = (LevelConnector) levelConnectors.get(i);
 			connector.display(g);
 		}
-		g2.translate(-scrollX, -scrollY);
+		g2.translate(-scrollX - (Screen.screenW / 2), -scrollY - (Screen.screenH / 2));
 		/* debug + hax */
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);

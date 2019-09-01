@@ -1,5 +1,4 @@
 package io.github.happyryan2.puzzlegame.game;
-// package io.github.happyryan2.hypocube.translocation.game;
 
 import java.awt.Graphics;
 import java.awt.Color;
@@ -17,7 +16,7 @@ import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Game {
 	private static boolean initialized = false;
-	public static String state = "level-editor";
+	public static String state = "start";
 	public static List levels = new ArrayList();
 	public static int levelOpen = 20;
 	public static float levelSize = 0;
@@ -30,6 +29,7 @@ public class Game {
 	public static int transition = 255;
 	public static int scrollY = 0;
 	public static String saveDest = System.getProperty("user.home") + "\\AppData\\Local\\HypocubeTranslocation\\progress.txt";
+	public static Button playButton = new Button(Screen.screenW / 2, Screen.screenH / 2, 100, 100, new Color(59, 67, 70), new Color(150, 150, 150), "icon:arrowright", "circle", null);
 	public static void updateProgress() {
 		// System.out.println("user home directory: " + System.getProperty("user.home"));
 		String progress = " ";
@@ -67,7 +67,6 @@ public class Game {
 	}
 	public static void run() {
 		if(!initialized) {
-			// updateProgress();
 			/* Initialize levels */
 			initialized = true;
 			levels.add(new Level1());
@@ -86,20 +85,15 @@ public class Game {
 			levels.add(new Level14());
 			levels.add(new Level15());
 			levels.add(new Level16());
-			levels.add(new Level20());
+			// levels.add(new Level20());
 			/* Load user progress from the file */
 			String progress = "";
 			try {
-				if(true) {
-					if(Files.exists(Paths.get(saveDest))) {
-						System.out.println("File exists!");
-						String path = saveDest;
-						byte[] encoded = Files.readAllBytes(Paths.get(path));
-						progress = new String(encoded, StandardCharsets.US_ASCII);
-					}
-				}
-				else {
-					System.out.println("Folder does not exist.");
+				if(Files.exists(Paths.get(saveDest))) {
+					System.out.println("File exists!");
+					String path = saveDest;
+					byte[] encoded = Files.readAllBytes(Paths.get(path));
+					progress = new String(encoded, StandardCharsets.US_ASCII);
 				}
 			}
 			catch(Exception e) {
@@ -136,8 +130,53 @@ public class Game {
 				}
 			}
 		}
-		if(state == "home") {
-			// display the home page
+		if(state == "start") {
+			/* update the home page */
+			playButton.update();
+			playButton.x = Screen.screenW / 2;
+			playButton.y = Screen.screenH / 2;
+			if(playButton.pressed) {
+				/* Move to the level select screen */
+				transition = 255;
+				state = "level-select";
+				/* Find out where to start the screen scrolling */
+				boolean completedAll = true;
+				for(short i = 0; i < levels.size(); i ++) {
+					Level level = (Level) levels.get(i);
+					if(!level.completedBefore) {
+						System.out.println("User has not completed level " + level.id);
+						completedAll = false;
+						break;
+					}
+				}
+				if(completedAll) {
+					int highestIndex = 0;
+					for(short i = 0; i < levels.size(); i ++) {
+						Level highest = (Level) levels.get(highestIndex);
+						Level level = (Level) levels.get(i);
+						if(level.id > highest.id) {
+							highestIndex = i;
+						}
+					}
+					Level lastLevel = (Level) levels.get(highestIndex);
+					LevelSelect.scrollX = -lastLevel.x - 50;
+					LevelSelect.scrollY = -lastLevel.y - 50;
+				}
+				else {
+					int lowestIncompleteIndex = levels.size() - 1;
+					for(short i = 0; i < levels.size(); i ++) {
+						Level lowest = (Level) levels.get(lowestIncompleteIndex);
+						Level level = (Level) levels.get(i);
+						if(!level.completedBefore && level.id < lowest.id) {
+							lowestIncompleteIndex = i;
+						}
+					}
+					Level lowestIncomplete = (Level) levels.get(lowestIncompleteIndex);
+					System.out.println("Lowest level: " + lowestIncomplete.id);
+					LevelSelect.scrollX = -lowestIncomplete.x - 50;
+					LevelSelect.scrollY = -lowestIncomplete.y - 50;
+				}
+			}
 		}
 		else if(state == "level-select") {
 			/* New level select menu */
@@ -161,8 +200,22 @@ public class Game {
 		if(!initialized) {
 			return;
 		}
-		if(state == "home") {
-
+		if(state == "start") {
+			/* Main box for GUI */
+			g.setColor(new Color(190, 190, 190));
+			g.fillRect(Screen.screenW / 4, 0, Screen.screenW / 2, Screen.screenH);
+			/* Title */
+			g.setColor(new Color(59, 67, 70));
+			g.setFont(Screen.fontOxygen.deriveFont(50f));
+			if(g.getFontMetrics().stringWidth("Hypocube Translocation") > Screen.screenW / 2 - 25) {
+				Screen.centerText(g, Screen.screenW / 2, Screen.screenH / 4 - 40, "Hypocube");
+				Screen.centerText(g, Screen.screenW / 2, Screen.screenH / 4 + 40, "Translocation");
+			}
+			else {
+				Screen.centerText(g, Screen.screenW / 2, Screen.screenH / 4, "Hypocube Translocation");
+			}
+			/* Play button */
+			playButton.display(g);
 		}
 		else if(state == "level-select") {
 			/* New level select menu */

@@ -9,7 +9,7 @@ import io.github.happyryan2.puzzlegame.objects.*;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
 import io.github.happyryan2.puzzlegame.utilities.MouseClick;
 import io.github.happyryan2.puzzlegame.utilities.MousePos;
-import io.github.happyryan2.puzzlegame.utilities.ImageLoader;
+import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 import io.github.happyryan2.puzzlegame.game.Button;
 import io.github.happyryan2.puzzlegame.game.LevelSelect;
 import io.github.happyryan2.puzzlegame.game.LevelConnector;
@@ -429,7 +429,7 @@ public class Level {
 	}
 	public void updateLevelSelect() {
 		/* Detect clicks */
-		if(MousePos.x > x + LevelSelect.scrollX && MousePos.x < x + LevelSelect.scrollX + 100 && MousePos.y > y + LevelSelect.scrollY && MousePos.y < y + LevelSelect.scrollY + 100 && this.opacity >= 1 && this.canPlay()) {
+		if(MousePos.x > x + LevelSelect.scrollX + (Screen.screenW / 2) && MousePos.x < x + LevelSelect.scrollX + (Screen.screenW / 2) + 100 && MousePos.y > y + LevelSelect.scrollY + (Screen.screenH / 2) && MousePos.y < y + LevelSelect.scrollY + (Screen.screenH / 2) + 100 && this.opacity >= 1 && this.canPlay()) {
 			Screen.cursor = "hand";
 			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
 				Game.levelOpen = this.id;

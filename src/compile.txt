@@ -34,6 +34,6 @@ io/github/happyryan2/puzzlegame/utilities/Delay.java
 io/github/happyryan2/puzzlegame/utilities/MousePos.java
 io/github/happyryan2/puzzlegame/utilities/MouseClick.java
 io/github/happyryan2/puzzlegame/utilities/KeyInputs.java
-io/github/happyryan2/puzzlegame/utilities/ImageLoader.java
+io/github/happyryan2/puzzlegame/utilities/ResourceLoader.java
 io/github/happyryan2/puzzlegame/utilities/Utils.java
 io/github/happyryan2/puzzlegame/utilities/PerlinNoise.java

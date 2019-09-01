@@ -13,7 +13,6 @@ import java.io.File;
 import java.net.URL;
 
 import io.github.happyryan2.puzzlegame.game.*;
-// import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Screen extends JPanel {
 	public static JFrame frame = new JFrame("HypoCube Translocation - version 0.1");
@@ -21,7 +20,8 @@ public class Screen extends JPanel {
 	public static int screenW = 0;
 	public static int screenH = 0;
 	public static String cursor = "default";
-	public static Font fontRighteous;
+	public static Font fontRighteous = ResourceLoader.loadFont("res/fonts/righteous.ttf");
+	public static Font fontOxygen = ResourceLoader.loadFont("res/fonts/oxygen.ttf");
 	public static int frameCount = 0;
 	public static boolean loading = true;
 
@@ -47,17 +47,6 @@ public class Screen extends JPanel {
 			Toolkit kit = Toolkit.getDefaultToolkit();
 			Image img = kit.createImage(url);
 			frame.setIconImage(img);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			File dir = new File(System.getProperty("user.dir"));
-			File res = new File(dir.getPath() + "/res");
-			Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File(res.getPath() + "/fonts/righteous.ttf")).deriveFont(40f);
-	    	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-			ge.registerFont(customFont);
-			fontRighteous = customFont;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -88,6 +77,14 @@ public class Screen extends JPanel {
 		//draw game graphics
 		Game.display(g);
 		loading = false;
+		//display warning for small screen sizes
+		if(Screen.screenW < 600 || Screen.screenH < 600) {
+			g.setColor(new Color(200, 200, 200));
+			g.fillRect(0, 0, screenW, screenH);
+			g.setColor(new Color(59, 67, 70));
+			g.setFont(fontOxygen.deriveFont(30f));
+			centerText(g, Screen.screenW / 2, Screen.screenH / 2, "The screen is too small");
+		}
 	}
 
 	public static void centerText(Graphics g, float x, float y, String text) {

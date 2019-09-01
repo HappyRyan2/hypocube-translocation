@@ -13,16 +13,16 @@ import io.github.happyryan2.puzzlegame.game.Level;
 import io.github.happyryan2.puzzlegame.utilities.MousePos;
 import io.github.happyryan2.puzzlegame.utilities.MouseClick;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
-import io.github.happyryan2.puzzlegame.utilities.ImageLoader;
+import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Extender extends Thing {
 	public float x;
 	public float y;
 	public String dir;
-	public static Image img = ImageLoader.loadImage("res/graphics/objects/extender.png");
-	public static Image img2 = ImageLoader.loadImage("res/graphics/objects/extender2.png");
-	public static Image img3 = ImageLoader.loadImage("res/graphics/objects/extender3.png");
-	public static Image img4 = ImageLoader.loadImage("res/graphics/objects/emptyExtender.png");
+	public static Image img = ResourceLoader.loadImage("res/graphics/objects/extender.png");
+	public static Image img2 = ResourceLoader.loadImage("res/graphics/objects/extender2.png");
+	public static Image img3 = ResourceLoader.loadImage("res/graphics/objects/extender3.png");
+	public static Image img4 = ResourceLoader.loadImage("res/graphics/objects/emptyExtender.png");
 	public Extender(float x, float y, String dir) {
 		super.x = x;
 		super.y = y;

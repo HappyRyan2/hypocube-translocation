@@ -13,14 +13,14 @@ import io.github.happyryan2.puzzlegame.game.Level;
 import io.github.happyryan2.puzzlegame.utilities.MousePos;
 import io.github.happyryan2.puzzlegame.utilities.MouseClick;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
-import io.github.happyryan2.puzzlegame.utilities.ImageLoader;
+import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Retractor extends Thing {
 	private static Color darkGreen = new Color(0, 128, 50);
 	private static Color lightGreen = new Color(50, 200, 150);
-	public static Image img = ImageLoader.loadImage("res/graphics/objects/retractor.png");
-	public static Image img2 = ImageLoader.loadImage("res/graphics/objects/retractor2.png");
-	public static Image img3 = ImageLoader.loadImage("res/graphics/objects/retractor3.png");
+	public static Image img = ResourceLoader.loadImage("res/graphics/objects/retractor.png");
+	public static Image img2 = ResourceLoader.loadImage("res/graphics/objects/retractor2.png");
+	public static Image img3 = ResourceLoader.loadImage("res/graphics/objects/retractor3.png");
 
 	public Retractor(float x, float y, String dir) {
 		super.x = x;
