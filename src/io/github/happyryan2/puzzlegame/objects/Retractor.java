@@ -18,9 +18,11 @@ import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 public class Retractor extends Thing {
 	private static Color darkGreen = new Color(0, 128, 50);
 	private static Color lightGreen = new Color(50, 200, 150);
-	public static Image img = ResourceLoader.loadImage("res/graphics/objects/retractor.png");
-	public static Image img2 = ResourceLoader.loadImage("res/graphics/objects/retractor2.png");
-	public static Image img3 = ResourceLoader.loadImage("res/graphics/objects/retractor3.png");
+
+	public static Image end = ResourceLoader.loadImage("res/graphics/objects/retractorEnd.png");
+	public static Image middle = ResourceLoader.loadImage("res/graphics/objects/retractorMiddle.png");
+	public static Image solidArrow = ResourceLoader.loadImage("res/graphics/objects/retractor2.png");
+	public static Image outlineArrow = ResourceLoader.loadImage("res/graphics/objects/retractor3.png");
 
 	public Retractor(float x, float y, String dir) {
 		super.x = x;
@@ -67,7 +69,10 @@ public class Retractor extends Thing {
 		else if(this.hoverY > 0) {
 			super.hoverY --;
 		}
-		// extension + pushing tiles
+		// debug
+	}
+	public void display(Graphics g) {
+		/* Update position */
 		if(super.extending) {
 			super.extension += 0.05;
 			if(super.extension >= 1) {
@@ -84,10 +89,6 @@ public class Retractor extends Thing {
 				super.extension = 0;
 			}
 		}
-		if((super.extending || super.retracting) && super.hoverY < h * super.height) {
-			super.hoverY ++;
-		}
-		//movement
 		if(super.moveDir == "up") {
 			super.y -= 0.05;
 		}
@@ -103,55 +104,22 @@ public class Retractor extends Thing {
 		if(super.moveDir != "none") {
 			super.timeMoving ++;
 			if(super.timeMoving >= 20) {
-				// System.out.println("done moving");
 				super.x = Math.round(super.x);
 				super.y = Math.round(super.y);
 				super.moveDir = "none";
 				super.timeMoving = 0;
 			}
 		}
-		// debug
-	}
-	public void display(Graphics g) {
 		/* Calculate position */
 		int x = (int) (super.x * Game.tileSize);
 		int y = (int) (super.y * Game.tileSize);
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
-		/* Debug */
-		if(super.selected && false) {
-			g.setColor(new Color(255, 0, 0));
-			g.fillRect(x, y, w, h);
-		}
-		/* Translate to position + scale to size */
+		/* Translate to position */
 		Graphics2D g2 = (Graphics2D) g;
-		AffineTransform at = g2.getTransform();
+		AffineTransform beforeRotation = g2.getTransform();
 		g2.translate(x + (w / 2), y + (h / 2));
-		float xScale = ((float) w) / ((float) img.getWidth(null));
-		float yScale = ((float) h) / ((float) img.getHeight(null));
-		g2.scale(xScale, yScale);
-		/* Scale for when extended */
-		if(super.dir == "right") {
-			g2.translate(w / -2 / xScale, 0);
-			g2.scale(super.extension + 1, 1);
-			g2.translate(w / 2 / xScale, 0);
-		}
-		else if(super.dir == "left") {
-			g2.translate(w / 2 / xScale, 0);
-			g2.scale(super.extension + 1, 1);
-			g2.translate(w / -2 / xScale, 0);
-		}
-		else if(super.dir == "up") {
-			g2.translate(0, h / 2 / yScale);
-			g2.scale(1, super.extension + 1);
-			g2.translate(0, h / -2 / yScale);
-		}
-		else if(super.dir == "down") {
-			g2.translate(0, h / -2 / yScale);
-			g2.scale(1, super.extension + 1);
-			g2.translate(0, h / 2 / yScale);
-		}
-		/* Rotate for different orientations */
+		/* Rotate to orientation */
 		if(super.dir == "right") {
 			g2.rotate(Math.toRadians(90));
 		}
@@ -161,11 +129,18 @@ public class Retractor extends Thing {
 		else if(super.dir == "down") {
 			g2.rotate(Math.toRadians(180));
 		}
-		/* Display + undo transformations */
-		g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
-		g2.setTransform(at);
+		/* Display front + back */
+		g2.translate(-(w / 2), 0);
+		Screen.scaleImage(g, end, w, h / 2);
+		g2.translate(0, -1 * super.extension * Game.tileSize);
+		g2.scale(1, -1);
+		Screen.scaleImage(g, end, w, h / 2);
+		g2.scale(1, -1);
+		/* Display middle */
+		Screen.scaleImage(g2, middle, w, (int) Math.round(super.extension * Game.tileSize));
+		g2.setTransform(beforeRotation);
 		/* Translate to position */
-		at = g2.getTransform();
+		beforeRotation = g2.getTransform();
 		g2.translate(x + (w / 2), y + (h / 2));
 		if(super.dir == "up") {
 			g2.translate(0, super.extension * h / -2);
@@ -189,16 +164,15 @@ public class Retractor extends Thing {
 		else if(super.dir == "left") {
 			g2.rotate(Math.toRadians(270));
 		}
-		/* Scale to correct size */
-		g2.scale(xScale, yScale);
-		/* Display + undo transformations */
+		/* Display triangle */
+		g2.translate(-(w / 2), -(h / 2));
 		if(super.isWeak) {
-			g2.drawImage(img3, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+			Screen.scaleImage(g2, outlineArrow, w, h);
 		}
 		else {
-			g2.drawImage(img2, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+			Screen.scaleImage(g2, solidArrow, w, h);
 		}
-		g2.setTransform(at);
+		g2.setTransform(beforeRotation);
 	}
 
 	public void onClick() {

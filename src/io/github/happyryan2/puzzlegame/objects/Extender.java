@@ -19,10 +19,13 @@ public class Extender extends Thing {
 	public float x;
 	public float y;
 	public String dir;
-	public static Image img = ResourceLoader.loadImage("res/graphics/objects/extender.png");
-	public static Image img2 = ResourceLoader.loadImage("res/graphics/objects/extender2.png");
-	public static Image img3 = ResourceLoader.loadImage("res/graphics/objects/extender3.png");
-	public static Image img4 = ResourceLoader.loadImage("res/graphics/objects/emptyExtender.png");
+
+	public static Image block = ResourceLoader.loadImage("res/graphics/objects/emptyExtender.png");
+	public static Image end = ResourceLoader.loadImage("res/graphics/objects/extenderEnd.png");
+	public static Image middle = ResourceLoader.loadImage("res/graphics/objects/extenderMiddle.png");
+	public static Image solidArrow = ResourceLoader.loadImage("res/graphics/objects/extender2.png");
+	public static Image outlineArrow = ResourceLoader.loadImage("res/graphics/objects/extender3.png");
+
 	public Extender(float x, float y, String dir) {
 		super.x = x;
 		super.y = y;
@@ -41,7 +44,6 @@ public class Extender extends Thing {
 	}
 	public void update() {
 		// calculate visual position for hitboxes
-		// super.height = Game.sizes[(int) Game.levelSize - 2];
 		super.height = 0.1;
 		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
 		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
@@ -70,49 +72,6 @@ public class Extender extends Thing {
 		else if(this.hoverY > 0) {
 			super.hoverY --;
 		}
-		// extension + pushing tiles
-		if(super.extending) {
-			super.extension += 0.05;
-			if(super.extension >= 1) {
-				Game.canClick = !Game.currentLevel.isComplete();
-				super.extending = false;
-				super.extension = 1;
-			}
-		}
-		else if(super.retracting) {
-			super.extension -= 0.05;
-			if(super.extension <= 0) {
-				Game.canClick = !Game.currentLevel.isComplete();
-				super.retracting = false;
-				super.extension = 0;
-			}
-		}
-		if((super.extending || super.retracting) && super.hoverY < h * super.height) {
-			super.hoverY ++;
-		}
-		//movement
-		if(super.moveDir == "up") {
-			super.y -= 0.05;
-		}
-		else if(super.moveDir == "down") {
-			super.y += 0.05;
-		}
-		else if(super.moveDir == "left") {
-			super.x -= 0.05;
-		}
-		else if(super.moveDir == "right") {
-			super.x += 0.05;
-		}
-		if(super.moveDir != "none") {
-			super.timeMoving ++;
-			if(super.timeMoving >= 20) {
-				super.x = Math.round(super.x);
-				super.y = Math.round(super.y);
-				super.moveDir = "none";
-				super.timeMoving = 0;
-			}
-		}
-		// debug
 	}
 	public void onClick() {
 		if(!Game.canClick || Game.currentLevel.transitioning() || Game.currentLevel.paused) {
@@ -285,45 +244,62 @@ public class Extender extends Thing {
 	}
 
 	public void display(Graphics g) {
+		/* Update position */
+		if(super.extending) {
+			super.extension += 0.05;
+			if(super.extension >= 1) {
+				Game.canClick = !Game.currentLevel.isComplete();
+				super.extending = false;
+				super.extension = 1;
+			}
+		}
+		else if(super.retracting) {
+			super.extension -= 0.05;
+			if(super.extension <= 0) {
+				Game.canClick = !Game.currentLevel.isComplete();
+				super.retracting = false;
+				super.extension = 0;
+			}
+		}
+		if(super.moveDir == "up") {
+			super.y -= 0.05;
+		}
+		else if(super.moveDir == "down") {
+			super.y += 0.05;
+		}
+		else if(super.moveDir == "left") {
+			super.x -= 0.05;
+		}
+		else if(super.moveDir == "right") {
+			super.x += 0.05;
+		}
+		if(super.moveDir != "none") {
+			super.timeMoving ++;
+			if(super.timeMoving >= 20) {
+				super.x = Math.round(super.x);
+				super.y = Math.round(super.y);
+				super.moveDir = "none";
+				super.timeMoving = 0;
+			}
+		}
 		/* Calculate position */
 		int x = (int) (super.x * Game.tileSize);
 		int y = (int) (super.y * Game.tileSize);
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
-		/* Debug */
-		if(super.selected && false) {
-			g.setColor(new Color(255, 0, 0));
-			g.fillRect(x, y, w, h);
+		/* Display non-directional extenders (basically just movable blocks) */
+		if(super.dir == "none") {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.translate(x, y);
+			Screen.scaleImage(g2, block, w, h);
+			g2.translate(-x, -y);
+			return;
 		}
-		/* Translate to position + scale to size */
+		/* Translate to position */
 		Graphics2D g2 = (Graphics2D) g;
-		AffineTransform at = g2.getTransform();
+		AffineTransform beforeRotation = g2.getTransform();
 		g2.translate(x + (w / 2), y + (h / 2));
-		float xScale = ((float) w) / ((float) img.getWidth(null));
-		float yScale = ((float) h) / ((float) img.getHeight(null));
-		g2.scale(xScale, yScale);
-		/* Scale for when extended */
-		if(super.dir == "right") {
-			g2.translate(w / -2 / xScale, 0);
-			g2.scale(super.extension + 1, 1);
-			g2.translate(w / 2 / xScale, 0);
-		}
-		else if(super.dir == "left") {
-			g2.translate(w / 2 / xScale, 0);
-			g2.scale(super.extension + 1, 1);
-			g2.translate(w / -2 / xScale, 0);
-		}
-		else if(super.dir == "up") {
-			g2.translate(0, h / 2 / yScale);
-			g2.scale(1, super.extension + 1);
-			g2.translate(0, h / -2 / yScale);
-		}
-		else if(super.dir == "down") {
-			g2.translate(0, h / -2 / yScale);
-			g2.scale(1, super.extension + 1);
-			g2.translate(0, h / 2 / yScale);
-		}
-		/* Rotate for different orientations */
+		/* Rotate to orientation */
 		if(super.dir == "right") {
 			g2.rotate(Math.toRadians(90));
 		}
@@ -333,19 +309,18 @@ public class Extender extends Thing {
 		else if(super.dir == "down") {
 			g2.rotate(Math.toRadians(180));
 		}
-		/* Display + undo transformations */
-		if(super.dir != "none") {
-			g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
-		}
-		else {
-			g2.drawImage(img4, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
-		}
-		g2.setTransform(at);
-		if(super.dir == "none") {
-			return;
-		}
+		/* Display front + back */
+		g2.translate(-(w / 2), 0);
+		Screen.scaleImage(g, end, w, h / 2);
+		g2.translate(0, -1 * super.extension * Game.tileSize);
+		g2.scale(1, -1);
+		Screen.scaleImage(g, end, w, h / 2);
+		g2.scale(1, -1);
+		/* Display middle */
+		Screen.scaleImage(g2, middle, w, (int) Math.round(super.extension * Game.tileSize));
+		g2.setTransform(beforeRotation);
 		/* Translate to position */
-		at = g2.getTransform();
+		beforeRotation = g2.getTransform();
 		g2.translate(x + (w / 2), y + (h / 2));
 		if(super.dir == "up") {
 			g2.translate(0, super.extension * h / -2);
@@ -369,17 +344,77 @@ public class Extender extends Thing {
 		else if(super.dir == "left") {
 			g2.rotate(Math.toRadians(270));
 		}
-		/* Scale to correct size */
-		g2.scale(xScale, yScale);
-		/* Display + undo transformations */
+		/* Display triangle */
+		g2.translate(-(w / 2), -(h / 2));
 		if(super.isWeak) {
-			g2.drawImage(img3, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+			Screen.scaleImage(g2, outlineArrow, w, h);
 		}
 		else {
-			g2.drawImage(img2, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+			Screen.scaleImage(g2, solidArrow, w, h);
 		}
-		g2.setTransform(at);
+		g2.setTransform(beforeRotation);
 	}
+	// public void display(Graphics g) {
+	// 	/* Calculate position */
+	// 	int x = (int) (super.x * Game.tileSize);
+	// 	int y = (int) (super.y * Game.tileSize);
+	// 	int w = (int) (Game.tileSize);
+	// 	int h = (int) (Game.tileSize);
+	// 	/* Debug */
+	// 	if(super.selected && false) {
+	// 		g.setColor(new Color(255, 0, 0));
+	// 		g.fillRect(x, y, w, h);
+	// 	}
+	// 	/* Translate to position + scale to size */
+	// 	Graphics2D g2 = (Graphics2D) g;
+	// 	AffineTransform at = g2.getTransform();
+	// 	g2.translate(x + (w / 2), y + (h / 2));
+	// 	float xScale = ((float) w) / ((float) img.getWidth(null));
+	// 	float yScale = ((float) h) / ((float) img.getHeight(null));
+	// 	g2.scale(xScale, yScale);
+	// 	/* Scale for when extended */
+	// 	if(super.dir == "right") {
+	// 		g2.translate(w / -2 / xScale, 0);
+	// 		g2.scale(super.extension + 1, 1);
+	// 		g2.translate(w / 2 / xScale, 0);
+	// 	}
+	// 	else if(super.dir == "left") {
+	// 		g2.translate(w / 2 / xScale, 0);
+	// 		g2.scale(super.extension + 1, 1);
+	// 		g2.translate(w / -2 / xScale, 0);
+	// 	}
+	// 	else if(super.dir == "up") {
+	// 		g2.translate(0, h / 2 / yScale);
+	// 		g2.scale(1, super.extension + 1);
+	// 		g2.translate(0, h / -2 / yScale);
+	// 	}
+	// 	else if(super.dir == "down") {
+	// 		g2.translate(0, h / -2 / yScale);
+	// 		g2.scale(1, super.extension + 1);
+	// 		g2.translate(0, h / 2 / yScale);
+	// 	}
+	// 	/* Rotate for different orientations */
+	// 	if(super.dir == "right") {
+	// 		g2.rotate(Math.toRadians(90));
+	// 	}
+	// 	else if(super.dir == "left") {
+	// 		g2.rotate(Math.toRadians(-90));
+	// 	}
+	// 	else if(super.dir == "down") {
+	// 		g2.rotate(Math.toRadians(180));
+	// 	}
+	// 	/* Display + undo transformations */
+	// 	if(super.dir != "none") {
+	// 		g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+	// 	}
+	// 	else {
+	// 		g2.drawImage(img4, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
+	// 	}
+	// 	g2.setTransform(at);
+	// 	if(super.dir == "none") {
+	// 		return;
+	// 	}
+	// }
 	public boolean cursorHovered() {
 		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
 		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
