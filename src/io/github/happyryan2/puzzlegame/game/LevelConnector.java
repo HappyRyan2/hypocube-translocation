@@ -39,7 +39,6 @@ public class LevelConnector {
 			float dist = (float) Utils.dist(current.x, current.y, next.x, next.y);
 			this.size += dist;
 		}
-		System.out.println("Size: " + this.size);
 	}
 	public void display(Graphics g) {
 		if(!this.initialized) {

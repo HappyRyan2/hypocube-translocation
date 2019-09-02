@@ -29,7 +29,7 @@ public class Game {
 	public static int transition = 255;
 	public static int scrollY = 0;
 	public static String saveDest = System.getProperty("user.home") + "\\AppData\\Local\\HypocubeTranslocation\\progress.txt";
-	public static Button playButton = new Button(Screen.screenW / 2, Screen.screenH / 2, 100, 100, new Color(59, 67, 70), new Color(150, 150, 150), "icon:arrowright", "circle", null);
+	public static ImageButton playButton = new ImageButton(Screen.screenW / 2, Screen.screenH / 2, 100, "res/graphics/buttons/play.png", new Color(59, 67, 70), new Color(150, 150, 150)); // (59, 67, 70)
 	public static void updateProgress() {
 		// System.out.println("user home directory: " + System.getProperty("user.home"));
 		String progress = " ";

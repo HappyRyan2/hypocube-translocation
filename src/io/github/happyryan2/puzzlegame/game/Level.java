@@ -36,13 +36,12 @@ public class Level {
 	public float opacity = 0;
 
 	/* Buttons */
-	public Button next = new Button(500, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowright", "circle");
-	public Button menu = new Button(400, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:3rects", "circle");
-	public Button retry = new Button(300, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowleft", "circle"); // retry button that shows when you have completed the level
-	public Button pause = new Button(30, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:2rects", "circle");
-	public Button restart = new Button(300, 325, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Restart", "rect"); // retry button that shows when you are on the pause screen
-	public Button exit = new Button(300, 400, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Exit", "rect");
-	public Button undo = new Button(100, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:arrowleft", "circle");
+	public ImageButton menu = new ImageButton(400, 100, 50, "res/graphics/buttons/next.png", new Color(255, 255, 255), new Color(175, 175, 175));
+	public ImageButton retry = new ImageButton(300, 100, 50, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175));
+	public ImageButton pause = new ImageButton(30, 30, 40, "res/graphics/buttons/pause2.png", new Color(255, 255, 255), new Color(175, 175, 175));
+	public TextButton restart = new TextButton(300, 325, 200, 50, "Restart", new Color(255, 255, 255), new Color(175, 175, 175));
+	public TextButton exit = new TextButton(300, 400, 200, 50, "Exit", new Color(255, 255, 255), new Color(175, 175, 175));
+	public ImageButton undo = new ImageButton(100, 30, 40, "res/graphics/buttons/undo.png", new Color(255, 255, 255), new Color(175, 175, 175));
 
 	public boolean lastLevel = false;
 	public boolean paused = false;
@@ -218,7 +217,6 @@ public class Level {
 	}
 
 	public void update() {
-		// System.out.println("level " + this.id + " is being updated");
 		/* initialize */
 		if(!resized || true) {
 			this.resize();
@@ -282,9 +280,6 @@ public class Level {
 			this.menu.update();
 			this.pause.y -= 5;
 			this.undo.y -= 5;
-			if(!this.lastLevel) {
-				this.next.update();
-			}
 			if(this.menu.pressed) {
 				Game.transition = 255;
 				Game.state = "level-select";
@@ -306,7 +301,12 @@ public class Level {
 		if(this.pause.pressed && !this.pause.pressedBefore) {
 			this.paused = !this.paused;
 		}
-		this.undo.update();
+		if(!this.paused && Stack.stack.size() != 0) {
+			this.undo.update();
+		}
+		else if(this.undo.hoverY > 0) {
+			this.undo.hoverY --;
+		}
 		if(this.undo.pressed && !this.undo.pressedBefore && Game.canClick) {
 			Stack.undoAction();
 		}
@@ -359,30 +359,24 @@ public class Level {
 			Screen.centerText(g, Screen.screenW / 2, this.completionY + 266, "Level Complete");
 			this.retry.y = this.completionY + Screen.screenH / 3 * 2;
 			this.menu.y = this.completionY + Screen.screenH / 3 * 2;
-			this.next.y = this.completionY + Screen.screenH / 3 * 2;
 			this.retry.display(g);
 			this.menu.display(g);
-			if(!this.lastLevel && false) {
-				this.next.display(g);
-			}
-			else {
-				this.retry.x = Screen.screenW / 2 - 50;
-				this.menu.x = Screen.screenW / 2 + 50;
-			}
+			this.retry.x = Screen.screenW / 2 - 50;
+			this.menu.x = Screen.screenW / 2 + 50;
 		}
 		else {
 			this.completionY = -Screen.screenH;
 		}
 		if(this.paused) {
-			this.restart.x = Screen.screenW / 2 - 75;
+			this.restart.x = Screen.screenW / 2 - 100;
 			this.restart.y = Screen.screenH / 2 - 75;
-			this.exit.x = Screen.screenW / 2 - 75;
+			this.exit.x = Screen.screenW / 2 - 100;
 			this.exit.y = Screen.screenH / 2;
 			g.setColor(new Color(100, 100, 100, 150));
 			g.fillRect(Screen.screenW / 2 - 200, 0, 400, Screen.screenH);
 			g.setFont(Screen.fontRighteous);
 			g.setColor(new Color(255, 255, 255));
-			Screen.centerText(g, Screen.screenW / 2, Screen.screenH / 2 - 100, "Menu");
+			Screen.centerText(g, Screen.screenW / 2, Screen.screenH / 2 - 105, "Menu");
 			this.restart.display(g);
 			this.exit.display(g);
 		}
