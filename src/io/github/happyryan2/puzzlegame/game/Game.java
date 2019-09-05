@@ -23,13 +23,16 @@ public class Game {
 	public static float tileSize = 0;
 	public static double[] sizes = {0.0625, 0.08, 0.095, 0.1, 0.104, 0.108, 0.111, 0.113, 0.115, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116};
 	public static boolean clickBefore = false;
-	public static boolean canClick = true;
 	public static boolean startingLevel = false;
 	public static Level currentLevel;
 	public static int transition = 255;
 	public static int scrollY = 0;
 	public static String saveDest = System.getProperty("user.home") + "\\AppData\\Local\\HypocubeTranslocation\\progress.txt";
 	public static ImageButton playButton = new ImageButton(Screen.screenW / 2, Screen.screenH / 2, 100, "res/graphics/buttons/play.png", new Color(59, 67, 70), new Color(150, 150, 150)); // (59, 67, 70)
+	public static float defaultAnimationSpeed = 0.05f;
+	public static float fastAnimationSpeed = 0.1f;
+	public static float animationSpeed = defaultAnimationSpeed;
+	public static boolean chainUndo = false;
 	public static void updateProgress() {
 		// System.out.println("user home directory: " + System.getProperty("user.home"));
 		String progress = " ";
@@ -85,6 +88,7 @@ public class Game {
 			levels.add(new Level14());
 			levels.add(new Level15());
 			levels.add(new Level16());
+			levels.add(new Level17());
 			// levels.add(new Level20());
 			/* Load user progress from the file */
 			String progress = "";

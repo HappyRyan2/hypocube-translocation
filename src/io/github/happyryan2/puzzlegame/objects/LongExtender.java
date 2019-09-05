@@ -15,31 +15,32 @@ import io.github.happyryan2.puzzlegame.utilities.MouseClick;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
 import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
-public class Extender extends Thing {
+public class LongExtender extends Thing {
 	public float x;
 	public float y;
 	public String dir;
+	public int timeExtending = 0;
+	public int timeRetracting = 0;
 
-	public static Image block = ResourceLoader.loadImage("res/graphics/objects/emptyExtender.png");
-	public static Image end = ResourceLoader.loadImage("res/graphics/objects/extenderEnd.png");
-	public static Image middle = ResourceLoader.loadImage("res/graphics/objects/extenderMiddle.png");
-	public static Image solidArrow = ResourceLoader.loadImage("res/graphics/objects/extender2.png");
-	public static Image outlineArrow = ResourceLoader.loadImage("res/graphics/objects/extender3.png");
+	public static Image end = ResourceLoader.loadImage("res/graphics/objects/longExtenderEnd.png");
+	public static Image middle = ResourceLoader.loadImage("res/graphics/objects/longExtenderMiddle.png");
+	public static Image solidArrow = ResourceLoader.loadImage("res/graphics/objects/longExtender2.png");
+	public static Image outlineArrow = ResourceLoader.loadImage("res/graphics/objects/longExtender3.png");
 
-	public Extender(float x, float y, String dir) {
+	public LongExtender(float x, float y, String dir) {
 		super.x = x;
 		super.y = y;
 		super.origX = x;
 		super.origY = y;
 		super.dir = dir;
 	}
-	public Extender(float x, float y, String dir, boolean isWeak) {
+	public LongExtender(float x, float y, String dir, boolean isWeak) {
 		this(x, y, dir);
 		super.isWeak = isWeak;
 	}
-	public Extender(float x, float y, String dir, boolean isWeak, boolean extended) {
+	public LongExtender(float x, float y, String dir, boolean isWeak, int extension) {
 		this(x, y, dir, isWeak);
-		super.extension = extended ? 1 : 0;
+		super.extension = extension;
 		super.origExtension = super.extension;
 	}
 
@@ -51,15 +52,7 @@ public class Extender extends Thing {
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
-		boolean transitioning = false;
-		for(int i = 0; i < Game.currentLevel.content.size(); i ++) {
-			Thing thing = (Thing) Game.currentLevel.content.get(i);
-			if((thing instanceof Extender || thing instanceof Retractor) && thing.extension != 0 && thing.extension != 1) {
-				transitioning = true;
-				break;
-			}
-		}
-		if(!transitioning && this.cursorHovered() && !Game.currentLevel.isComplete() && !Game.currentLevel.paused && super.dir != "none") {
+		if(!Game.currentLevel.transitioning() && this.cursorHovered() && !Game.currentLevel.isComplete() && !Game.currentLevel.paused) {
 			if(MouseClick.mouseIsPressed) {
 				this.onClick();
 			}
@@ -87,18 +80,21 @@ public class Extender extends Thing {
 			boolean forwards = this.canExtendForward();
 			boolean backwards = this.canExtendBackward();
 			if(this.canExtendForward()) {
+				Game.animationSpeed = Game.fastAnimationSpeed;
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
 				Stack.addAction();
 			}
 			else if(this.canExtendBackward()) {
+				Game.animationSpeed = Game.fastAnimationSpeed;
 				super.extending = true;
 				super.moveDir = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
 				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
 				Stack.addAction();
 			}
 		}
-		else if(super.extension == 1 && this.canRetractForward()) {
+		else if(this.canRetractForward()) {
+			Game.animationSpeed = Game.fastAnimationSpeed;
 			super.retracting = true;
 			Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left")); // move selected tiles in the opposite direction of super.dir
 			Stack.addAction();
@@ -106,32 +102,64 @@ public class Extender extends Thing {
 		this.ignoring = false;
 	}
 	public void move() {
-		/* Update position */
 		if(super.extending) {
+			this.timeExtending ++;
 			super.extension += Game.animationSpeed;
-			if(super.extension >= 1) {
-				super.extending = false;
-				super.extension = 1;
+			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
+			if(timeExtending >= (1 / Game.animationSpeed) + 1) {
+				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
+					Thing thing = (Thing) Game.currentLevel.content.get(i);
+					thing.x = Math.round((float) thing.x);
+					thing.y = Math.round((float) thing.y);
+				}
+				super.extension = Math.round(super.extension);
+				if(this.canExtendForward()) {
+					Game.currentLevel.moveSelected(super.dir);
+					this.timeExtending = 0;
+					Stack.addAction(true);
+				}
+				else if(this.canExtendBackward()) {
+					String backward = (super.dir == "right" || super.dir == "left") ? (super.dir == "right" ? "left" : "right") : (super.dir == "up" ? "down" : "up");
+					Game.currentLevel.moveSelected(backward);
+					this.timeExtending = 0;
+					super.timeMoving = 0;
+					super.moveDir = backward;
+					Stack.addAction(true);
+				}
+				else {
+					Game.animationSpeed = Game.defaultAnimationSpeed;
+					super.extending = false;
+				}
 			}
 		}
 		else if(super.retracting) {
+			this.timeRetracting ++;
 			super.extension -= Game.animationSpeed;
+			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
+			/* If doing a big chain undo, pause every integer extension */
+			if(this.timeRetracting >= 1 / Game.animationSpeed && Game.chainUndo) {
+				super.retracting = false;
+				this.timeRetracting = 0;
+			}
 			if(super.extension <= 0) {
 				super.retracting = false;
 				super.extension = 0;
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 			}
 		}
-		if(super.moveDir == "up") {
-			super.y -= Game.animationSpeed;
-		}
-		else if(super.moveDir == "down") {
-			super.y += Game.animationSpeed;
-		}
-		else if(super.moveDir == "left") {
-			super.x -= Game.animationSpeed;
-		}
-		else if(super.moveDir == "right") {
-			super.x += Game.animationSpeed;
+		if(super.timeMoving > 0 || !super.extending) {
+			if(super.moveDir == "up") {
+				super.y -= Game.animationSpeed;
+			}
+			else if(super.moveDir == "down") {
+				super.y += Game.animationSpeed;
+			}
+			else if(super.moveDir == "left") {
+				super.x -= Game.animationSpeed;
+			}
+			else if(super.moveDir == "right") {
+				super.x += Game.animationSpeed;
+			}
 		}
 		if(super.moveDir != "none") {
 			super.timeMoving ++;
@@ -149,16 +177,16 @@ public class Extender extends Thing {
 		Game.currentLevel.clearSelected();
 		super.ignoring = true;
 		if(super.dir == "left") {
-			Game.currentLevel.moveObject(super.x - 1, super.y, "left");
+			Game.currentLevel.moveObject(super.x - 1 - super.extension, super.y, "left");
 		}
 		else if(super.dir == "right") {
-			Game.currentLevel.moveObject(super.x + 1, super.y, "right");
+			Game.currentLevel.moveObject(super.x + 1 + super.extension, super.y, "right");
 		}
 		else if(super.dir == "up") {
-			Game.currentLevel.moveObject(super.x, super.y - 1, "up");
+			Game.currentLevel.moveObject(super.x, super.y - 1 - super.extension, "up");
 		}
 		else if(super.dir == "down") {
-			Game.currentLevel.moveObject(super.x, super.y + 1, "down");
+			Game.currentLevel.moveObject(super.x, super.y + 1 + super.extension, "down");
 		}
 		/* Find out if any of the selected tiles cannot be moved */
 		boolean foundOne = false;
@@ -176,10 +204,10 @@ public class Extender extends Thing {
 		}
 		/* Find out if this is in front of a wall */
 		if(
-			(super.x == 0 && super.dir == "left") ||
-			(super.x == Game.currentLevel.width - 1 && super.dir == "right") ||
-			(super.y == 0 && super.dir == "up") ||
-			(super.y == Game.currentLevel.height - 1 && super.dir == "down")
+			(super.x <= super.extension && super.dir == "left") ||
+			(super.x >= Game.currentLevel.width - 1 - super.extension && super.dir == "right") ||
+			(super.y <= super.extension && super.dir == "up") ||
+			(super.y == Game.currentLevel.height - 1 - super.extension && super.dir == "down")
 		) {
 			return false;
 		}
@@ -274,7 +302,7 @@ public class Extender extends Thing {
 		if(super.extension == 0) {
 			return this.canExtendForward() || this.canExtendBackward();
 		}
-		else if(super.extension == 1) {
+		else if(super.extension % 1 <= 0.01) {
 			return this.canRetractForward();
 		}
 		else {
@@ -288,14 +316,6 @@ public class Extender extends Thing {
 		int y = (int) (super.y * Game.tileSize);
 		int w = (int) (Game.tileSize);
 		int h = (int) (Game.tileSize);
-		/* Display non-directional extenders (basically just movable blocks) */
-		if(super.dir == "none") {
-			Graphics2D g2 = (Graphics2D) g;
-			g2.translate(x, y);
-			Screen.scaleImage(g2, block, w, h);
-			g2.translate(-x, -y);
-			return;
-		}
 		/* Translate to position */
 		Graphics2D g2 = (Graphics2D) g;
 		AffineTransform beforeRotation = g2.getTransform();
@@ -355,67 +375,6 @@ public class Extender extends Thing {
 		}
 		g2.setTransform(beforeRotation);
 	}
-	// public void display(Graphics g) {
-	// 	/* Calculate position */
-	// 	int x = (int) (super.x * Game.tileSize);
-	// 	int y = (int) (super.y * Game.tileSize);
-	// 	int w = (int) (Game.tileSize);
-	// 	int h = (int) (Game.tileSize);
-	// 	/* Debug */
-	// 	if(super.selected && false) {
-	// 		g.setColor(new Color(255, 0, 0));
-	// 		g.fillRect(x, y, w, h);
-	// 	}
-	// 	/* Translate to position + scale to size */
-	// 	Graphics2D g2 = (Graphics2D) g;
-	// 	AffineTransform at = g2.getTransform();
-	// 	g2.translate(x + (w / 2), y + (h / 2));
-	// 	float xScale = ((float) w) / ((float) img.getWidth(null));
-	// 	float yScale = ((float) h) / ((float) img.getHeight(null));
-	// 	g2.scale(xScale, yScale);
-	// 	/* Scale for when extended */
-	// 	if(super.dir == "right") {
-	// 		g2.translate(w / -2 / xScale, 0);
-	// 		g2.scale(super.extension + 1, 1);
-	// 		g2.translate(w / 2 / xScale, 0);
-	// 	}
-	// 	else if(super.dir == "left") {
-	// 		g2.translate(w / 2 / xScale, 0);
-	// 		g2.scale(super.extension + 1, 1);
-	// 		g2.translate(w / -2 / xScale, 0);
-	// 	}
-	// 	else if(super.dir == "up") {
-	// 		g2.translate(0, h / 2 / yScale);
-	// 		g2.scale(1, super.extension + 1);
-	// 		g2.translate(0, h / -2 / yScale);
-	// 	}
-	// 	else if(super.dir == "down") {
-	// 		g2.translate(0, h / -2 / yScale);
-	// 		g2.scale(1, super.extension + 1);
-	// 		g2.translate(0, h / 2 / yScale);
-	// 	}
-	// 	/* Rotate for different orientations */
-	// 	if(super.dir == "right") {
-	// 		g2.rotate(Math.toRadians(90));
-	// 	}
-	// 	else if(super.dir == "left") {
-	// 		g2.rotate(Math.toRadians(-90));
-	// 	}
-	// 	else if(super.dir == "down") {
-	// 		g2.rotate(Math.toRadians(180));
-	// 	}
-	// 	/* Display + undo transformations */
-	// 	if(super.dir != "none") {
-	// 		g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
-	// 	}
-	// 	else {
-	// 		g2.drawImage(img4, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
-	// 	}
-	// 	g2.setTransform(at);
-	// 	if(super.dir == "none") {
-	// 		return;
-	// 	}
-	// }
 	public boolean cursorHovered() {
 		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
 		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
@@ -459,22 +418,29 @@ public class Extender extends Thing {
 	}
 	@Override
 	public void checkMovement(String dir) {
+		System.out.println("Checking movement");
 		/*
 		This function selects all the tiles that would be moved if this was pushed in a certain direction.
 		*/
-		Game.currentLevel.moveTile(super.x, super.y, dir);
-		if(super.extension != 0) {
-			if(super.dir == "left") {
-				Game.currentLevel.moveTile(super.x - 1, super.y, dir);
+		if(super.dir == "left") {
+			for(int i = 0; i < super.extension + 1; i ++) {
+				Game.currentLevel.moveTile(super.x - i, super.y, dir);
 			}
-			else if(super.dir == "right") {
-				Game.currentLevel.moveTile(super.x + 1, super.y, dir);
+		}
+		else if(super.dir == "right") {
+			for(int i = 0; i < super.extension + 1; i ++) {
+				Game.currentLevel.moveTile(super.x + i, super.y, dir);
+				System.out.println("Moving: (" + (super.x + i) + ", " + super.y + ")");
 			}
-			else if(super.dir == "up") {
-				Game.currentLevel.moveTile(super.x, super.y - 1, dir);
+		}
+		else if(super.dir == "up") {
+			for(int i = 0; i < super.extension + 1; i ++) {
+				Game.currentLevel.moveTile(super.x, super.y - i, dir);
 			}
-			else if(super.dir == "down") {
-				Game.currentLevel.moveTile(super.x, super.y + 1, dir);
+		}
+		else if(super.dir == "down") {
+			for(int i = 0; i < super.extension + 1; i ++) {
+				Game.currentLevel.moveTile(super.x, super.y + i, dir);
 			}
 		}
 	}

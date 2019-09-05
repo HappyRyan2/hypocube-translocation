@@ -29,6 +29,7 @@ public class Thing {
 	public boolean deleted = false;
 	public void display(Graphics g) { }
 	public void update() { }
+	public void move() { }
 	public void checkMovement(String dir) {}
 	public boolean canBePushed(String dir) { return false; }
 	public boolean canDoSomething() { return false; }

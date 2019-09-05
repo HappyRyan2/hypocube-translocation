@@ -71,45 +71,78 @@ public class Retractor extends Thing {
 		}
 		// debug
 	}
-	public void display(Graphics g) {
+	public void onClick() {
+		if(Game.currentLevel.transitioning() || Game.currentLevel.paused) {
+			return;
+		}
+		Game.currentLevel.clearSelected();
+		if(super.extension == 0) {
+			if(this.canExtendForward()) { // push something forward
+				super.extending = true;
+				Game.currentLevel.moveSelected(super.dir);
+				Stack.addAction();
+			}
+			else if(this.canExtendBackward()) { // push itself backward
+				super.extending = true;
+				super.moveDir = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
+				Game.currentLevel.moveSelected(super.moveDir);
+				Stack.addAction();
+			}
+		}
+		else if(super.extension == 1) {
+			if(this.canRetractForward()) { // pull something towards itself
+				super.retracting = true;
+				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
+				Stack.addAction();
+			}
+			else if(this.canRetractBackward()) { // pull itself towards something
+				super.retracting = true;
+				super.moveDir = super.dir;
+				Game.currentLevel.moveSelected(super.dir);
+				Stack.addAction();
+			}
+		}
+	}
+	public void move() {
 		/* Update position */
 		if(super.extending) {
-			super.extension += 0.05;
+			super.extension += Game.animationSpeed;
 			if(super.extension >= 1) {
-				Game.canClick = !Game.currentLevel.isComplete();
 				super.extending = false;
 				super.extension = 1;
 			}
 		}
 		else if(super.retracting) {
-			super.extension -= 0.05;
+			super.extension -= Game.animationSpeed;
 			if(super.extension <= 0) {
-				Game.canClick = !Game.currentLevel.isComplete();
 				super.retracting = false;
 				super.extension = 0;
 			}
 		}
 		if(super.moveDir == "up") {
-			super.y -= 0.05;
+			super.y -= Game.animationSpeed;
 		}
 		else if(super.moveDir == "down") {
-			super.y += 0.05;
+			super.y += Game.animationSpeed;
 		}
 		else if(super.moveDir == "left") {
-			super.x -= 0.05;
+			super.x -= Game.animationSpeed;
 		}
 		else if(super.moveDir == "right") {
-			super.x += 0.05;
+			super.x += Game.animationSpeed;
 		}
 		if(super.moveDir != "none") {
 			super.timeMoving ++;
-			if(super.timeMoving >= 20) {
+			if(super.timeMoving >= 1 / Game.animationSpeed) {
 				super.x = Math.round(super.x);
 				super.y = Math.round(super.y);
 				super.moveDir = "none";
 				super.timeMoving = 0;
 			}
 		}
+	}
+
+	public void display(Graphics g) {
 		/* Calculate position */
 		int x = (int) (super.x * Game.tileSize);
 		int y = (int) (super.y * Game.tileSize);
@@ -175,38 +208,6 @@ public class Retractor extends Thing {
 		g2.setTransform(beforeRotation);
 	}
 
-	public void onClick() {
-		if(!Game.canClick || Game.currentLevel.transitioning() || Game.currentLevel.paused) {
-			return;
-		}
-		Game.currentLevel.clearSelected();
-		if(super.extension == 0) {
-			if(this.canExtendForward()) { // push something forward
-				super.extending = true;
-				Game.currentLevel.moveSelected(super.dir);
-				Stack.addAction();
-			}
-			else if(this.canExtendBackward()) { // push itself backward
-				super.extending = true;
-				super.moveDir = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
-				Game.currentLevel.moveSelected(super.moveDir);
-				Stack.addAction();
-			}
-		}
-		else if(super.extension == 1) {
-			if(this.canRetractForward()) { // pull something towards itself
-				super.retracting = true;
-				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
-				Stack.addAction();
-			}
-			else if(this.canRetractBackward()) { // pull itself towards something
-				super.retracting = true;
-				super.moveDir = super.dir;
-				Game.currentLevel.moveSelected(super.dir);
-				Stack.addAction();
-			}
-		}
-	}
 	public boolean canExtendForward() {
 		/* Find out which tiles will be moved */
 		Game.currentLevel.clearSelected();

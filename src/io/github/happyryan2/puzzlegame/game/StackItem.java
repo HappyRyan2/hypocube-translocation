@@ -15,4 +15,17 @@ public class StackItem {
         this.dir = dir;
         this.moving = moving;
     }
+
+	/* Debug */
+	public void print() {
+		if(this.dir == "extend") {
+			System.out.println("    - Extend something at (" + this.x + ", " + this.y + ")");
+		}
+		else if(this.dir == "retract") {
+			System.out.println("    - Retract something at (" + this.x + ", " + this.y + ")");
+		}
+		else {
+			System.out.println("    - Move something at (" + this.x + ", " + this.y + ") " + this.dir);
+		}
+	}
 }

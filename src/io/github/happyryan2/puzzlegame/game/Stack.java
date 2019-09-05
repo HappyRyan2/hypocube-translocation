@@ -12,7 +12,13 @@ import io.github.happyryan2.puzzlegame.objects.*;
 
 public class Stack {
     public static List stack = new ArrayList();
-    public static void addAction() {
+	public boolean chainAction;
+    public List movement = new ArrayList();
+
+	public static void addAction() {
+		addAction(false);
+	}
+    public static void addAction(boolean chainAction) {
         // System.out.println("adding an action!");
         Stack action = new Stack();
         for(byte i = 0; i < Game.currentLevel.content.size(); i ++) {
@@ -49,9 +55,13 @@ public class Stack {
                 action.movement.add(new StackItem(x, y, "extend", false));
             }
         }
+		action.chainAction = chainAction;
         stack.add(action);
     }
     public static void undoAction() {
+		printStack();
+		Game.currentLevel.printContent();
+		// System.out.println("UNDOING");
 		if(stack.size() == 0 || Game.currentLevel.transitioning()) {
 			return;
 		}
@@ -63,30 +73,61 @@ public class Stack {
 			// System.out.println("looking for something at (" + action.x + ", " + action.y + ")");
 			for(byte j = 0; j < Game.currentLevel.content.size(); j ++) {
 				Thing thing = (Thing) Game.currentLevel.content.get(j);
-				// System.out.println("found something at (" + thing.x + ", " + thing.y);
+				System.out.println("found something at (" + thing.x + ", " + thing.y);
 				if(thing.x == action.x && thing.y == action.y) {
-					// System.out.println("found something at the right position");
+					System.out.println("found something at the right position");
 					if(action.moving) {
 						// System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
 						thing.moveDir = action.dir;
 						thing.timeMoving = 0;
+						System.out.println("Started moving to undo");
 					}
 					if(action.dir == "retract") {
 						// System.out.println("retracting the thing at position (" + thing.x + ", " + thing.y + ")");
+						if(thing instanceof LongExtender) {
+							Game.animationSpeed = Game.fastAnimationSpeed;
+							((LongExtender) (thing)).timeRetracting = 0;
+						}
 						thing.retracting = true;
 					}
 					if(action.dir == "extend") {
 						// System.out.println("extending the thing at position (" + thing.x + ", " + thing.y + ")");
+						if(thing instanceof LongExtender) {
+							((LongExtender) (thing)).timeExtending = 0;
+							Game.animationSpeed = Game.fastAnimationSpeed;
+						}
 						thing.extending = true;
 					}
 				}
 			}
 		}
+		Game.chainUndo = actions.chainAction;
 		stack.remove(stack.size() - 1);
     }
-    public static void resetStack() {
-		stack = new ArrayList();
-    }
 
-    public List movement = new ArrayList();
+	public static void printStack() {
+		if(stack.size() == 0) {
+			// System.out.println("The stack is empty.");
+			return;
+		}
+		System.out.println("-------------------------------------");
+		System.out.println("The stack has the following contents:");
+		for(short i = 0; i < stack.size(); i ++) {
+			Stack item = (Stack) stack.get(i);
+			item.printItem();
+		}
+		System.out.println("End printing for stack");
+		System.out.println("-------------------------------------");
+	}
+	public void printItem() {
+		System.out.println(" - A " + (this.chainAction ? "chain " : "") + "action with the following instructions:");
+		for(short i = 0; i < movement.size(); i ++) {
+			StackItem item = (StackItem) movement.get(i);
+			item.print();
+		}
+	}
+
+	public static void resetStack() {
+		stack = new ArrayList();
+	}
 }

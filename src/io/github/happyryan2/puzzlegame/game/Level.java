@@ -154,7 +154,7 @@ public class Level {
 			Thing thing = (Thing) this.content.get(i);
 			thing.x = thing.origX;
 			thing.y = thing.origY;
-			if(thing instanceof Extender || thing instanceof Retractor) {
+			if(thing instanceof Extender || thing instanceof Retractor || thing instanceof LongExtender) {
 				thing.extending = false;
 				thing.retracting = false;
 				thing.extension = thing.origExtension;
@@ -221,31 +221,7 @@ public class Level {
 		if(!resized || true) {
 			this.resize();
 		}
-		if(this.isComplete() || Game.transition > 5) {
-			Game.canClick = false;
-		}
-		if(Game.startingLevel && !MouseClick.mouseIsPressed) {
-			Game.canClick = true;
-		}
-		for(byte i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			if((thing instanceof Extender || thing instanceof Retractor) && thing.extension != 0 && thing.extension != 1) {
-				Game.canClick = false;
-			}
-		}
-		for(byte i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			if((thing instanceof Extender || thing instanceof Retractor) && ((thing.extension != 0 && thing.extension != 1) || thing.extending || thing.retracting)) {
-				Game.canClick = false;
-				break;
-			}
-			if(thing instanceof Player && (thing.x != Math.round(thing.x) || thing.y != Math.round(thing.y))) {
-				Game.canClick = false;
-				break;
-			}
-		}
 		if(this.paused) {
-			Game.canClick = false;
 			this.restart.update();
 			this.exit.update();
 			if(this.restart.pressed && !this.isForTesting) {
@@ -258,7 +234,6 @@ public class Level {
 				this.paused = false;
 				Game.transition = 255;
 				Game.state = "level-select";
-				Game.canClick = false;
 				Game.startingLevel = true;
 			}
 		}
@@ -269,6 +244,10 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.update();
+		}
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			thing.move();
 		}
 		if(this.isComplete()) {
 			if(!this.completedBefore) {
@@ -307,7 +286,10 @@ public class Level {
 		else if(this.undo.hoverY > 0) {
 			this.undo.hoverY --;
 		}
-		if(this.undo.pressed && !this.undo.pressedBefore && Game.canClick) {
+		if(this.undo.pressed && !this.undo.pressedBefore && !Game.currentLevel.transitioning()) {
+			Stack.undoAction();
+		}
+		if(Game.chainUndo && !this.transitioning()) {
 			Stack.undoAction();
 		}
 	}
@@ -428,7 +410,6 @@ public class Level {
 			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
 				Game.levelOpen = this.id;
 				Game.currentLevel = this;
-				Game.canClick = true;
 				Game.startingLevel = true;
 				Game.state = "play";
 				Game.transition = 255;
@@ -535,7 +516,12 @@ public class Level {
 			if(thing.extension == 0 || thing instanceof Goal) {
 				continue;
 			}
-			if((thing.x == x && thing.y == y - 1 && thing.dir == "down") || (thing.x == x && thing.y == y + 1 && thing.dir == "up") || (thing.y == y && thing.x == x - 1 && thing.dir == "right") || (thing.y == y && thing.x == x + 1 && thing.dir == "left")) {
+			if(
+				(thing.x == x && thing.y >= y - thing.extension && thing.y < y && thing.dir == "down") ||
+				(thing.x == x && thing.y <= y + thing.extension && thing.y > y && thing.dir == "up") ||
+				(thing.y == y && thing.x >= x - thing.extension && thing.x < x && thing.dir == "right") ||
+				(thing.y == y && thing.x <= x + thing.extension && thing.x > x && thing.dir == "left")
+			) {
 				return thing;
 			}
 		}
@@ -549,6 +535,7 @@ public class Level {
 		}
 	}
 	public void moveTile(float x, float y, String dir) {
+		// System.out.println("Moving tile: (" + x + ", " + y + ")");
 		/*
 		Selects the tile, as well as any other tiles that:
 		 - would be pushed by it moving
@@ -615,7 +602,10 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing.selected) {
+				thing.x = Math.round((float) thing.x);
+				thing.y = Math.round((float) thing.y);
 				thing.moveDir = dir;
+				thing.timeMoving = 0;
 			}
 		}
 	}
@@ -819,12 +809,42 @@ public class Level {
 			else if(thing instanceof Retractor) {
 				str += "a" + (thing.isWeak ? " weak" : "") + " retractor at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended.";
 			}
+			else if(thing instanceof LongExtender) {
+				str += "a" + (thing.isWeak ? " weak" : "") + " long extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension;
+			}
 			else if(thing instanceof Wall) {
 				str += "a wall at (" + thing.x + ", " + thing.y + ")";
 			}
 			str += ", ";
 		}
 		return str;
+	}
+	public void printContent() {
+		System.out.println("-----------------");
+		System.out.println("Objects in level " + this.id + ":");
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Player) {
+				System.out.println(" - A player at (" + thing.x + ", " + thing.y + ")");
+			}
+			else if(thing instanceof Goal) {
+				System.out.println(" - A goal at (" + thing.x + ", " + thing.y + ")");
+			}
+			else if(thing instanceof Extender) {
+				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " extender at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended");
+			}
+			else if(thing instanceof Retractor) {
+				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " extender at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended");
+			}
+			else if(thing instanceof LongExtender) {
+				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " long extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
+			}
+			else if(thing instanceof Wall) {
+				System.out.println(" - A wall at (" + thing.x + ", " + thing.y + ")");
+			}
+		}
+		System.out.println("End printing for level " + this.id);
+		System.out.println("-----------------");
 	}
 	public String selectedToString() {
 		/*
