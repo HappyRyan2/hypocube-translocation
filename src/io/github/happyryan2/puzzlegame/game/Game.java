@@ -89,6 +89,7 @@ public class Game {
 			levels.add(new Level15());
 			levels.add(new Level16());
 			levels.add(new Level17());
+			levels.add(new Level18());
 			// levels.add(new Level20());
 			/* Load user progress from the file */
 			String progress = "";

@@ -418,7 +418,6 @@ public class LongExtender extends Thing {
 	}
 	@Override
 	public void checkMovement(String dir) {
-		System.out.println("Checking movement");
 		/*
 		This function selects all the tiles that would be moved if this was pushed in a certain direction.
 		*/
@@ -430,7 +429,7 @@ public class LongExtender extends Thing {
 		else if(super.dir == "right") {
 			for(int i = 0; i < super.extension + 1; i ++) {
 				Game.currentLevel.moveTile(super.x + i, super.y, dir);
-				System.out.println("Moving: (" + (super.x + i) + ", " + super.y + ")");
+				// System.out.println("Moving: (" + (super.x + i) + ", " + super.y + ")");
 			}
 		}
 		else if(super.dir == "up") {

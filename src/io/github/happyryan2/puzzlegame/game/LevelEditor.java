@@ -17,7 +17,7 @@ public class LevelEditor {
 	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "solve", "rect");
 	public static Button crop = new Button(130, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "crop", "rect");
 	public static Button uncrop = new Button(240, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "uncrop", "rect");
-	public static Level level = new Level6();
+	public static Level level = new Level();
 	public static boolean initialized = false;
 	public static List tree = new ArrayList(); // for checking whether it is solvable or not
 	public static List solutionTree = new ArrayList();
@@ -46,6 +46,9 @@ public class LevelEditor {
 			}
 			else if(mode.text == "retract") {
 				level.content.add(new Retractor(x, y, dir, (isWeak.text == "is weak")));
+			}
+			else if(mode.text == "long extend") {
+				level.content.add(new LongExtender(x, y, dir, (isWeak.text == "is weak")));
 			}
 			else if(mode.text == "player") {
 				level.content.add(new Player(x, y));
@@ -96,6 +99,9 @@ public class LevelEditor {
 				mode.text = "retract";
 			}
 			else if(mode.text == "retract") {
+				mode.text = "long extend";
+			}
+			else if(mode.text == "long extend") {
 				mode.text = "player";
 			}
 			else if(mode.text == "player") {
@@ -238,6 +244,7 @@ public class LevelEditor {
 		tree.add(depth0);
 
 		for(int i = 0; i < tree.size(); i ++) {
+			// System.out.println("Checking index: " + i + ". Indices left: " + (tree.size() - i));
 			Level currentLevel = (Level) tree.get(i);
 			Game.currentLevel = currentLevel;
 			for(short x = 0; x < currentLevel.width; x ++) {
@@ -267,11 +274,18 @@ public class LevelEditor {
 					nextDepth.preX = x;
 					nextDepth.preY = y;
 
+					/* Remove unnecessary properties (mostly buttons) to save memory */
+					nextDepth.menu = null;
+					nextDepth.retry = null;
+					nextDepth.pause = null;
+					nextDepth.restart = null;
+					nextDepth.exit = null;
+					nextDepth.undo = null;
+
 					/* But first, check to make sure it isn't a duplicate */
 					for(int j = 0; j < tree.size(); j ++) {
 						Level duplicate = (Level) tree.get(j);
 						if(nextDepth.equals(duplicate) && i != j) {
-							// System.out.println("clicking at (" + x + ", " + y + ") will take you to a previous state");
 							Stack.undoAction();
 							currentLevel.fastForward();
 							continue yLoop;

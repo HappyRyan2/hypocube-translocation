@@ -59,10 +59,15 @@ public class Stack {
         stack.add(action);
     }
     public static void undoAction() {
-		printStack();
-		Game.currentLevel.printContent();
+		if(stack.size() == 0) {
+			System.out.println("Stack size is 0");
+			Game.chainUndo = false;
+			return;
+		}
+		// printStack();
+		// Game.currentLevel.printContent();
 		// System.out.println("UNDOING");
-		if(stack.size() == 0 || Game.currentLevel.transitioning()) {
+		if(Game.currentLevel.transitioning(true)) {
 			return;
 		}
         // System.out.println("undoing an action!");
@@ -71,7 +76,7 @@ public class Stack {
 			StackItem action = (StackItem) actions.movement.get(i);
 			// System.out.println("the direction is: " + action.dir);
 			// System.out.println("looking for something at (" + action.x + ", " + action.y + ")");
-			for(byte j = 0; j < Game.currentLevel.content.size(); j ++) {
+			itemLoop: for(byte j = 0; j < Game.currentLevel.content.size(); j ++) {
 				Thing thing = (Thing) Game.currentLevel.content.get(j);
 				System.out.println("found something at (" + thing.x + ", " + thing.y);
 				if(thing.x == action.x && thing.y == action.y) {
@@ -98,6 +103,7 @@ public class Stack {
 						}
 						thing.extending = true;
 					}
+					break itemLoop;
 				}
 			}
 		}

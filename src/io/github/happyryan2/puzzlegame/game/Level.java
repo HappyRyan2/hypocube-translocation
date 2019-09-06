@@ -286,11 +286,15 @@ public class Level {
 		else if(this.undo.hoverY > 0) {
 			this.undo.hoverY --;
 		}
-		if(this.undo.pressed && !this.undo.pressedBefore && !Game.currentLevel.transitioning()) {
+		System.out.println("Transitioning? " + this.transitioning());
+		System.out.println("---------------");
+		if(this.undo.pressed && !this.undo.pressedBefore && !Game.chainUndo && !this.transitioning()) {
 			Stack.undoAction();
+			System.out.println("Undoing because clicks");
 		}
-		if(Game.chainUndo && !this.transitioning()) {
+		if(Game.chainUndo && !this.transitioning(true)) {
 			Stack.undoAction();
+			System.out.println("Undoing because chaining");
 		}
 	}
 	public void display(Graphics g) {
@@ -705,7 +709,11 @@ public class Level {
 			thing.moveDir = "none";
 		}
 	}
-	public boolean transitioning() {
+	public boolean transitioning(boolean ignoreChainUndos) {
+		if(Game.chainUndo && !ignoreChainUndos) {
+			System.out.println("Game is transitioning because it's doing a chain undo");
+			return true;
+		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing.moveDir != "none") {
@@ -722,6 +730,9 @@ public class Level {
 			}
 		}
 		return false;
+	}
+	public boolean transitioning() {
+		return transitioning(false);
 	}
 
 	public boolean isEmpty(int x, int y) {
