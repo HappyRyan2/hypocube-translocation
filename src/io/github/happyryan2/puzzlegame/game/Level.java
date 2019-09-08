@@ -235,6 +235,7 @@ public class Level {
 				Game.transition = 255;
 				Game.state = "level-select";
 				Game.startingLevel = true;
+				Stack.resetStack();
 			}
 		}
 		for(short i = 0; i < this.content.size(); i ++) {
@@ -244,6 +245,25 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.update();
+		}
+		if(Game.lastAction && Game.timeSinceLastAction >= 1 / Game.animationSpeed) {
+			System.out.println("           Final action - freezing everything");
+			for(short i = 0; i < this.content.size(); i ++) {
+				Thing thing = (Thing) this.content.get(i);
+				thing.x = Math.round(thing.x);
+				thing.y = Math.round(thing.y);
+				thing.extension = Math.round(thing.extension);
+				thing.extending = false;
+				thing.retracting = false;
+				thing.timeMoving = 0;
+				if(thing instanceof LongExtender) {
+					LongExtender ex = (LongExtender) thing;
+					ex.timeExtending = 0;
+					ex.timeRetracting = 0;
+				}
+			}
+			Game.lastAction = false;
+			Game.chainUndo = false;
 		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -262,6 +282,7 @@ public class Level {
 			if(this.menu.pressed) {
 				Game.transition = 255;
 				Game.state = "level-select";
+				Stack.resetStack();
 				for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
 					LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
 					if(connector.previousLevel == this.id && connector.animationProgress == 0) {
@@ -286,16 +307,21 @@ public class Level {
 		else if(this.undo.hoverY > 0) {
 			this.undo.hoverY --;
 		}
-		System.out.println("Transitioning? " + this.transitioning());
-		System.out.println("---------------");
-		if(this.undo.pressed && !this.undo.pressedBefore && !Game.chainUndo && !this.transitioning()) {
-			Stack.undoAction();
-			System.out.println("Undoing because clicks");
+		// System.out.println("Transitioning? " + this.transitioning());
+		// System.out.println("---------------");
+		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
+			Game.timeSinceLastAction ++;
 		}
-		if(Game.chainUndo && !this.transitioning(true)) {
+		if(this.undo.pressed && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && Stack.stack.size() > 0) {
+			System.out.println("Undoing because clicks. Game.chainUndo is " + Game.chainUndo);
+			// System.out.println("Stack size is: " + Stack.stack.size());
 			Stack.undoAction();
-			System.out.println("Undoing because chaining");
 		}
+		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
+			Stack.undoAction();
+			// System.out.println("Undoing because chaining");
+		}
+		// System.out.println("The extender's extension is " + ((Thing) this.content.get(6)).extension + " and it is " + (((Thing) this.content.get(6)).extending ? "" : " not") + " extending.");
 	}
 	public void display(Graphics g) {
 		// walls + background
@@ -711,7 +737,7 @@ public class Level {
 	}
 	public boolean transitioning(boolean ignoreChainUndos) {
 		if(Game.chainUndo && !ignoreChainUndos) {
-			System.out.println("Game is transitioning because it's doing a chain undo");
+			// System.out.println("Game is transitioning because it's doing a chain undo");
 			return true;
 		}
 		for(short i = 0; i < this.content.size(); i ++) {
@@ -907,4 +933,14 @@ public class Level {
 		}
 		return true;
 	}
+	public boolean canSelectedBePushed(String dir) {
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing.selected && !thing.canBePushed(dir)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
+// note to self: make Stack.addAction() make actions be chain if they are also final

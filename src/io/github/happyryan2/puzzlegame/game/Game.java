@@ -15,6 +15,7 @@ import io.github.happyryan2.puzzlegame.utilities.*;
 import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Game {
+	public static boolean debugged = false;
 	private static boolean initialized = false;
 	public static String state = "start";
 	public static List levels = new ArrayList();
@@ -33,6 +34,9 @@ public class Game {
 	public static float fastAnimationSpeed = 0.1f;
 	public static float animationSpeed = defaultAnimationSpeed;
 	public static boolean chainUndo = false;
+	public static boolean chainUndoLastFrame = false;
+	public static boolean lastAction = false;
+	public static int timeSinceLastAction = 0;
 	public static void updateProgress() {
 		// System.out.println("user home directory: " + System.getProperty("user.home"));
 		String progress = " ";
@@ -134,6 +138,7 @@ public class Game {
 					}
 				}
 			}
+			chainUndoLastFrame = chainUndo;
 		}
 		if(state == "start") {
 			/* update the home page */
