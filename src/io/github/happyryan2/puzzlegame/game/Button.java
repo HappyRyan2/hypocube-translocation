@@ -75,7 +75,7 @@ public class Button {
 			g.fillPolygon(triangle);
 			g.translate((int) -this.w / 20, (int) -this.hoverY);
 		}
-		else if(this.text == "icon:arrowleft") {
+		else if(this.text == "icon:retry") {
 			g.translate((int) -this.w / 20, (int) this.hoverY);
 			Polygon triangle = new Polygon();
 			triangle.addPoint((int) (this.x + (this.w / 6)), (int) (this.y - (this.w / 6)));

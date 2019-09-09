@@ -9,8 +9,7 @@ import io.github.happyryan2.puzzlegame.objects.*;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
 import io.github.happyryan2.puzzlegame.utilities.MouseClick;
 import io.github.happyryan2.puzzlegame.utilities.MousePos;
-import io.github.happyryan2.puzzlegame.utilities.ImageLoader;
-import io.github.happyryan2.puzzlegame.game.Button;
+import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 import io.github.happyryan2.puzzlegame.game.LevelSelect;
 import io.github.happyryan2.puzzlegame.game.LevelConnector;
 
@@ -36,18 +35,18 @@ public class Level {
 	public float opacity = 0;
 
 	/* Buttons */
-	public Button next = new Button(500, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowright", "circle");
-	public Button menu = new Button(400, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:3rects", "circle");
-	public Button retry = new Button(300, 100, 50, 50, new Color(200, 200, 200), new Color(255, 255, 255), "icon:arrowleft", "circle"); // retry button that shows when you have completed the level
-	public Button pause = new Button(30, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:2rects", "circle");
-	public Button restart = new Button(300, 325, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Restart", "rect"); // retry button that shows when you are on the pause screen
-	public Button exit = new Button(300, 400, 200, 50, new Color(200, 200, 200), new Color(255, 255, 255), "Exit", "rect");
-	public Button undo = new Button(100, 30, 40, 40, new Color(175, 175, 175), new Color(255, 255, 255), "icon:arrowleft", "circle");
+	// public ImageButton pause = new ImageButton(30, 30, 40, "res/graphics/buttons/pause2.png", new Color(255, 255, 255), new Color(175, 175, 175));
+	// public TextButton restart = new TextButton(300, 325, 200, 50, "Restart", new Color(255, 255, 255), new Color(175, 175, 175));
+	// public TextButton exit = new TextButton(300, 400, 200, 50, "Exit", new Color(255, 255, 255), new Color(175, 175, 175));
+	public ImageButton exit = new ImageButton(30, 30, 40, "res/graphics/buttons/pause2.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on play screen
+	public ImageButton exit2 = new ImageButton(0, 0, 50, "res/graphics/buttons/next.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on win screen
+	public ImageButton restart2 = new ImageButton(0, 0, 50, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on play screen
+	public ImageButton restart = new ImageButton(100, 30, 40, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on win screen
+	public ImageButton undo = new ImageButton(170, 30, 40, "res/graphics/buttons/undo.png", new Color(255, 255, 255), new Color(175, 175, 175));
 
-	public boolean lastLevel = false;
 	public boolean paused = false;
 
-	/* Visual size + location (in pixels) */
+	/* Visual size + location of top-left corner (in pixels) */
 	public int visualWidth = 0;
 	public int visualHeight = 0;
 	public int top = 0;
@@ -64,34 +63,32 @@ public class Level {
 	public Level() {
 		this.content = new ArrayList();
 	}
-	public Level copy() {
-		Level clone = new Level();
-		clone.index = this.index;
-		clone.depth = this.depth;
-		clone.width = this.width; clone.height = this.height;
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
+	public Level(Level level) {
+		/* Copy constructor */
+		this();
+		this.index = level.index;
+		this.depth = level.depth;
+		this.width = level.width; this.height = level.height;
+		for(short i = 0; i < level.content.size(); i ++) {
+			Thing thing = (Thing) level.content.get(i);
 			if(thing instanceof Extender) {
-				Extender extender = new Extender(thing.x, thing.y, thing.dir, thing.isWeak);
-				extender.extension = thing.extension;
-				clone.content.add(extender);
+				Extender extender = new Extender((Extender) thing);
+				this.content.add(extender);
 			}
 			else if(thing instanceof Retractor) {
-				Retractor retractor = new Retractor(thing.x, thing.y, thing.dir, thing.isWeak);
-				retractor.extension = thing.extension;
-				clone.content.add(retractor);
+				Retractor retractor = new Retractor((Retractor) thing);
+				this.content.add(retractor);
 			}
 			else if(thing instanceof Player) {
-				clone.content.add(new Player(thing.x, thing.y));
+				this.content.add(new Player((Player) thing));
 			}
 			else if(thing instanceof Goal) {
-				clone.content.add(new Goal(thing.x, thing.y));
+				this.content.add(new Goal((Goal) thing));
 			}
 			else if(thing instanceof Wall) {
-				clone.content.add(new Wall(thing.x, thing.y));
+				this.content.add(new Wall((Wall) thing));
 			}
 		}
-		return clone;
 	}
 	public boolean equals(Level level) {
 		/*
@@ -147,23 +144,22 @@ public class Level {
 	}
 
 	public void reset() {
+		/* Move win GUI + buttons away */
 		this.completeNow = false;
 		this.completionY = -800;
-		this.pause.y = 30;
 		this.undo.y = 30;
+		/* Reset all game objects to original position */
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.x = thing.origX;
 			thing.y = thing.origY;
-			if(thing instanceof Extender || thing instanceof Retractor) {
+			if(thing instanceof Extender || thing instanceof Retractor || thing instanceof LongExtender) {
 				thing.extending = false;
 				thing.retracting = false;
 				thing.extension = thing.origExtension;
 			}
 			else if(thing instanceof Player || thing instanceof Goal) {
 				thing.deleted = false;
-				thing.hoverY = 0;
-				thing.color = 0;
 				thing.winAnimation = false;
 			}
 		}
@@ -218,76 +214,48 @@ public class Level {
 	}
 
 	public void update() {
-		// System.out.println("level " + this.id + " is being updated");
-		/* initialize */
-		if(!resized || true) {
-			this.resize();
+		/* Update level size */
+		this.resize();
+		/* Buttons shown while playing */
+		this.restart.update();
+		this.exit.update();
+		if(UndoStack.stack.size() != 0) {
+			this.undo.update();
 		}
-		if(this.isComplete() || Game.transition > 5) {
-			Game.canClick = false;
+		else if(this.undo.hoverY > 0) {
+			this.undo.hoverY --;
 		}
-		if(Game.startingLevel && !MouseClick.mouseIsPressed) {
-			Game.canClick = true;
+		if(this.undo.pressed && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && UndoStack.stack.size() > 0) {
+			UndoStack.undoAction();
 		}
-		for(byte i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			if((thing instanceof Extender || thing instanceof Retractor) && thing.extension != 0 && thing.extension != 1) {
-				Game.canClick = false;
-			}
+		if(this.exit.pressed) {
+			UndoStack.resetStack();
+			Game.transition = 255;
+			Game.state = "level-select";
+			return;
 		}
-		for(byte i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			if((thing instanceof Extender || thing instanceof Retractor) && ((thing.extension != 0 && thing.extension != 1) || thing.extending || thing.retracting)) {
-				Game.canClick = false;
-				break;
-			}
-			if(thing instanceof Player && (thing.x != Math.round(thing.x) || thing.y != Math.round(thing.y))) {
-				Game.canClick = false;
-				break;
-			}
+		if(this.restart.pressed && !this.restart.pressedBefore) {
+			Game.transition = 255;
+			this.paused = false;
+			this.reset();
+			UndoStack.resetStack();
 		}
-		if(this.paused) {
-			Game.canClick = false;
-			this.restart.update();
-			this.exit.update();
-			if(this.restart.pressed && !this.isForTesting) {
-				Game.transition = 255;
-				this.paused = false;
-				this.reset();
-				Stack.resetStack();
-			}
-			if(this.exit.pressed) {
-				this.paused = false;
-				Game.transition = 255;
-				Game.state = "level-select";
-				Game.canClick = false;
-				Game.startingLevel = true;
-			}
-		}
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			thing.selected = false;
-		}
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			thing.update();
-		}
+		/* Win menu buttons */
 		if(this.isComplete()) {
 			if(!this.completedBefore) {
 				this.completedBefore = true;
-				Game.updateProgress();
+				Game.saveProgress();
 			}
 			this.completeNow = true;
-			this.retry.update();
-			this.menu.update();
-			this.pause.y -= 5;
+			this.restart2.update();
+			this.exit2.update();
+			this.exit.y -= 5;
 			this.undo.y -= 5;
-			if(!this.lastLevel) {
-				this.next.update();
-			}
-			if(this.menu.pressed) {
+			this.restart.y -= 5;
+			if(this.exit2.pressed) {
 				Game.transition = 255;
 				Game.state = "level-select";
+				UndoStack.resetStack();
 				for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
 					LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
 					if(connector.previousLevel == this.id && connector.animationProgress == 0) {
@@ -295,24 +263,50 @@ public class Level {
 					}
 				}
 			}
-			if(this.retry.pressed) {
+			if(this.restart2.pressed) {
 				Game.transition = 255;
-				Game.startingLevel = true;
 				this.reset();
-				Stack.resetStack();
+				UndoStack.resetStack();
 			}
 		}
-		this.pause.update();
-		if(this.pause.pressed && !this.pause.pressedBefore) {
-			this.paused = !this.paused;
+		/* Load content */
+		this.clearSelected();
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			thing.update();
 		}
-		this.undo.update();
-		if(this.undo.pressed && !this.undo.pressedBefore && Game.canClick) {
-			Stack.undoAction();
+		/* Undos + movement */
+		if(Game.lastAction && Game.timeSinceLastAction >= 1 / Game.animationSpeed) {
+			for(short i = 0; i < this.content.size(); i ++) {
+				Thing thing = (Thing) this.content.get(i);
+				thing.x = Math.round(thing.x);
+				thing.y = Math.round(thing.y);
+				thing.extension = Math.round(thing.extension);
+				thing.extending = false;
+				thing.retracting = false;
+				thing.timeMoving = 0;
+				if(thing instanceof LongExtender) {
+					LongExtender ex = (LongExtender) thing;
+					ex.timeExtending = 0;
+					ex.timeRetracting = 0;
+				}
+			}
+			Game.lastAction = false;
+			Game.chainUndo = false;
+		}
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			thing.move();
+		}
+		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
+			Game.timeSinceLastAction ++;
+		}
+		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
+			UndoStack.undoAction();
 		}
 	}
 	public void display(Graphics g) {
-		// walls + background
+		/* walls + background */
 		g.setColor(wallColor);
 		g.fillRect(0, 0, Screen.screenW, Screen.screenH);
 		for(byte x = 0; x < this.width; x ++) {
@@ -320,35 +314,26 @@ public class Level {
 				this.fillArea(g, x, y);
 			}
 		}
-		// sort by y-value (display top ones first)
-		List sorted = new ArrayList();
-		List unsorted = new ArrayList();
+		/* Display objects */
+		g.translate(this.left, this.top);
+		for(short i = 0; i < this.content.size(); i ++) {
+			/* Display goals underneath the rest of the objects*/
+			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Goal) {
+				thing.display(g);
+			}
+		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			unsorted.add(thing);
-		}
-		while(unsorted.size() > 0) {
-			int highestIndex = 0;
-			for(short i = 0; i < unsorted.size(); i ++) {
-				Thing thing = (Thing) unsorted.get(i);
-				Thing highest = (Thing) unsorted.get(highestIndex);
-				if(thing.y < highest.y && !(highest instanceof Goal) || thing instanceof Goal) {
-					highestIndex = i;
-				}
+			if(!(thing instanceof Goal)) {
+				thing.display(g);
 			}
-			Thing thing = (Thing) unsorted.get(highestIndex);
-			sorted.add(thing);
-			unsorted.remove(highestIndex);
-		}
-		// display objects
-		g.translate(this.left, this.top);
-		for(short i = 0; i < sorted.size(); i ++) {
-			Thing thing = (Thing) sorted.get(i);
-			thing.display(g);
 		}
 		g.translate(-this.left, -this.top);
-		//gui box for winning
+		/* GUI box for winning */
 		if(this.isComplete()) {
+			this.restart2.display(g);
+			this.exit2.display(g);
 			if(this.completionY < 0) {
 				this.completionY += Math.max((0 - this.completionY) / 15, 1);
 			}
@@ -357,40 +342,36 @@ public class Level {
 			g.setFont(Screen.fontRighteous);
 			g.setColor(new Color(255, 255, 255));
 			Screen.centerText(g, Screen.screenW / 2, this.completionY + 266, "Level Complete");
-			this.retry.y = this.completionY + Screen.screenH / 3 * 2;
-			this.menu.y = this.completionY + Screen.screenH / 3 * 2;
-			this.next.y = this.completionY + Screen.screenH / 3 * 2;
-			this.retry.display(g);
-			this.menu.display(g);
-			if(!this.lastLevel && false) {
-				this.next.display(g);
-			}
-			else {
-				this.retry.x = Screen.screenW / 2 - 50;
-				this.menu.x = Screen.screenW / 2 + 50;
-			}
+			this.restart2.y = this.completionY + Screen.screenH / 3 * 2;
+			this.exit2.y = this.completionY + Screen.screenH / 3 * 2;
+			this.restart2.display(g);
+			this.exit2.display(g);
+			this.restart2.x = Screen.screenW / 2 - 50;
+			this.exit2.x = Screen.screenW / 2 + 50;
 		}
 		else {
 			this.completionY = -Screen.screenH;
 		}
 		if(this.paused) {
-			this.restart.x = Screen.screenW / 2 - 75;
+			this.restart.x = Screen.screenW / 2 - 100;
 			this.restart.y = Screen.screenH / 2 - 75;
-			this.exit.x = Screen.screenW / 2 - 75;
+			this.exit.x = Screen.screenW / 2 - 100;
 			this.exit.y = Screen.screenH / 2;
 			g.setColor(new Color(100, 100, 100, 150));
 			g.fillRect(Screen.screenW / 2 - 200, 0, 400, Screen.screenH);
 			g.setFont(Screen.fontRighteous);
 			g.setColor(new Color(255, 255, 255));
-			Screen.centerText(g, Screen.screenW / 2, Screen.screenH / 2 - 100, "Menu");
+			Screen.centerText(g, Screen.screenW / 2, Screen.screenH / 2 - 105, "Menu");
 			this.restart.display(g);
 			this.exit.display(g);
 		}
-		// pause button
-		this.pause.display(g);
+		/* Buttons */
+		this.exit.display(g);
 		this.undo.display(g);
+		this.restart.display(g);
 	}
 	public void displayLevelSelect(Graphics g) {
+		/* Don't display if the level has not been discovered */
 		if(!this.discovered) {
 			return;
 		}
@@ -403,6 +384,7 @@ public class Level {
 				}
 			}
 		}
+		/* Display level image with opacity */
 		this.opacity += 0.05;
 		Image img = (this.completedBefore) ? LevelSelect.completeLevel : (this.canPlay() ? LevelSelect.incompleteLevel : LevelSelect.inaccessibleLevel);
 		Graphics2D g2 = (Graphics2D) g;
@@ -412,6 +394,7 @@ public class Level {
 		}
 		g2.translate(this.x, this.y);
 		Screen.scaleImage(g2, img, 100, 100);
+		/* Display level number */
 		if(this.completedBefore) {
 			g2.setColor(new Color(66, 139, 255));
 		}
@@ -429,13 +412,11 @@ public class Level {
 	}
 	public void updateLevelSelect() {
 		/* Detect clicks */
-		if(MousePos.x > x + LevelSelect.scrollX && MousePos.x < x + LevelSelect.scrollX + 100 && MousePos.y > y + LevelSelect.scrollY && MousePos.y < y + LevelSelect.scrollY + 100 && this.opacity >= 1 && this.canPlay()) {
+		if(MousePos.x > x + LevelSelect.scrollX + (Screen.screenW / 2) && MousePos.x < x + LevelSelect.scrollX + (Screen.screenW / 2) + 100 && MousePos.y > y + LevelSelect.scrollY + (Screen.screenH / 2) && MousePos.y < y + LevelSelect.scrollY + (Screen.screenH / 2) + 100 && this.opacity >= 1 && this.canPlay()) {
 			Screen.cursor = "hand";
 			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
 				Game.levelOpen = this.id;
 				Game.currentLevel = this;
-				Game.canClick = true;
-				Game.startingLevel = true;
 				Game.state = "play";
 				Game.transition = 255;
 				this.reset();
@@ -541,7 +522,12 @@ public class Level {
 			if(thing.extension == 0 || thing instanceof Goal) {
 				continue;
 			}
-			if((thing.x == x && thing.y == y - 1 && thing.dir == "down") || (thing.x == x && thing.y == y + 1 && thing.dir == "up") || (thing.y == y && thing.x == x - 1 && thing.dir == "right") || (thing.y == y && thing.x == x + 1 && thing.dir == "left")) {
+			if(
+				(thing.x == x && thing.y >= y - thing.extension && thing.y < y && thing.dir == "down") ||
+				(thing.x == x && thing.y <= y + thing.extension && thing.y > y && thing.dir == "up") ||
+				(thing.y == y && thing.x >= x - thing.extension && thing.x < x && thing.dir == "right") ||
+				(thing.y == y && thing.x <= x + thing.extension && thing.x > x && thing.dir == "left")
+			) {
 				return thing;
 			}
 		}
@@ -549,6 +535,7 @@ public class Level {
 		return null;
 	};
 	public void select(float x, float y) {
+		/* Selects the object at (x, y) */
 		Thing thing = this.getAtPos(x, y);
 		if(thing != null && !thing.ignoring) {
 			thing.selected = true;
@@ -603,7 +590,6 @@ public class Level {
 		}
 	}
 	public void moveObject(float x, float y, String dir) {
-		// System.out.println("moving object at (" + x + ", " + y + ") " + dir);
 		/*
 		Selects the object at that position, as well as any other objects that:
 		 - would be pushed by it moving
@@ -621,7 +607,10 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing.selected) {
+				thing.x = Math.round((float) thing.x);
+				thing.y = Math.round((float) thing.y);
 				thing.moveDir = dir;
+				thing.timeMoving = 0;
 			}
 		}
 	}
@@ -647,7 +636,6 @@ public class Level {
 		/*
 		Returns true if each goal has a player on it.
 		*/
-		boolean complete = true;
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing instanceof Goal) {
@@ -655,14 +643,12 @@ public class Level {
 				for(short j = 0; j < this.content.size(); j ++) {
 					Thing thing2 = (Thing) this.content.get(j);
 					if(thing2 instanceof Player && thing2.x == thing.x && thing2.y == thing.y) {
-						// System.out.println("goal at (" + thing.x + ", " + thing.y + ") has a player on it");
 						occupied = true;
 						break;
 					}
 				}
 				if(!occupied) {
-					complete = false;
-					break;
+					return false;
 				}
 			}
 		}
@@ -674,10 +660,9 @@ public class Level {
 			}
 		}
 		if(!hasAGoal) {
-			// System.out.println("the level does not have a goal");
 			return false; // level is under construction
 		}
-		return complete;
+		return true;
 	}
 	public boolean winAnimationDone() {
 		/*
@@ -721,41 +706,32 @@ public class Level {
 			thing.moveDir = "none";
 		}
 	}
-	public boolean transitioning() {
+	public boolean transitioning(boolean ignoreChainUndos) {
+		if(Game.chainUndo && !ignoreChainUndos) {
+			return true;
+		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			if(thing.moveDir != "none") {
-				// System.out.println("something at (" + thing.x + ", " + thing.y + ") is moving");
-			}
-			else if(thing.extending) {
-				// System.out.println("something is extending");
-			}
-			else if(thing.retracting) {
-				// System.out.println("something is retracting");
-			}
 			if(thing.moveDir != "none" || thing.extending || thing.retracting && !(thing instanceof Goal)) {
 				return true;
 			}
 		}
 		return false;
 	}
+	public boolean transitioning() {
+		return this.transitioning(false);
+	}
 
 	public boolean isEmpty(int x, int y) {
-		if(x < 0 || y < 0 || x >= width || y >= height) {
+		/* Return whether there is not a wall at that position */
+		if(x < 0 || y < 0 || x >= width || y >= height || this.getAtPos(x, y) instanceof Wall) {
 			return false;
-		}
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			if(thing instanceof Wall && thing.x == x && thing.y == y) {
-				return false;
-			}
 		}
 		return true;
 	}
 	public void fillArea(Graphics g, int x, int y) {
 		/*
 		Fills an area the correct color + with rounded corners where necessary.
-		(Walls = 200, Background = 150)
 		*/
 		Graphics2D g2 = (Graphics2D) g;
 		if(this.isEmpty(x, y)) {
@@ -825,12 +801,42 @@ public class Level {
 			else if(thing instanceof Retractor) {
 				str += "a" + (thing.isWeak ? " weak" : "") + " retractor at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended.";
 			}
+			else if(thing instanceof LongExtender) {
+				str += "a" + (thing.isWeak ? " weak" : "") + " long extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension;
+			}
 			else if(thing instanceof Wall) {
 				str += "a wall at (" + thing.x + ", " + thing.y + ")";
 			}
 			str += ", ";
 		}
 		return str;
+	}
+	public void printContent() {
+		System.out.println("-----------------");
+		System.out.println("Objects in level " + this.id + ":");
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing instanceof Player) {
+				System.out.println(" - A player at (" + thing.x + ", " + thing.y + ")");
+			}
+			else if(thing instanceof Goal) {
+				System.out.println(" - A goal at (" + thing.x + ", " + thing.y + ")");
+			}
+			else if(thing instanceof Extender) {
+				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " extender at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended");
+			}
+			else if(thing instanceof Retractor) {
+				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " extender at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended");
+			}
+			else if(thing instanceof LongExtender) {
+				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " long extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
+			}
+			else if(thing instanceof Wall) {
+				System.out.println(" - A wall at (" + thing.x + ", " + thing.y + ")");
+			}
+		}
+		System.out.println("End printing for level " + this.id);
+		System.out.println("-----------------");
 	}
 	public String selectedToString() {
 		/*
@@ -881,5 +887,24 @@ public class Level {
 			return false;
 		}
 		return true;
+	}
+	public boolean canSelectedBePushed(String dir) {
+		/* Returns whether all the selected objects can be pushed in the direction. */
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(thing.selected && !thing.canBePushed(dir)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void snapToGrid() {
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			thing.x = Math.round((float) thing.x);
+			thing.y = Math.round((float) thing.y);
+			thing.extension = Math.round((float) thing.extension);
+		}
 	}
 }

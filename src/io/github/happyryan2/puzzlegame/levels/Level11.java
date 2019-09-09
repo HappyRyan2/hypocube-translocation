@@ -5,20 +5,20 @@ import io.github.happyryan2.puzzlegame.game.Level;
 
 public class Level11 extends Level {
 	public Level11() {
-		super.x = 1000;
+		super.id = 11;
+		super.x = 400;
 		super.y = 200;
 		super.requirements.add(9);
-		super.id = 11;
 
-		super.manualSize = true;
-		super.width = 3;
-		super.height = 5;
-
-		super.content.add(new Retractor(0, 1, "down", true));
-		super.content.add(new Extender(0, 2, "right"));
-		super.content.add(new Retractor(1, 3, "up", true));
-		super.content.add(new Player(1, 1));
-		super.content.add(new Goal(2, 1));
-		super.content.add(new Extender(2, 3, "none"));
+		super.content.add(new Retractor(1, 1, "down", false, true));
+		super.content.add(new Retractor(2, 3, "up", false));
+		super.content.add(new Retractor(0, 3, "right", false));
+		super.content.add(new Player(2, 4));
+		super.content.add(new Goal(1, 3));
+		super.content.add(new Retractor(0, 1, "right", false));
+		super.content.add(new Wall(1, 4));
+		super.content.add(new Wall(0, 2));
+		super.content.add(new Wall(0, 0));
+		super.content.add(new Wall(1, 0));
 	}
 }

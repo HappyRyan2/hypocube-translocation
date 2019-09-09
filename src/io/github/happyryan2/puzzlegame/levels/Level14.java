@@ -1,25 +1,27 @@
 package io.github.happyryan2.puzzlegame.levels;
 
-import io.github.happyryan2.puzzlegame.objects.*;
 import io.github.happyryan2.puzzlegame.game.Level;
+import io.github.happyryan2.puzzlegame.objects.*;
 
 public class Level14 extends Level {
 	public Level14() {
 		super.id = 14;
-		super.x = 400;
-		super.y = 0;
+		super.requireAll = true;
 		super.requirements.add(6);
 		super.requirements.add(12);
-		super.requireAll = true;
+		super.x = 1000;
+		super.y = -200;
 
-		super.manualSize = true;
-		super.width = 3;
-		super.height = 5;
-
-		super.content.add(new Retractor(1, 4, "up", true));
-		super.content.add(new Retractor(1, 3, "up"));
-		super.content.add(new Retractor(0, 1, "right"));
-		super.content.add(new Player(1, 2));
-		super.content.add(new Goal(1, 0));
+		super.content.add(new Retractor(0, 1, "right", true));
+		super.content.add(new Retractor(0, 2, "right", true));
+		super.content.add(new Retractor(1, 1, "down", false));
+		super.content.add(new Wall(0, 0));
+		super.content.add(new Wall(1, 0));
+		super.content.add(new Wall(2, 0));
+		super.content.add(new Wall(3, 0));
+		super.content.add(new Wall(4, 3));
+		super.content.add(new Wall(6, 2));
+		super.content.add(new Player(6, 1));
+		super.content.add(new Goal(7, 1));
 	}
 }

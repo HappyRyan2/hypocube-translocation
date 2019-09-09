@@ -13,38 +13,38 @@ import java.awt.geom.AffineTransform;
 
 import io.github.happyryan2.puzzlegame.game.Game;
 import io.github.happyryan2.puzzlegame.game.Level;
-import io.github.happyryan2.puzzlegame.utilities.ImageLoader;
+import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Player extends Thing {
-	private Color darkBlue = new Color(0, 0, 255);
-	private Color lightBlue = new Color(0, 128, 255);
-	public Image img = ImageLoader.loadImage("res/graphics/objects/player.png");
+	public Image img = ResourceLoader.loadImage("res/graphics/objects/player.png");
+
 	public Player(float x, float y) {
 		super.x = x;
 		super.y = y;
 		super.origX = x;
 		super.origY = y;
 	}
-	public void update() {
-		if(super.deleted) { return; }
-		// super.height = Game.sizes[(int) Game.levelSize - 2];
-		super.height = 0.1;
-		//movement
+	public Player(Player p) {
+		this(p.x, p.y);
+	}
+
+	public void update() { }
+	public void move() {
 		if(super.moveDir == "up") {
-			super.y -= 0.05;
+			super.y -= Game.animationSpeed;
 		}
 		else if(super.moveDir == "down") {
-			super.y += 0.05;
+			super.y += Game.animationSpeed;
 		}
 		else if(super.moveDir == "left") {
-			super.x -= 0.05;
+			super.x -= Game.animationSpeed;
 		}
 		else if(super.moveDir == "right") {
-			super.x += 0.05;
+			super.x += Game.animationSpeed;
 		}
 		if(super.moveDir != "none") {
 			super.timeMoving ++;
-			if(super.timeMoving >= 20) {
+			if(super.timeMoving >= 1 / Game.animationSpeed) {
 				super.x = Math.round(super.x);
 				super.y = Math.round(super.y);
 				super.moveDir = "none";
@@ -52,6 +52,7 @@ public class Player extends Thing {
 			}
 		}
 	}
+
 	public void display(Graphics g) {
 		/* Calculate position */
 		int x = (int) (super.x * Game.tileSize);
@@ -74,22 +75,7 @@ public class Player extends Thing {
 		g2.drawImage(img, Math.round(-(w / 2) / xScale), Math.round(-(h / 2) / yScale), null);
 		g2.setTransform(at);
 	}
-	public void raisedRect(Graphics g, double x, double y, double w, double h) {
-		if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {
-			x = (super.x * Game.tileSize) + Game.tileSize - w;
-		}
-		if(y + h >= (super.y * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4) && super.extension == 0) {
-			y = (super.y * Game.tileSize) + Game.tileSize - h;
-		}
-		int vX = (int) (x);
-		int vY = (int) (y);
-		int vW = (int) (w);
-		int vH = (int) (h);
-		g.setColor(lightBlue);
-		g.fillRect(vX, (int) (vY + vH + super.hoverY), vW, (int) (Game.tileSize * super.height - super.hoverY));
-		g.setColor(darkBlue);
-		g.fillRect(vX, (int) (vY + super.hoverY), vW, vH);
-	}
+
 	public boolean canBePushed(String dir) {
 		if(super.deleted) { return true; }
 		return !((dir == "left" && super.x == 0) || (dir == "right" && super.x == Game.currentLevel.width - 1) || (dir == "up" && super.y == 0) || (dir == "down" && super.y == Game.currentLevel.height - 1));

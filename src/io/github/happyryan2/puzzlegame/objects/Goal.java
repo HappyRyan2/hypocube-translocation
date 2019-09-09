@@ -9,17 +9,22 @@ import java.awt.geom.AffineTransform;
 import io.github.happyryan2.puzzlegame.game.Game;
 import io.github.happyryan2.puzzlegame.game.Level;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
-import io.github.happyryan2.puzzlegame.utilities.ImageLoader;
+import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Goal extends Thing {
-	public Color darkRed = new Color(128, 0, 0);
-	public static Image img = ImageLoader.loadImage("res/graphics/objects/goal.png");
+
+	public static Image img = ResourceLoader.loadImage("res/graphics/objects/goal.png");
+
 	public Goal(float x, float y) {
 		super.x = x;
 		super.y = y;
 		super.origX = x;
 		super.origY = y;
 	}
+	public Goal(Goal g) {
+		this(g.x, g.y);
+	}
+
 	public void update() {
 		super.extending = false;
 		super.retracting = false;
@@ -38,6 +43,7 @@ public class Goal extends Thing {
 		Screen.scaleImage(g2, img, w, h);
 		g2.setTransform(at);
 	}
+
 	public boolean canBePushed() {
 		return true;
 	}

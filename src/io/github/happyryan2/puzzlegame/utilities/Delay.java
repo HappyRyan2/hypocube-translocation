@@ -33,7 +33,7 @@ public class Delay extends TimerTask {
 		MousePos.update();
 
 		//run the game
-		Game.run();
+		Game.update();
 
 		//repaint to show changes
 		Screen.canvas.repaint();

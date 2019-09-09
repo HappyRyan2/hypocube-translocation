@@ -1,17 +1,13 @@
 package io.github.happyryan2.puzzlegame.levels;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import io.github.happyryan2.puzzlegame.objects.*;
 import io.github.happyryan2.puzzlegame.game.Level;
+import io.github.happyryan2.puzzlegame.objects.*;
 
 public class Level3 extends Level {
-	List content = new ArrayList();
 	public Level3() {
 		super.requirements.add(2);
 		super.id = 3;
-		super.x = 200;
+		super.x = 400;
 		super.y = -200;
 
 		super.manualSize = true;

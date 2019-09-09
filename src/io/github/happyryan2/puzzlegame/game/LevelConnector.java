@@ -28,6 +28,10 @@ public class LevelConnector {
 		this.color = color;
 	}
 	public void init() {
+		if(this.initialized) {
+			return;
+		}
+		this.initialized = true;
 		/* Calculate total length */
 		for(byte i = 0; i < this.coords.length - 1; i ++) {
 			Point current = this.coords[i];
@@ -37,9 +41,8 @@ public class LevelConnector {
 		}
 	}
 	public void display(Graphics g) {
-		if(!initialized) {
+		if(!this.initialized) {
 			this.init();
-			initialized = true;
 		}
 		/* Don't display if previous level has not been won */
 		for(byte i = 0; i < Game.levels.size(); i ++) {
