@@ -35,12 +35,11 @@ public class Level {
 	public float opacity = 0;
 
 	/* Buttons */
-	public ImageButton menu = new ImageButton(400, 100, 50, "res/graphics/buttons/next.png", new Color(255, 255, 255), new Color(175, 175, 175));
-	public ImageButton retry = new ImageButton(300, 100, 50, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175));
-	public ImageButton pause = new ImageButton(30, 30, 40, "res/graphics/buttons/pause2.png", new Color(255, 255, 255), new Color(175, 175, 175));
-	public TextButton restart = new TextButton(300, 325, 200, 50, "Restart", new Color(255, 255, 255), new Color(175, 175, 175));
-	public TextButton exit = new TextButton(300, 400, 200, 50, "Exit", new Color(255, 255, 255), new Color(175, 175, 175));
-	public ImageButton undo = new ImageButton(100, 30, 40, "res/graphics/buttons/undo.png", new Color(255, 255, 255), new Color(175, 175, 175));
+	public ImageButton exit = new ImageButton(30, 30, 40, "res/graphics/buttons/pause2.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on play screen
+	public ImageButton exit2 = new ImageButton(0, 0, 50, "res/graphics/buttons/next.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on win screen
+	public ImageButton restart2 = new ImageButton(0, 0, 50, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on play screen
+	public ImageButton restart = new ImageButton(100, 30, 40, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on win screen
+	public ImageButton undo = new ImageButton(170, 30, 40, "res/graphics/buttons/undo.png", new Color(255, 255, 255), new Color(175, 175, 175));
 
 	public boolean paused = false;
 
@@ -145,8 +144,9 @@ public class Level {
 		/* Move win GUI + buttons away */
 		this.completeNow = false;
 		this.completionY = -800;
-		this.pause.y = 30;
 		this.undo.y = 30;
+		this.exit.y = 30;
+		this.restart.y = 30;
 		/* Reset all game objects to original position */
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -215,12 +215,10 @@ public class Level {
 	public void update() {
 		/* Update level size */
 		this.resize();
-		/* Pause + undo buttons */
-		this.pause.update();
-		if(this.pause.pressed && !this.pause.pressedBefore) {
-			this.paused = !this.paused;
-		}
-		if(!this.paused && UndoStack.stack.size() != 0) {
+		/* Buttons shown while playing */
+		this.restart.update();
+		this.exit.update();
+		if(UndoStack.stack.size() != 0) {
 			this.undo.update();
 		}
 		else if(this.undo.hoverY > 0) {
@@ -229,25 +227,17 @@ public class Level {
 		if(this.undo.pressed && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && UndoStack.stack.size() > 0) {
 			UndoStack.undoAction();
 		}
-		/* Pause menu buttons */
-		if(this.paused) {
-			this.restart.update();
-			this.exit.update();
-			if(this.restart.pressed && !this.isForTesting) {
-				Game.transition = 255;
-				this.paused = false;
-				this.reset();
-				UndoStack.resetStack();
-			}
-			if(this.exit.pressed) {
-				this.paused = false;
-				Game.transition = 255;
-				Game.state = "level-select";
-				UndoStack.resetStack();
-				Game.chainUndo = false;
-				Game.lastAction = false;
-				return;
-			}
+		if(this.exit.pressed) {
+			UndoStack.resetStack();
+			Game.transition = 255;
+			Game.state = "level-select";
+			return;
+		}
+		if(this.restart.pressed && !this.restart.pressedBefore) {
+			Game.transition = 255;
+			this.paused = false;
+			this.reset();
+			UndoStack.resetStack();
 		}
 		/* Win menu buttons */
 		if(this.isComplete()) {
@@ -256,11 +246,12 @@ public class Level {
 				Game.saveProgress();
 			}
 			this.completeNow = true;
-			this.retry.update();
-			this.menu.update();
-			this.pause.y -= 5;
+			this.restart2.update();
+			this.exit2.update();
+			this.exit.y -= 5;
 			this.undo.y -= 5;
-			if(this.menu.pressed) {
+			this.restart.y -= 5;
+			if(this.exit2.pressed) {
 				Game.transition = 255;
 				Game.state = "level-select";
 				UndoStack.resetStack();
@@ -271,7 +262,7 @@ public class Level {
 					}
 				}
 			}
-			if(this.retry.pressed) {
+			if(this.restart2.pressed) {
 				Game.transition = 255;
 				this.reset();
 				UndoStack.resetStack();
@@ -340,6 +331,8 @@ public class Level {
 		g.translate(-this.left, -this.top);
 		/* GUI box for winning */
 		if(this.isComplete()) {
+			this.restart2.display(g);
+			this.exit2.display(g);
 			if(this.completionY < 0) {
 				this.completionY += Math.max((0 - this.completionY) / 15, 1);
 			}
@@ -348,12 +341,12 @@ public class Level {
 			g.setFont(Screen.fontRighteous);
 			g.setColor(new Color(255, 255, 255));
 			Screen.centerText(g, Screen.screenW / 2, this.completionY + 266, "Level Complete");
-			this.retry.y = this.completionY + Screen.screenH / 3 * 2;
-			this.menu.y = this.completionY + Screen.screenH / 3 * 2;
-			this.retry.display(g);
-			this.menu.display(g);
-			this.retry.x = Screen.screenW / 2 - 50;
-			this.menu.x = Screen.screenW / 2 + 50;
+			this.restart2.y = this.completionY + Screen.screenH / 3 * 2;
+			this.exit2.y = this.completionY + Screen.screenH / 3 * 2;
+			this.restart2.display(g);
+			this.exit2.display(g);
+			this.restart2.x = Screen.screenW / 2 - 50;
+			this.exit2.x = Screen.screenW / 2 + 50;
 		}
 		else {
 			this.completionY = -Screen.screenH;
@@ -372,8 +365,9 @@ public class Level {
 			this.exit.display(g);
 		}
 		/* Buttons */
-		this.pause.display(g);
+		this.exit.display(g);
 		this.undo.display(g);
+		this.restart.display(g);
 	}
 	public void displayLevelSelect(Graphics g) {
 		/* Don't display if the level has not been discovered */

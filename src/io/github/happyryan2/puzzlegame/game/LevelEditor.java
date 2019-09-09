@@ -11,13 +11,13 @@ import io.github.happyryan2.puzzlegame.levels.*;
 
 public class LevelEditor {
 
-	public static TextButton mode = new TextButton(130, 10, 100, 30, "extend", new Color(150, 150, 150), new Color(100, 100, 100));
-	public static TextButton isWeak = new TextButton(240, 10, 100, 30, "is weak", new Color(150, 150, 150), new Color(100, 100, 100));
-	public static TextButton editing = new TextButton(350, 10, 100, 30, "editing", new Color(150, 150, 150), new Color(100, 100, 100));
-	public static TextButton printCode = new TextButton(460, 10, 100, 30, "print code", new Color(150, 150, 150), new Color(100, 100, 100));
-	public static TextButton checkSolvable = new TextButton(570, 10, 100, 30, "solve", new Color(150, 150, 150), new Color(100, 100, 100));
-	public static TextButton crop = new TextButton(130, 50, 100, 30, "crop", new Color(150, 150, 150), new Color(100, 100, 100));
-	public static TextButton uncrop = new TextButton(240, 50, 100, 30, "uncrop", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton mode = new TextButton(240, 10, 100, 30, "extend", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton isWeak = new TextButton(350, 10, 100, 30, "is weak", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton editing = new TextButton(460, 10, 100, 30, "editing", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton printCode = new TextButton(570, 10, 100, 30, "print code", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton checkSolvable = new TextButton(240, 50, 100, 30, "solve", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton crop = new TextButton(350, 50, 100, 30, "crop", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton uncrop = new TextButton(460, 50, 100, 30, "uncrop", new Color(150, 150, 150), new Color(100, 100, 100));
 
 	public static Level level = new Level();
 
@@ -309,9 +309,9 @@ public class LevelEditor {
 					nextDepth.preY = y;
 
 					/* Remove unnecessary properties (mostly buttons) to save memory */
-					nextDepth.menu = null;
-					nextDepth.retry = null;
-					nextDepth.pause = null;
+					nextDepth.exit2 = null;
+					nextDepth.restart2 = null;
+					nextDepth.exit = null;
 					nextDepth.restart = null;
 					nextDepth.exit = null;
 					nextDepth.undo = null;
