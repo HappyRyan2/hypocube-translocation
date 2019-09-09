@@ -10,7 +10,6 @@ import io.github.happyryan2.puzzlegame.utilities.Screen;
 import io.github.happyryan2.puzzlegame.utilities.MouseClick;
 import io.github.happyryan2.puzzlegame.utilities.MousePos;
 import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
-import io.github.happyryan2.puzzlegame.game.Button;
 import io.github.happyryan2.puzzlegame.game.LevelSelect;
 import io.github.happyryan2.puzzlegame.game.LevelConnector;
 
@@ -43,10 +42,9 @@ public class Level {
 	public TextButton exit = new TextButton(300, 400, 200, 50, "Exit", new Color(255, 255, 255), new Color(175, 175, 175));
 	public ImageButton undo = new ImageButton(100, 30, 40, "res/graphics/buttons/undo.png", new Color(255, 255, 255), new Color(175, 175, 175));
 
-	public boolean lastLevel = false;
 	public boolean paused = false;
 
-	/* Visual size + location (in pixels) */
+	/* Visual size + location of top-left corner (in pixels) */
 	public int visualWidth = 0;
 	public int visualHeight = 0;
 	public int top = 0;
@@ -63,34 +61,32 @@ public class Level {
 	public Level() {
 		this.content = new ArrayList();
 	}
-	public Level copy() {
-		Level clone = new Level();
-		clone.index = this.index;
-		clone.depth = this.depth;
-		clone.width = this.width; clone.height = this.height;
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
+	public Level(Level level) {
+		/* Copy constructor */
+		this();
+		this.index = level.index;
+		this.depth = level.depth;
+		this.width = level.width; this.height = level.height;
+		for(short i = 0; i < level.content.size(); i ++) {
+			Thing thing = (Thing) level.content.get(i);
 			if(thing instanceof Extender) {
-				Extender extender = new Extender(thing.x, thing.y, thing.dir, thing.isWeak);
-				extender.extension = thing.extension;
-				clone.content.add(extender);
+				Extender extender = new Extender((Extender) thing);
+				this.content.add(extender);
 			}
 			else if(thing instanceof Retractor) {
-				Retractor retractor = new Retractor(thing.x, thing.y, thing.dir, thing.isWeak);
-				retractor.extension = thing.extension;
-				clone.content.add(retractor);
+				Retractor retractor = new Retractor((Retractor) thing);
+				this.content.add(retractor);
 			}
 			else if(thing instanceof Player) {
-				clone.content.add(new Player(thing.x, thing.y));
+				this.content.add(new Player((Player) thing));
 			}
 			else if(thing instanceof Goal) {
-				clone.content.add(new Goal(thing.x, thing.y));
+				this.content.add(new Goal((Goal) thing));
 			}
 			else if(thing instanceof Wall) {
-				clone.content.add(new Wall(thing.x, thing.y));
+				this.content.add(new Wall((Wall) thing));
 			}
 		}
-		return clone;
 	}
 	public boolean equals(Level level) {
 		/*
@@ -146,10 +142,12 @@ public class Level {
 	}
 
 	public void reset() {
+		/* Move win GUI + buttons away */
 		this.completeNow = false;
 		this.completionY = -800;
 		this.pause.y = 30;
 		this.undo.y = 30;
+		/* Reset all game objects to original position */
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.x = thing.origX;
@@ -161,8 +159,6 @@ public class Level {
 			}
 			else if(thing instanceof Player || thing instanceof Goal) {
 				thing.deleted = false;
-				thing.hoverY = 0;
-				thing.color = 0;
 				thing.winAnimation = false;
 			}
 		}
@@ -217,10 +213,23 @@ public class Level {
 	}
 
 	public void update() {
-		/* initialize */
-		if(!resized || true) {
-			this.resize();
+		/* Update level size */
+		this.resize();
+		/* Pause + undo buttons */
+		this.pause.update();
+		if(this.pause.pressed && !this.pause.pressedBefore) {
+			this.paused = !this.paused;
 		}
+		if(!this.paused && UndoStack.stack.size() != 0) {
+			this.undo.update();
+		}
+		else if(this.undo.hoverY > 0) {
+			this.undo.hoverY --;
+		}
+		if(this.undo.pressed && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && UndoStack.stack.size() > 0) {
+			UndoStack.undoAction();
+		}
+		/* Pause menu buttons */
 		if(this.paused) {
 			this.restart.update();
 			this.exit.update();
@@ -228,26 +237,51 @@ public class Level {
 				Game.transition = 255;
 				this.paused = false;
 				this.reset();
-				Stack.resetStack();
+				UndoStack.resetStack();
 			}
 			if(this.exit.pressed) {
 				this.paused = false;
 				Game.transition = 255;
 				Game.state = "level-select";
-				Game.startingLevel = true;
-				Stack.resetStack();
+				UndoStack.resetStack();
 			}
 		}
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			thing.selected = false;
+		/* Win menu buttons */
+		if(this.isComplete()) {
+			if(!this.completedBefore) {
+				this.completedBefore = true;
+				Game.saveProgress();
+			}
+			this.completeNow = true;
+			this.retry.update();
+			this.menu.update();
+			this.pause.y -= 5;
+			this.undo.y -= 5;
+			if(this.menu.pressed) {
+				Game.transition = 255;
+				Game.state = "level-select";
+				UndoStack.resetStack();
+				for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
+					LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
+					if(connector.previousLevel == this.id && connector.animationProgress == 0) {
+						connector.animationProgress = 1;
+					}
+				}
+			}
+			if(this.retry.pressed) {
+				Game.transition = 255;
+				this.reset();
+				UndoStack.resetStack();
+			}
 		}
+		/* Load content */
+		this.clearSelected();
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.update();
 		}
+		/* Undos + movement */
 		if(Game.lastAction && Game.timeSinceLastAction >= 1 / Game.animationSpeed) {
-			System.out.println("           Final action - freezing everything");
 			for(short i = 0; i < this.content.size(); i ++) {
 				Thing thing = (Thing) this.content.get(i);
 				thing.x = Math.round(thing.x);
@@ -269,62 +303,15 @@ public class Level {
 			Thing thing = (Thing) this.content.get(i);
 			thing.move();
 		}
-		if(this.isComplete()) {
-			if(!this.completedBefore) {
-				this.completedBefore = true;
-				Game.updateProgress();
-			}
-			this.completeNow = true;
-			this.retry.update();
-			this.menu.update();
-			this.pause.y -= 5;
-			this.undo.y -= 5;
-			if(this.menu.pressed) {
-				Game.transition = 255;
-				Game.state = "level-select";
-				Stack.resetStack();
-				for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
-					LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
-					if(connector.previousLevel == this.id && connector.animationProgress == 0) {
-						connector.animationProgress = 1;
-					}
-				}
-			}
-			if(this.retry.pressed) {
-				Game.transition = 255;
-				Game.startingLevel = true;
-				this.reset();
-				Stack.resetStack();
-			}
-		}
-		this.pause.update();
-		if(this.pause.pressed && !this.pause.pressedBefore) {
-			this.paused = !this.paused;
-		}
-		if(!this.paused && Stack.stack.size() != 0) {
-			this.undo.update();
-		}
-		else if(this.undo.hoverY > 0) {
-			this.undo.hoverY --;
-		}
-		// System.out.println("Transitioning? " + this.transitioning());
-		// System.out.println("---------------");
 		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
 			Game.timeSinceLastAction ++;
 		}
-		if(this.undo.pressed && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && Stack.stack.size() > 0) {
-			System.out.println("Undoing because clicks. Game.chainUndo is " + Game.chainUndo);
-			// System.out.println("Stack size is: " + Stack.stack.size());
-			Stack.undoAction();
-		}
 		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
-			Stack.undoAction();
-			// System.out.println("Undoing because chaining");
+			UndoStack.undoAction();
 		}
-		// System.out.println("The extender's extension is " + ((Thing) this.content.get(6)).extension + " and it is " + (((Thing) this.content.get(6)).extending ? "" : " not") + " extending.");
 	}
 	public void display(Graphics g) {
-		// walls + background
+		/* walls + background */
 		g.setColor(wallColor);
 		g.fillRect(0, 0, Screen.screenW, Screen.screenH);
 		for(byte x = 0; x < this.width; x ++) {
@@ -332,34 +319,14 @@ public class Level {
 				this.fillArea(g, x, y);
 			}
 		}
-		// sort by y-value (display top ones first)
-		List sorted = new ArrayList();
-		List unsorted = new ArrayList();
+		/* Display objects */
+		g.translate(this.left, this.top);
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			unsorted.add(thing);
-		}
-		while(unsorted.size() > 0) {
-			int highestIndex = 0;
-			for(short i = 0; i < unsorted.size(); i ++) {
-				Thing thing = (Thing) unsorted.get(i);
-				Thing highest = (Thing) unsorted.get(highestIndex);
-				if(thing.y < highest.y && !(highest instanceof Goal) || thing instanceof Goal) {
-					highestIndex = i;
-				}
-			}
-			Thing thing = (Thing) unsorted.get(highestIndex);
-			sorted.add(thing);
-			unsorted.remove(highestIndex);
-		}
-		// display objects
-		g.translate(this.left, this.top);
-		for(short i = 0; i < sorted.size(); i ++) {
-			Thing thing = (Thing) sorted.get(i);
 			thing.display(g);
 		}
 		g.translate(-this.left, -this.top);
-		//gui box for winning
+		/* GUI box for winning */
 		if(this.isComplete()) {
 			if(this.completionY < 0) {
 				this.completionY += Math.max((0 - this.completionY) / 15, 1);
@@ -392,11 +359,12 @@ public class Level {
 			this.restart.display(g);
 			this.exit.display(g);
 		}
-		// pause button
+		/* Buttons */
 		this.pause.display(g);
 		this.undo.display(g);
 	}
 	public void displayLevelSelect(Graphics g) {
+		/* Don't display if the level has not been discovered */
 		if(!this.discovered) {
 			return;
 		}
@@ -409,6 +377,7 @@ public class Level {
 				}
 			}
 		}
+		/* Display level image with opacity */
 		this.opacity += 0.05;
 		Image img = (this.completedBefore) ? LevelSelect.completeLevel : (this.canPlay() ? LevelSelect.incompleteLevel : LevelSelect.inaccessibleLevel);
 		Graphics2D g2 = (Graphics2D) g;
@@ -418,6 +387,7 @@ public class Level {
 		}
 		g2.translate(this.x, this.y);
 		Screen.scaleImage(g2, img, 100, 100);
+		/* Display level number */
 		if(this.completedBefore) {
 			g2.setColor(new Color(66, 139, 255));
 		}
@@ -440,7 +410,6 @@ public class Level {
 			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
 				Game.levelOpen = this.id;
 				Game.currentLevel = this;
-				Game.startingLevel = true;
 				Game.state = "play";
 				Game.transition = 255;
 				this.reset();
@@ -559,13 +528,13 @@ public class Level {
 		return null;
 	};
 	public void select(float x, float y) {
+		/* Selects the object at (x, y) */
 		Thing thing = this.getAtPos(x, y);
 		if(thing != null && !thing.ignoring) {
 			thing.selected = true;
 		}
 	}
 	public void moveTile(float x, float y, String dir) {
-		// System.out.println("Moving tile: (" + x + ", " + y + ")");
 		/*
 		Selects the tile, as well as any other tiles that:
 		 - would be pushed by it moving
@@ -614,7 +583,6 @@ public class Level {
 		}
 	}
 	public void moveObject(float x, float y, String dir) {
-		// System.out.println("moving object at (" + x + ", " + y + ") " + dir);
 		/*
 		Selects the object at that position, as well as any other objects that:
 		 - would be pushed by it moving
@@ -661,7 +629,6 @@ public class Level {
 		/*
 		Returns true if each goal has a player on it.
 		*/
-		boolean complete = true;
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing instanceof Goal) {
@@ -669,14 +636,12 @@ public class Level {
 				for(short j = 0; j < this.content.size(); j ++) {
 					Thing thing2 = (Thing) this.content.get(j);
 					if(thing2 instanceof Player && thing2.x == thing.x && thing2.y == thing.y) {
-						// System.out.println("goal at (" + thing.x + ", " + thing.y + ") has a player on it");
 						occupied = true;
 						break;
 					}
 				}
 				if(!occupied) {
-					complete = false;
-					break;
+					return false;
 				}
 			}
 		}
@@ -688,10 +653,9 @@ public class Level {
 			}
 		}
 		if(!hasAGoal) {
-			// System.out.println("the level does not have a goal");
 			return false; // level is under construction
 		}
-		return complete;
+		return true;
 	}
 	public boolean winAnimationDone() {
 		/*
@@ -737,20 +701,10 @@ public class Level {
 	}
 	public boolean transitioning(boolean ignoreChainUndos) {
 		if(Game.chainUndo && !ignoreChainUndos) {
-			// System.out.println("Game is transitioning because it's doing a chain undo");
 			return true;
 		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			if(thing.moveDir != "none") {
-				// System.out.println("something at (" + thing.x + ", " + thing.y + ") is moving");
-			}
-			else if(thing.extending) {
-				// System.out.println("something is extending");
-			}
-			else if(thing.retracting) {
-				// System.out.println("something is retracting");
-			}
 			if(thing.moveDir != "none" || thing.extending || thing.retracting && !(thing instanceof Goal)) {
 				return true;
 			}
@@ -758,25 +712,19 @@ public class Level {
 		return false;
 	}
 	public boolean transitioning() {
-		return transitioning(false);
+		return this.transitioning(false);
 	}
 
 	public boolean isEmpty(int x, int y) {
-		if(x < 0 || y < 0 || x >= width || y >= height) {
+		/* Return whether there is not a wall at that position */
+		if(x < 0 || y < 0 || x >= width || y >= height || this.getAtPos(x, y) instanceof Wall) {
 			return false;
-		}
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			if(thing instanceof Wall && thing.x == x && thing.y == y) {
-				return false;
-			}
 		}
 		return true;
 	}
 	public void fillArea(Graphics g, int x, int y) {
 		/*
 		Fills an area the correct color + with rounded corners where necessary.
-		(Walls = 200, Background = 150)
 		*/
 		Graphics2D g2 = (Graphics2D) g;
 		if(this.isEmpty(x, y)) {
@@ -934,6 +882,7 @@ public class Level {
 		return true;
 	}
 	public boolean canSelectedBePushed(String dir) {
+		/* Returns whether all the selected objects can be pushed in the direction. */
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing.selected && !thing.canBePushed(dir)) {
@@ -942,5 +891,13 @@ public class Level {
 		}
 		return true;
 	}
+
+	public void snapToGrid() {
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			thing.x = Math.round((float) thing.x);
+			thing.y = Math.round((float) thing.y);
+			thing.extension = Math.round((float) thing.extension);
+		}
+	}
 }
-// note to self: make Stack.addAction() make actions be chain if they are also final

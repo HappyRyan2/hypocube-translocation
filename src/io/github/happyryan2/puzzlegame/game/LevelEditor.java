@@ -10,29 +10,53 @@ import io.github.happyryan2.puzzlegame.objects.*;
 import io.github.happyryan2.puzzlegame.levels.*;
 
 public class LevelEditor {
-	public static Button mode = new Button(130, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "extend", "rect");
-	public static Button isWeak = new Button(240, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "is weak", "rect");
-	public static Button editing = new Button(350, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "editing", "rect");
-	public static Button printCode = new Button(460, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "print code", "rect");
-	public static Button checkSolvable = new Button(570, 10, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "solve", "rect");
-	public static Button crop = new Button(130, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "crop", "rect");
-	public static Button uncrop = new Button(240, 50, 100, 30, new Color(100, 100, 100), new Color(150, 150, 150), "uncrop", "rect");
+
+	public static TextButton mode = new TextButton(130, 10, 100, 30, "extend", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton isWeak = new TextButton(240, 10, 100, 30, "is weak", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton editing = new TextButton(350, 10, 100, 30, "editing", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton printCode = new TextButton(460, 10, 100, 30, "print code", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton checkSolvable = new TextButton(570, 10, 100, 30, "solve", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton crop = new TextButton(130, 50, 100, 30, "crop", new Color(150, 150, 150), new Color(100, 100, 100));
+	public static TextButton uncrop = new TextButton(240, 50, 100, 30, "uncrop", new Color(150, 150, 150), new Color(100, 100, 100));
+
 	public static Level level = new Level();
+
 	public static boolean initialized = false;
-	public static List tree = new ArrayList(); // for checking whether it is solvable or not
-	public static List solutionTree = new ArrayList();
+
+	public static List tree = new ArrayList(); // Not a tree, just an ArrayList. Still functions as a tree. Used for solving.
+	public static List solutionTree = new ArrayList(); // Definitely not a tree at all. Doesn't function as a tree. Used to remember the solution so it can play the solution back to you multiple times.
 	public static int solutionStep = -1;
+
 	public static int cropX = 0;
 	public static int cropY = 0;
 	public static boolean cropping = false;
+
+	public static void init() {
+		Game.tileSize = (800 - (level.top * 2)) / Game.levelSize;
+		Game.levelSize = 10;
+		level.isForTesting = true;
+		if(level.width == 0 && level.height == 0) {
+			level.width = 10;
+			level.height = 10;
+		}
+		level.left = 100;
+		level.top = 100;
+		initialized = true;
+	}
+
 	public static void update() {
+		level.resize();
+		Game.currentLevel = level;
+		/* Click to add items to the level */
 		if(MouseClick.mouseIsPressed && MousePos.x > level.left && MousePos.x < Screen.screenW - level.left && MousePos.y > level.top && MousePos.y < Screen.screenH - level.top && editing.text == "editing" && crop.text == "crop") {
+			/* Calculate position */
 			int x = MousePos.x;
 			int y = MousePos.y;
 			x -= level.left;
 			y -= level.top;
 			x = (int) Math.floor((float) x / (float) Game.tileSize);
 			y = (int) Math.floor((float) y / (float) Game.tileSize);
+			/* Remove what was previously there */
 			for(byte i = 0; i < level.content.size(); i ++) {
 				Thing thing = (Thing) level.content.get(i);
 				if(thing.x == x && thing.y == y) {
@@ -40,6 +64,7 @@ public class LevelEditor {
 					continue;
 				}
 			}
+			/* Add the new object */
 			String dir = (KeyInputs.keyA || KeyInputs.keyD) ? (KeyInputs.keyA ? "left" : "right") : ((KeyInputs.keyW || KeyInputs.keyS) ? (KeyInputs.keyW ? "up" : "down") : "none");
 			if(mode.text == "extend") {
 				level.content.add(new Extender(x, y, dir, (isWeak.text == "is weak")));
@@ -61,29 +86,23 @@ public class LevelEditor {
 			}
 			solutionTree.clear();
 		}
+		/* Cap level size at 3 */
 		if(Game.levelSize < 3) {
 			Game.levelSize = 3;
 			Game.tileSize = 200;
 		}
-		Game.currentLevel = level;
+		/* Initialize */
 		if(!initialized) {
-			Game.tileSize = (800 - (level.top * 2)) / Game.levelSize;
-			Game.levelSize = 10;
-			level.isForTesting = true;
-			if(level.width == 0 && level.height == 0) {
-				level.width = 10;
-				level.height = 10;
-			}
-			level.left = 100;
-			level.top = 100;
-			initialized = true;
+			init();
 		}
+		/* Update level */
 		if(editing.text == "playing" && !cropping) {
 			level.update();
 		}
 		else {
 			level.completionY = -1000;
 		}
+		/* Update buttons */
 		mode.update();
 		isWeak.update();
 		editing.update();
@@ -120,7 +139,6 @@ public class LevelEditor {
 		if(editing.pressed && !editing.pressedBefore) {
 			if(editing.text == "editing") {
 				level.reset();
-				Game.startingLevel = true;
 			}
 			editing.text = (editing.text == "editing") ? "playing" : "editing";
 		}
@@ -219,6 +237,7 @@ public class LevelEditor {
 			level.height = 10;
 			level.resize();
 		}
+		/* Replay solution */
 		if(solutionStep != -1 && !level.transitioning()) {
 			editing.text = "playing";
 			Game.currentLevel = level;
@@ -234,17 +253,33 @@ public class LevelEditor {
 			}
 			solutionStep --;
 		}
-		level.resize();
 	}
+	public static void display(Graphics g) {
+		level.display(g);
+		mode.display(g);
+		isWeak.display(g);
+		editing.display(g);
+		printCode.display(g);
+		checkSolvable.display(g);
+		crop.display(g);
+		uncrop.display(g);
+		if(cropping) {
+			g.setColor(new Color(100, 100, 100, 100));
+			g.fillRect(level.left, level.top, 800 - (level.left * 2), cropY - level.top); // top
+			g.fillRect(level.left, level.top, cropX - level.left, 800 - (level.top * 2)); // left
+			g.fillRect(level.left, MousePos.y, 800 - (level.left * 2), 800 - level.top - MousePos.y); // bottom
+			g.fillRect(MousePos.x, level.top, 800 - level.left - MousePos.x, 800 - (level.top * 2)); // right
+		}
+	}
+
 	public static void checkSolution() throws OutOfMemoryError {
 		/* First, clear the tree and set the root to be the current state */
 		tree.clear();
-		Level depth0 = level.copy();
+		Level depth0 = new Level(level);
 		depth0.depth = 0;
 		tree.add(depth0);
 
 		for(int i = 0; i < tree.size(); i ++) {
-			// System.out.println("Checking index: " + i + ". Indices left: " + (tree.size() - i));
 			Level currentLevel = (Level) tree.get(i);
 			Game.currentLevel = currentLevel;
 			for(short x = 0; x < currentLevel.width; x ++) {
@@ -263,12 +298,11 @@ public class LevelEditor {
 						Retractor retractor = (Retractor) thing;
 						retractor.onClick();
 					}
-					// System.out.println("clicked at (" + x + ", " + y + ")");
-					Stack.addAction();
+					UndoStack.addAction();
 					currentLevel.fastForward();
 
 					/* Add the modified state to the tree */
-					Level nextDepth = currentLevel.copy();
+					Level nextDepth = new Level(currentLevel);
 					nextDepth.depth = currentLevel.depth + 1;
 					nextDepth.parentIndex = i;
 					nextDepth.preX = x;
@@ -286,14 +320,14 @@ public class LevelEditor {
 					for(int j = 0; j < tree.size(); j ++) {
 						Level duplicate = (Level) tree.get(j);
 						if(nextDepth.equals(duplicate) && i != j) {
-							Stack.undoAction();
+							UndoStack.undoAction();
 							currentLevel.fastForward();
 							continue yLoop;
 						}
 					}
 					tree.add(nextDepth);
 
-					Stack.undoAction();
+					UndoStack.undoAction();
 					currentLevel.fastForward();
 
 					/* If the level has been won, terminate the algorithm and print the solution. */
@@ -342,23 +376,6 @@ public class LevelEditor {
 					System.out.println("a goal at (" + thing.x + ", " + thing.y + ")");
 				}
 			}
-		}
-	}
-	public static void display(Graphics g) {
-		level.display(g);
-		mode.display(g);
-		isWeak.display(g);
-		editing.display(g);
-		printCode.display(g);
-		checkSolvable.display(g);
-		crop.display(g);
-		uncrop.display(g);
-		if(cropping) {
-			g.setColor(new Color(100, 100, 100, 100));
-			g.fillRect(level.left, level.top, 800 - (level.left * 2), cropY - level.top); // top
-			g.fillRect(level.left, level.top, cropX - level.left, 800 - (level.top * 2)); // left
-			g.fillRect(level.left, MousePos.y, 800 - (level.left * 2), 800 - level.top - MousePos.y); // bottom
-			g.fillRect(MousePos.x, level.top, 800 - level.left - MousePos.x, 800 - (level.top * 2)); // right
 		}
 	}
 }

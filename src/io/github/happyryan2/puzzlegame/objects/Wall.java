@@ -7,9 +7,12 @@ public class Wall extends Thing {
 		super.origX = x;
 		super.origY = y;
 	}
+	public Wall(Wall w) {
+		this(w.x, w.y);
+	}
 
 	public boolean canBePushed() {
-		return true;
+		return false;
 	}
 	public void checkMovement() {
 		return;

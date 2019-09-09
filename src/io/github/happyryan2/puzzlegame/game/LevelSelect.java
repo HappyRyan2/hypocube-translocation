@@ -76,7 +76,7 @@ public class LevelSelect {
 			connector.display(g);
 		}
 		g2.translate(-scrollX - (Screen.screenW / 2), -scrollY - (Screen.screenH / 2));
-		/* debug + hax */
+		/* make all levels completed for dev */
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
 			if(level.id <= 15 && false) {

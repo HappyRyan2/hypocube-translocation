@@ -8,8 +8,8 @@ import java.awt.Image;
 import java.awt.geom.AffineTransform;
 
 import io.github.happyryan2.puzzlegame.game.Game;
-import io.github.happyryan2.puzzlegame.game.Stack;
-import io.github.happyryan2.puzzlegame.game.StackItem;
+import io.github.happyryan2.puzzlegame.game.UndoStack;
+import io.github.happyryan2.puzzlegame.game.UndoStackItem;
 import io.github.happyryan2.puzzlegame.game.Level;
 import io.github.happyryan2.puzzlegame.utilities.MousePos;
 import io.github.happyryan2.puzzlegame.utilities.MouseClick;
@@ -17,9 +17,6 @@ import io.github.happyryan2.puzzlegame.utilities.Screen;
 import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class LongExtender extends Thing {
-	public float x;
-	public float y;
-	public String dir;
 	public int timeExtending = 0;
 	public int timeRetracting = 0;
 
@@ -39,31 +36,24 @@ public class LongExtender extends Thing {
 		this(x, y, dir);
 		super.isWeak = isWeak;
 	}
-	public LongExtender(float x, float y, String dir, boolean isWeak, int extension) {
+	public LongExtender(float x, float y, String dir, boolean isWeak, float extension) {
 		this(x, y, dir, isWeak);
 		super.extension = extension;
 		super.origExtension = super.extension;
 	}
+	public LongExtender(LongExtender le) {
+		this(le.x, le.y, le.dir, le.isWeak, le.extension);
+	}
 
 	public void update() {
-		// calculate visual position for hitboxes
-		super.height = 0.1;
-		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
-		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
-		int w = (int) (Game.tileSize);
-		int h = (int) (Game.tileSize);
 		// detect hovering + clicks
 		if(!Game.currentLevel.transitioning() && this.cursorHovered() && !Game.currentLevel.isComplete() && !Game.currentLevel.paused) {
 			if(MouseClick.mouseIsPressed) {
 				this.onClick();
 			}
-			// System.out.println("Can it do something? " + this.canDoSomething());
 			if(this.canDoSomething()) {
 				Screen.cursor = "hand";
 			}
-		}
-		else if(this.hoverY > 0) {
-			super.hoverY --;
 		}
 	}
 	public void onClick() {
@@ -76,82 +66,63 @@ public class LongExtender extends Thing {
 		int h = (int) (Game.tileSize);
 		this.ignoring = true;
 		if(super.extension == 0) {
-			System.out.println("Clicked - Extending");
-			boolean forwards = this.canExtendForward();
-			boolean backwards = this.canExtendBackward();
 			if(this.canExtendForward()) {
 				Game.animationSpeed = Game.fastAnimationSpeed;
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
-				Stack.addAction();
+				UndoStack.addAction();
 				this.timeExtending = 0;
 			}
 			else if(this.canExtendBackward()) {
-				this.timeExtending = 0;
+				String backwards = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
+				super.moveDir = backwards;
+				Game.currentLevel.moveSelected(backwards);
 				Game.animationSpeed = Game.fastAnimationSpeed;
 				super.extending = true;
-				super.moveDir = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
-				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
-				Stack.addAction();
-				// System.out.println("Clicked - adding an action");
+				this.timeExtending = 0;
+				UndoStack.addAction();
 			}
 		}
 		else if(this.canRetractForward()) {
-			System.out.println("Clicked - Retracting");
+			String backwards = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
+			Game.currentLevel.moveSelected(backwards);
 			Game.animationSpeed = Game.fastAnimationSpeed;
 			super.retracting = true;
 			this.timeRetracting = 0;
-			Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left")); // move selected tiles in the opposite direction of super.dir
-			Stack.addAction();
-			((Stack) Stack.stack.get(Stack.stack.size() - 1)).lastAction = true;
-			Stack.setLastFinal(true);
-			Stack.setLastChain(true);
-			System.out.println("That action was the last");
-			// System.out.println("Clicked - adding an action");
+			UndoStack.addAction();
+			UndoStack.setLastFinal(true);
+			UndoStack.setLastChain(true);
 		}
-		this.ignoring = false;
+		super.ignoring = false;
 	}
 	public void move() {
 		if(super.extending) {
 			this.timeExtending ++;
 			super.extension += Game.animationSpeed;
 			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
-			if(Game.chainUndo) {
-				// System.out.println("Extension: " + super.extension + ", Time Extending: " + this.timeExtending);
-			}
+			/* Pause every integer extension to see if it should continue extending */
 			if(this.timeExtending >= (1 / Game.animationSpeed)) {
-				// System.out.println("Stopping at extension " + super.extension + ". Have been extending for " + );
-				for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
-					Thing thing = (Thing) Game.currentLevel.content.get(i);
-					thing.x = Math.round((float) thing.x);
-					thing.y = Math.round((float) thing.y);
-				}
-				super.extension = Math.round(super.extension);
+				Game.currentLevel.snapToGrid();
 				if(this.canExtendForward()) {
-					// System.out.println("  Can extend forward");
 					if(!Game.chainUndo && !Game.chainUndoLastFrame && Game.timeSinceLastAction >= 3 && super.extension >= 1) {
-						// System.out.println("  Not doing a chain undo");
-						// System.out.println("Extending forward - adding action with extension " + super.extension);
 						Game.currentLevel.moveSelected(super.dir);
 						this.timeExtending = 0;
-						System.out.println("Extending, so added an action at extension " + super.extension + ". Time since last final action: " + Game.timeSinceLastAction);
-						Stack.addAction(true);
+						UndoStack.addAction(true);
 					}
 					else {
-						// System.out.println("  Doing a chain undo");
+						/* Wait for the chain undo to tell it to keep moving */
 						this.timeExtending = 0;
 						super.extending = false;
 					}
 				}
 				else if(this.canExtendBackward()) {
 					if(!Game.chainUndo && super.extension >= 1) {
-						String backward = (super.dir == "right" || super.dir == "left") ? (super.dir == "right" ? "left" : "right") : (super.dir == "up" ? "down" : "up");
-						Game.currentLevel.moveSelected(backward);
+						String backwards = (super.dir == "right" || super.dir == "left") ? (super.dir == "right" ? "left" : "right") : (super.dir == "up" ? "down" : "up");
+						Game.currentLevel.moveSelected(backwards);
 						this.timeExtending = 0;
 						super.timeMoving = 0;
-						super.moveDir = backward;
-						// System.out.println("Extending backward - adding action with extension " + super.extension);
-						Stack.addAction(true);
+						super.moveDir = backwards;
+						UndoStack.addAction(true);
 					}
 					else {
 						this.timeRetracting = 0;
@@ -159,10 +130,8 @@ public class LongExtender extends Thing {
 					}
 				}
 				else {
-					// System.out.println("  Cannot extend at all");
 					Game.animationSpeed = Game.defaultAnimationSpeed;
 					super.extending = false;
-					// Stack.printStack();
 				}
 			}
 		}
@@ -172,26 +141,26 @@ public class LongExtender extends Thing {
 			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
 			/* Pause every integer extension to see if it should continue retracting */
 			if(this.timeRetracting >= 1 / Game.animationSpeed) {
-				// System.out.println("Hit an integer point");
 				this.timeRetracting = 0;
 				if(super.extension >= 1) {
 					if(Game.chainUndo) {
-						System.out.println("Hit an integer point (" + super.extension + ") while doing a chain undo");
+						/* Wait for the chain undo to tell it to keep moving */
 						super.retracting = false;
 					}
 					else {
 						super.retracting = false;
 						if(this.canRetractForward()) {
 							super.retracting = true;
-							Stack.addAction(true);
-							// System.out.println("Retracting forward - adding action with extension " + super.extension);
+							String backwards = (super.dir == "left" || super.dir == "right") ? (super.dir == "left" ? "right" : "left") : (super.dir == "up" ? "down" : "up");
+							Game.currentLevel.moveSelected(backwards);
+							UndoStack.addAction(true);
 						}
 						else if(this.canRetractBackward()) {
 							super.retracting = true;
 							super.moveDir = super.dir;
 							super.timeMoving = 0;
-							Stack.addAction(true);
-							// System.out.println("Retracting backward - adding action with extension " + super.extension);
+							Game.currentLevel.moveSelected(super.dir);
+							UndoStack.addAction(true);
 						}
 					}
 				}
@@ -244,18 +213,8 @@ public class LongExtender extends Thing {
 			Game.currentLevel.moveObject(super.x, super.y + 1 + super.extension, "down");
 		}
 		/* Find out if any of the selected tiles cannot be moved */
-		boolean foundOne = false;
-		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
-			Thing thing = (Thing) Game.currentLevel.content.get(i);
-			if(thing.selected) {
-				if(foundOne && super.isWeak) {
-					return false;
-				}
-				if(!thing.canBePushed(super.dir)) {
-					return false;
-				}
-				foundOne = true;
-			}
+		if((Game.currentLevel.numSelected() > 1 && super.isWeak) || !Game.currentLevel.canSelectedBePushed(super.dir)) {
+			return false;
 		}
 		/* Find out if this is in front of a wall */
 		if(
@@ -288,9 +247,6 @@ public class LongExtender extends Thing {
 		}
 		String backwards = (super.dir == "left" || super.dir == "right") ? (super.dir == "left" ? "right" : "left") : (super.dir == "up" ? "down" : "up");
 		if(!Game.currentLevel.canSelectedBePushed(backwards)) {
-			System.out.println("Cannot retract because of walls");
-			System.out.println("Number of tiles selected: " + Game.currentLevel.numSelected());
-			System.out.println("This is what is selected: " + Game.currentLevel.selectedToString());
 			return false;
 		}
 		return true;
@@ -312,19 +268,9 @@ public class LongExtender extends Thing {
 			Game.currentLevel.moveObject(super.x, super.y - 1, "up");
 		}
 		/* Find out if any of the selected tiles cannot be moved */
-		String backward = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
-		boolean foundOne = false;
-		for(short i = 0; i < Game.currentLevel.content.size(); i ++) {
-			Thing thing = (Thing) Game.currentLevel.content.get(i);
-			if(thing.selected) {
-				if(foundOne && super.isWeak) {
-					return false;
-				}
-				if(!thing.canBePushed(backward)) {
-					return false;
-				}
-				foundOne = true;
-			}
+		String backwards = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
+		if((Game.currentLevel.numSelected() > 1 && super.isWeak) || !Game.currentLevel.canSelectedBePushed(backwards)) {
+			return false;
 		}
 		/* Find out if this is in front of a wall */
 		if(
@@ -442,29 +388,9 @@ public class LongExtender extends Thing {
 		else if(super.dir == "down") {
 			return (MousePos.x > x && MousePos.x < x + w && MousePos.y > y && MousePos.y < y + h + (Game.tileSize * super.extension));
 		}
-		return true; // (just to appease the compiler)
-	}
-	public void raisedRect(Graphics g, double x, double y, double w, double h) {
-		if((super.dir == "right") && x + w >= (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
-			x = (super.x * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - w;
+		else {
+			return false;
 		}
-		else if(x + w >= (super.x * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
-			x = (super.x * Game.tileSize) + Game.tileSize - w;
-		}
-		if((super.dir == "down") && y + h >= (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
-			y = (super.y * Game.tileSize) + (super.extension * Game.tileSize) + Game.tileSize - h;
-		}
-		else if(y + h >= (super.y * Game.tileSize) + Game.tileSize - Math.max(Game.tileSize * 0.03, 4)) {
-			y = (super.y * Game.tileSize) + Game.tileSize - h;
-		}
-		int vX = (int) (x);
-		int vY = (int) (y);
-		int vW = (int) (w);
-		int vH = (int) (h);
-		g.setColor(new Color(150, 150, 150));
-		g.fillRect(vX, (int) (vY + vH + super.hoverY), vW, (int) (Game.tileSize * super.height - super.hoverY));
-		g.setColor(new Color(100, 100, 100));
-		g.fillRect(vX, (int) (vY + super.hoverY), vW, vH);
 	}
 	@Override
 	public void checkMovement(String dir) {
@@ -479,7 +405,6 @@ public class LongExtender extends Thing {
 		else if(super.dir == "right") {
 			for(int i = 0; i < super.extension + 1; i ++) {
 				Game.currentLevel.moveTile(super.x + i, super.y, dir);
-				// System.out.println("Moving: (" + (super.x + i) + ", " + super.y + ")");
 			}
 		}
 		else if(super.dir == "up") {

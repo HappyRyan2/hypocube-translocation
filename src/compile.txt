@@ -3,9 +3,8 @@ io/github/happyryan2/puzzlegame/game/Level.java
 io/github/happyryan2/puzzlegame/game/LevelEditor.java
 io/github/happyryan2/puzzlegame/game/LevelSelect.java
 io/github/happyryan2/puzzlegame/game/LevelConnector.java
-io/github/happyryan2/puzzlegame/game/Button.java
-io/github/happyryan2/puzzlegame/game/Stack.java
-io/github/happyryan2/puzzlegame/game/StackItem.java
+io/github/happyryan2/puzzlegame/game/UndoStack.java
+io/github/happyryan2/puzzlegame/game/UndoStackItem.java
 io/github/happyryan2/puzzlegame/levels/Level1.java
 io/github/happyryan2/puzzlegame/levels/Level2.java
 io/github/happyryan2/puzzlegame/levels/Level3.java

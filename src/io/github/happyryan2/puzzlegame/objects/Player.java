@@ -16,8 +16,6 @@ import io.github.happyryan2.puzzlegame.game.Level;
 import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Player extends Thing {
-	private Color darkBlue = new Color(0, 0, 255);
-	private Color lightBlue = new Color(0, 128, 255);
 	public Image img = ResourceLoader.loadImage("res/graphics/objects/player.png");
 
 	public Player(float x, float y) {
@@ -26,12 +24,12 @@ public class Player extends Thing {
 		super.origX = x;
 		super.origY = y;
 	}
-
-	public void update() {
-		if(super.deleted) { return; }
+	public Player(Player p) {
+		this(p.x, p.y);
 	}
+
+	public void update() { }
 	public void move() {
-		//movement
 		if(super.moveDir == "up") {
 			super.y -= Game.animationSpeed;
 		}

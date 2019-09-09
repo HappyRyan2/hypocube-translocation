@@ -15,30 +15,99 @@ import io.github.happyryan2.puzzlegame.utilities.*;
 import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Game {
-	public static boolean debugged = false;
-	private static boolean initialized = false;
 	public static String state = "start";
-	public static List levels = new ArrayList();
 	public static int levelOpen = 20;
+
+	public static List levels = new ArrayList();
+
 	public static float levelSize = 0;
 	public static float tileSize = 0;
-	public static double[] sizes = {0.0625, 0.08, 0.095, 0.1, 0.104, 0.108, 0.111, 0.113, 0.115, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116, 0.116};
-	public static boolean clickBefore = false;
-	public static boolean startingLevel = false;
 	public static Level currentLevel;
+
 	public static int transition = 255;
-	public static int scrollY = 0;
+
 	public static String saveDest = System.getProperty("user.home") + "\\AppData\\Local\\HypocubeTranslocation\\progress.txt";
-	public static ImageButton playButton = new ImageButton(Screen.screenW / 2, Screen.screenH / 2, 100, "res/graphics/buttons/play.png", new Color(59, 67, 70), new Color(150, 150, 150)); // (59, 67, 70)
+	private static boolean initialized = false;
+
+	public static ImageButton playButton = new ImageButton(Screen.screenW / 2, Screen.screenH / 2, 100, "res/graphics/buttons/play.png", new Color(59, 67, 70), new Color(150, 150, 150));
+
 	public static float defaultAnimationSpeed = 0.05f;
 	public static float fastAnimationSpeed = 0.1f;
 	public static float animationSpeed = defaultAnimationSpeed;
+
 	public static boolean chainUndo = false;
 	public static boolean chainUndoLastFrame = false;
 	public static boolean lastAction = false;
 	public static int timeSinceLastAction = 0;
-	public static void updateProgress() {
-		// System.out.println("user home directory: " + System.getProperty("user.home"));
+
+	public static void init() {
+		/* Initialize levels */
+		levels.add(new Level1());
+		levels.add(new Level2());
+		levels.add(new Level3());
+		levels.add(new Level4());
+		levels.add(new Level5());
+		levels.add(new Level6());
+		levels.add(new Level7());
+		levels.add(new Level8());
+		levels.add(new Level9());
+		levels.add(new Level10());
+		levels.add(new Level11());
+		levels.add(new Level12());
+		levels.add(new Level13());
+		levels.add(new Level14());
+		levels.add(new Level15());
+		levels.add(new Level16());
+		levels.add(new Level17());
+		levels.add(new Level18());
+		/* Load user progress */
+		loadProgress();
+	}
+	public static void startGame() {
+		/* Move to the level select screen */
+		transition = 255;
+		state = "level-select";
+		/* Find out where to start the screen scrolling */
+		boolean completedAll = true;
+		for(short i = 0; i < levels.size(); i ++) {
+			Level level = (Level) levels.get(i);
+			if(!level.completedBefore) {
+				completedAll = false;
+				break;
+			}
+		}
+		if(completedAll) {
+			/* If they have completed all levels, start off at the highest one */
+			int highestIndex = 0;
+			for(short i = 0; i < levels.size(); i ++) {
+				Level highest = (Level) levels.get(highestIndex);
+				Level level = (Level) levels.get(i);
+				if(level.id > highest.id) {
+					highestIndex = i;
+				}
+			}
+			Level lastLevel = (Level) levels.get(highestIndex);
+			LevelSelect.scrollX = -lastLevel.x - 50;
+			LevelSelect.scrollY = -lastLevel.y - 50;
+		}
+		else {
+			/* If they have not completed all levels, start off at the lowest incomplete one. */
+			int lowestIncompleteIndex = levels.size() - 1;
+			for(short i = 0; i < levels.size(); i ++) {
+				Level lowest = (Level) levels.get(lowestIncompleteIndex);
+				Level level = (Level) levels.get(i);
+				if(!level.completedBefore && level.id < lowest.id) {
+					lowestIncompleteIndex = i;
+				}
+			}
+			Level lowestIncomplete = (Level) levels.get(lowestIncompleteIndex);
+			LevelSelect.scrollX = -lowestIncomplete.x - 50;
+			LevelSelect.scrollY = -lowestIncomplete.y - 50;
+		}
+	}
+
+	public static void saveProgress() {
+		/* Writes the user's progress to the text file */
 		String progress = " ";
 		for(short i = 0; i < levels.size(); i ++) {
 			Level level = (Level) levels.get(i);
@@ -46,8 +115,6 @@ public class Game {
 				progress += level.id + " ";
 			}
 		}
-		// progress = "foobar";
-		System.out.println("Writing string to file: \"" + progress + "\"");
 		try {
 			/* Create the folder if it doesn't already exist */
 			if(!Files.exists(Paths.get(System.getProperty("user.home") + "\\AppData\\Local\\HypocubeTranslocation"))) {
@@ -72,73 +139,54 @@ public class Game {
 			e.printStackTrace();
 		}
 	}
-	public static void run() {
-		if(!initialized) {
-			/* Initialize levels */
-			initialized = true;
-			levels.add(new Level1());
-			levels.add(new Level2());
-			levels.add(new Level3());
-			levels.add(new Level4());
-			levels.add(new Level5());
-			levels.add(new Level6());
-			levels.add(new Level7());
-			levels.add(new Level8());
-			levels.add(new Level9());
-			levels.add(new Level10());
-			levels.add(new Level11());
-			levels.add(new Level12());
-			levels.add(new Level13());
-			levels.add(new Level14());
-			levels.add(new Level15());
-			levels.add(new Level16());
-			levels.add(new Level17());
-			levels.add(new Level18());
-			// levels.add(new Level20());
-			/* Load user progress from the file */
-			String progress = "";
-			try {
-				if(Files.exists(Paths.get(saveDest))) {
-					System.out.println("File exists!");
-					String path = saveDest;
-					byte[] encoded = Files.readAllBytes(Paths.get(path));
-					progress = new String(encoded, StandardCharsets.US_ASCII);
-				}
+	public static void loadProgress() {
+		/* Load user progress from the file */
+		String progress = "";
+		try {
+			if(Files.exists(Paths.get(saveDest))) {
+				System.out.println("File exists!");
+				String path = saveDest;
+				byte[] encoded = Files.readAllBytes(Paths.get(path));
+				progress = new String(encoded, StandardCharsets.US_ASCII);
 			}
-			catch(Exception e) {
-				System.out.println("Progress file not found.");
-				// e.printStackTrace();
-			}
-			System.out.println("Progress: \"" + progress + "\"");
-			loop1: for(short i = 0; i < progress.length(); i ++) {
-				if(progress.substring(i, i + 1).equals(" ")) {
-					loop2: for(short j = (short) (i + 1); j < progress.length(); j ++) {
-						if(progress.substring(j, j + 1).equals(" ")) {
-							int num = Integer.parseInt(progress.substring(i + 1, j));
-							loop3: for(short k = 0; k < levels.size(); k ++) {
-								Level level = (Level) levels.get(k);
-								if(level.id == num) {
-									level.completedBefore = true;
-									continue loop1;
-								}
+		}
+		catch(Exception e) {
+			System.out.println("Progress file not found.");
+		}
+		loop1: for(short i = 0; i < progress.length(); i ++) {
+			if(progress.substring(i, i + 1).equals(" ")) {
+				loop2: for(short j = (short) (i + 1); j < progress.length(); j ++) {
+					if(progress.substring(j, j + 1).equals(" ")) {
+						int num = Integer.parseInt(progress.substring(i + 1, j));
+						loop3: for(short k = 0; k < levels.size(); k ++) {
+							Level level = (Level) levels.get(k);
+							if(level.id == num) {
+								level.completedBefore = true;
+								continue loop1;
 							}
 						}
 					}
 				}
 			}
-			/* Update level connectors */
-			LevelSelect.init();
-			for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
-				LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
-				connector.init();
-				for(short j = 0; j < levels.size(); j ++) {
-					Level level = (Level) levels.get(j);
-					if(level.id == connector.previousLevel && level.completedBefore) {
-						connector.animationProgress = connector.size;
-					}
+		}
+		/* Update level connectors */
+		LevelSelect.init();
+		for(short i = 0; i < LevelSelect.levelConnectors.size(); i ++) {
+			LevelConnector connector = (LevelConnector) LevelSelect.levelConnectors.get(i);
+			connector.init();
+			for(short j = 0; j < levels.size(); j ++) {
+				Level level = (Level) levels.get(j);
+				if(level.id == connector.previousLevel && level.completedBefore) {
+					connector.animationProgress = connector.size;
 				}
 			}
-			chainUndoLastFrame = chainUndo;
+		}
+	}
+
+	public static void update() {
+		if(!initialized) {
+			initialized = true;
+			init();
 		}
 		if(state == "start") {
 			/* update the home page */
@@ -146,50 +194,10 @@ public class Game {
 			playButton.x = Screen.screenW / 2;
 			playButton.y = Screen.screenH / 2;
 			if(playButton.pressed) {
-				/* Move to the level select screen */
-				transition = 255;
-				state = "level-select";
-				/* Find out where to start the screen scrolling */
-				boolean completedAll = true;
-				for(short i = 0; i < levels.size(); i ++) {
-					Level level = (Level) levels.get(i);
-					if(!level.completedBefore) {
-						System.out.println("User has not completed level " + level.id);
-						completedAll = false;
-						break;
-					}
-				}
-				if(completedAll) {
-					int highestIndex = 0;
-					for(short i = 0; i < levels.size(); i ++) {
-						Level highest = (Level) levels.get(highestIndex);
-						Level level = (Level) levels.get(i);
-						if(level.id > highest.id) {
-							highestIndex = i;
-						}
-					}
-					Level lastLevel = (Level) levels.get(highestIndex);
-					LevelSelect.scrollX = -lastLevel.x - 50;
-					LevelSelect.scrollY = -lastLevel.y - 50;
-				}
-				else {
-					int lowestIncompleteIndex = levels.size() - 1;
-					for(short i = 0; i < levels.size(); i ++) {
-						Level lowest = (Level) levels.get(lowestIncompleteIndex);
-						Level level = (Level) levels.get(i);
-						if(!level.completedBefore && level.id < lowest.id) {
-							lowestIncompleteIndex = i;
-						}
-					}
-					Level lowestIncomplete = (Level) levels.get(lowestIncompleteIndex);
-					System.out.println("Lowest level: " + lowestIncomplete.id);
-					LevelSelect.scrollX = -lowestIncomplete.x - 50;
-					LevelSelect.scrollY = -lowestIncomplete.y - 50;
-				}
+				startGame();
 			}
 		}
 		else if(state == "level-select") {
-			/* New level select menu */
 			LevelSelect.update();
 		}
 		else if(state == "play") {
@@ -204,7 +212,7 @@ public class Game {
 		else if(state == "level-editor") {
 			LevelEditor.update();
 		}
-		clickBefore = MouseClick.mouseIsPressed;
+		chainUndoLastFrame = chainUndo;
 	}
 	public static void display(Graphics g) {
 		if(!initialized) {
@@ -242,7 +250,7 @@ public class Game {
 		else if(state == "level-editor") {
 			LevelEditor.display(g);
 		}
-		// transitions
+		/* fading transitions */
 		g.setColor(new Color(255, 255, 255, transition));
 		g.fillRect(0, 0, Screen.screenW, Screen.screenH);
 		transition -= (transition > 0) ? 10 : 0;
