@@ -45,6 +45,10 @@ public class LevelEditor {
 	}
 
 	public static void update() {
+		/* Initialize */
+		if(!initialized) {
+			init();
+		}
 		level.resize();
 		Game.currentLevel = level;
 		/* Click to add items to the level */
@@ -90,10 +94,6 @@ public class LevelEditor {
 		if(Game.levelSize < 3) {
 			Game.levelSize = 3;
 			Game.tileSize = 200;
-		}
-		/* Initialize */
-		if(!initialized) {
-			init();
 		}
 		/* Update level */
 		if(editing.text == "playing" && !cropping) {

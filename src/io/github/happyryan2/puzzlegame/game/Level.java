@@ -244,6 +244,9 @@ public class Level {
 				Game.transition = 255;
 				Game.state = "level-select";
 				UndoStack.resetStack();
+				Game.chainUndo = false;
+				Game.lastAction = false;
+				return;
 			}
 		}
 		/* Win menu buttons */
@@ -322,8 +325,17 @@ public class Level {
 		/* Display objects */
 		g.translate(this.left, this.top);
 		for(short i = 0; i < this.content.size(); i ++) {
+			/* Display goals underneath the rest of the objects*/
 			Thing thing = (Thing) this.content.get(i);
-			thing.display(g);
+			if(thing instanceof Goal) {
+				thing.display(g);
+			}
+		}
+		for(short i = 0; i < this.content.size(); i ++) {
+			Thing thing = (Thing) this.content.get(i);
+			if(!(thing instanceof Goal)) {
+				thing.display(g);
+			}
 		}
 		g.translate(-this.left, -this.top);
 		/* GUI box for winning */
