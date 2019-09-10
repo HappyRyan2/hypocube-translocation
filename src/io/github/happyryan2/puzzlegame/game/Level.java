@@ -35,9 +35,6 @@ public class Level {
 	public float opacity = 0;
 
 	/* Buttons */
-	// public ImageButton pause = new ImageButton(30, 30, 40, "res/graphics/buttons/pause2.png", new Color(255, 255, 255), new Color(175, 175, 175));
-	// public TextButton restart = new TextButton(300, 325, 200, 50, "Restart", new Color(255, 255, 255), new Color(175, 175, 175));
-	// public TextButton exit = new TextButton(300, 400, 200, 50, "Exit", new Color(255, 255, 255), new Color(175, 175, 175));
 	public ImageButton exit = new ImageButton(30, 30, 40, "res/graphics/buttons/pause2.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on play screen
 	public ImageButton exit2 = new ImageButton(0, 0, 50, "res/graphics/buttons/next.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on win screen
 	public ImageButton restart2 = new ImageButton(0, 0, 50, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on play screen
@@ -148,6 +145,8 @@ public class Level {
 		this.completeNow = false;
 		this.completionY = -800;
 		this.undo.y = 30;
+		this.exit.y = 30;
+		this.restart.y = 30;
 		/* Reset all game objects to original position */
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
@@ -301,7 +300,10 @@ public class Level {
 		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
 			Game.timeSinceLastAction ++;
 		}
+		System.out.println("transitioning(true) ? " + this.transitioning(true));
+		System.out.println("last action? " + Game.lastAction);
 		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
+			System.out.println("Doing a chain undo");
 			UndoStack.undoAction();
 		}
 	}
@@ -713,6 +715,16 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing.moveDir != "none" || thing.extending || thing.retracting && !(thing instanceof Goal)) {
+				System.out.println("Found an object at (" + thing.x + ", " + thing.y + ") that is transitioning");
+				if(thing.moveDir != "none") {
+					System.out.println(" - it is moving " + thing.moveDir);
+				}
+				else if(thing.extending) {
+					System.out.println(" - it is extending");
+				}
+				else if(thing.retracting) {
+					System.out.println(" - it is retracting");
+				}
 				return true;
 			}
 		}

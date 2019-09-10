@@ -60,6 +60,12 @@ public class Game {
 		levels.add(new Level16());
 		levels.add(new Level17());
 		levels.add(new Level18());
+		levels.add(new Level19());
+		levels.add(new Level20());
+		for(short i = 0; i < levels.size(); i ++) {
+			Level level = (Level) levels.get(i);
+			level.completedBefore = true;
+		}
 		/* Load user progress */
 		loadProgress();
 	}
@@ -107,7 +113,6 @@ public class Game {
 	}
 
 	public static void saveProgress() {
-		if(true) { return; }
 		/* Writes the user's progress to the text file */
 		String progress = " ";
 		for(short i = 0; i < levels.size(); i ++) {
@@ -185,6 +190,7 @@ public class Game {
 	}
 
 	public static void update() {
+		System.out.println("chain undo? " + chainUndo);
 		if(!initialized) {
 			initialized = true;
 			init();

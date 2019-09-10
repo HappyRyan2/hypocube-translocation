@@ -83,15 +83,28 @@ public class LongExtender extends Thing {
 				UndoStack.addAction();
 			}
 		}
-		else if(this.canRetractForward()) {
-			String backwards = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
-			Game.currentLevel.moveSelected(backwards);
-			Game.animationSpeed = Game.fastAnimationSpeed;
-			super.retracting = true;
-			this.timeRetracting = 0;
-			UndoStack.addAction();
-			UndoStack.setLastFinal(true);
-			UndoStack.setLastChain(true);
+		else {
+			if(this.canRetractForward()) {
+				String backwards = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
+				Game.currentLevel.moveSelected(backwards);
+				Game.animationSpeed = Game.fastAnimationSpeed;
+				super.retracting = true;
+				this.timeRetracting = 0;
+				UndoStack.addAction();
+				UndoStack.setLastFinal(true);
+				UndoStack.setLastChain(true);
+			}
+			else if(this.canRetractBackward()) {
+				String backwards = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
+				Game.currentLevel.moveSelected(backwards);
+				Game.animationSpeed = Game.fastAnimationSpeed;
+				super.retracting = true;
+				this.timeRetracting = 0;
+				super.moveDir = super.dir;
+				UndoStack.addAction();
+				UndoStack.setLastFinal(true);
+				UndoStack.setLastChain(true);
+			}
 		}
 		super.ignoring = false;
 	}
@@ -103,6 +116,11 @@ public class LongExtender extends Thing {
 			/* Pause every integer extension to see if it should continue extending */
 			if(this.timeExtending >= (1 / Game.animationSpeed)) {
 				Game.currentLevel.snapToGrid();
+				if(Game.chainUndo) {
+					super.extending = false;
+					this.timeExtending = 0;
+					return;
+				}
 				if(this.canExtendForward()) {
 					if(!Game.chainUndo && !Game.chainUndoLastFrame && Game.timeSinceLastAction >= 3 && super.extension >= 1) {
 						Game.currentLevel.moveSelected(super.dir);
@@ -141,6 +159,7 @@ public class LongExtender extends Thing {
 			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
 			/* Pause every integer extension to see if it should continue retracting */
 			if(this.timeRetracting >= 1 / Game.animationSpeed) {
+				Game.currentLevel.snapToGrid();
 				this.timeRetracting = 0;
 				if(super.extension >= 1) {
 					if(Game.chainUndo) {
@@ -284,6 +303,7 @@ public class LongExtender extends Thing {
 		return true;
 	}
 	public boolean canRetractBackward() {
+		Game.currentLevel.clearSelected();
 		Game.currentLevel.moveTile(super.x, super.y, super.dir);
 		if(Game.currentLevel.numSelected() > 1 && super.isWeak) {
 			return false;
