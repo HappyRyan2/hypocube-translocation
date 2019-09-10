@@ -60,6 +60,8 @@ public class Game {
 		levels.add(new Level16());
 		levels.add(new Level17());
 		levels.add(new Level18());
+		levels.add(new Level19());
+		levels.add(new Level20());
 		/* Load user progress */
 		loadProgress();
 	}

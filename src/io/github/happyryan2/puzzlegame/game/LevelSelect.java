@@ -47,6 +47,9 @@ public class LevelSelect {
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(1250, -90), new Point(1250, -10)}, 15, 16));
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(850, 310), new Point(850, 390)}, 8, 17));
 		levelConnectors.add(new LevelConnector(new Point[] {new Point(850, 510), new Point(850, 590)}, 17, 18));
+		levelConnectors.add(new LevelConnector(new Point[] {new Point(1050, 310), new Point(1050, 390)}, 10, 19, "gray"));
+		levelConnectors.add(new LevelConnector(new Point[] {new Point(910, 450), new Point(990, 450)}, 17, 19, "gray"));
+		levelConnectors.add(new LevelConnector(new Point[] {new Point(1050, 510), new Point(1050, 590)}, 19, 20));
 	}
 	public static void display(Graphics g) {
 		/* animated noise background */
