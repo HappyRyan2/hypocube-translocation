@@ -48,7 +48,7 @@ public class LongExtender extends Thing {
 	public void update() {
 		// detect hovering + clicks
 		if(!Game.currentLevel.transitioning() && this.cursorHovered() && !Game.currentLevel.isComplete() && !Game.currentLevel.paused) {
-			if(MouseClick.mouseIsPressed) {
+			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
 				this.onClick();
 			}
 			if(this.canDoSomething()) {
@@ -334,7 +334,7 @@ public class LongExtender extends Thing {
 			return this.canExtendForward() || this.canExtendBackward();
 		}
 		else if(super.extension % 1 <= 0.01) {
-			return this.canRetractForward();
+			return this.canRetractForward() || this.canRetractBackward();
 		}
 		else {
 			return false;

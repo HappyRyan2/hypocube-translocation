@@ -15,7 +15,7 @@ import io.github.happyryan2.puzzlegame.utilities.*;
 import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Game {
-	public static String state = "start";
+	public static String state = "level-editor";
 	public static int levelOpen = 20;
 
 	public static List levels = new ArrayList();
