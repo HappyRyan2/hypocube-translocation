@@ -60,6 +60,7 @@ public class UndoStack {
 		stack.add(action);
 	}
 	public static void undoAction() {
+		Game.currentLevel.snapToGrid();
 		printStack();
 		// System.out.println("Stack size: " + stack.size());
 		if(stack.size() == 0) {
@@ -68,7 +69,7 @@ public class UndoStack {
 			return;
 		}
 		// Game.currentLevel.printContent();
-		System.out.println("UNDOING");
+		// System.out.println("UNDOING");
 		if(Game.currentLevel.transitioning(true)) {
 			return;
 		}

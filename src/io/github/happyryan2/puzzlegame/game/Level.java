@@ -283,6 +283,7 @@ public class Level {
 				thing.extension = Math.round(thing.extension);
 				thing.extending = false;
 				thing.retracting = false;
+				thing.moveDir = "none";
 				thing.timeMoving = 0;
 				if(thing instanceof LongExtender) {
 					LongExtender ex = (LongExtender) thing;
@@ -300,10 +301,10 @@ public class Level {
 		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
 			Game.timeSinceLastAction ++;
 		}
-		System.out.println("transitioning(true) ? " + this.transitioning(true));
-		System.out.println("last action? " + Game.lastAction);
+		// System.out.println("transitioning(true) ? " + this.transitioning(true));
+		// System.out.println("last action? " + Game.lastAction);
 		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
-			System.out.println("Doing a chain undo");
+			// System.out.println("Doing a chain undo");
 			UndoStack.undoAction();
 		}
 	}
@@ -715,16 +716,16 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing.moveDir != "none" || thing.extending || thing.retracting && !(thing instanceof Goal)) {
-				System.out.println("Found an object at (" + thing.x + ", " + thing.y + ") that is transitioning");
-				if(thing.moveDir != "none") {
-					System.out.println(" - it is moving " + thing.moveDir);
-				}
-				else if(thing.extending) {
-					System.out.println(" - it is extending");
-				}
-				else if(thing.retracting) {
-					System.out.println(" - it is retracting");
-				}
+				// System.out.println("Found an object at (" + thing.x + ", " + thing.y + ") that is transitioning");
+				// if(thing.moveDir != "none") {
+				// 	System.out.println(" - it is moving " + thing.moveDir);
+				// }
+				// else if(thing.extending) {
+				// 	System.out.println(" - it is extending");
+				// }
+				// else if(thing.retracting) {
+				// 	System.out.println(" - it is retracting");
+				// }
 				return true;
 			}
 		}
@@ -917,6 +918,8 @@ public class Level {
 			thing.x = Math.round((float) thing.x);
 			thing.y = Math.round((float) thing.y);
 			thing.extension = Math.round((float) thing.extension);
+			thing.timeMoving = 0;
+			thing.moveDir = "none";
 		}
 	}
 }

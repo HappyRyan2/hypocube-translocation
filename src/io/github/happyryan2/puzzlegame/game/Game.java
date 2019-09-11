@@ -190,7 +190,7 @@ public class Game {
 	}
 
 	public static void update() {
-		System.out.println("chain undo? " + chainUndo);
+		// System.out.println("chain undo? " + chainUndo);
 		if(!initialized) {
 			initialized = true;
 			init();
