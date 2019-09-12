@@ -20,7 +20,7 @@ public class UndoStack {
 		addAction(false);
 	}
 	public static void addAction(boolean chainAction) {
-		System.out.println("adding an action!");
+		// System.out.println("adding an action!");
 		UndoStack action = new UndoStack();
 		for(byte i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -60,6 +60,8 @@ public class UndoStack {
 		stack.add(action);
 	}
 	public static void undoAction() {
+		Game.currentLevel.snapToGrid();
+		printStack();
 		// System.out.println("Stack size: " + stack.size());
 		if(stack.size() == 0) {
 			// System.out.println("Stack size is 0");
