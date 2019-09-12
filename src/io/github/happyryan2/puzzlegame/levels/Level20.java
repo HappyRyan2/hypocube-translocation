@@ -10,17 +10,20 @@ public class Level20 extends Level  {
 		super.y = 600;
 		super.requirements.add(19);
 
-		super.content.add(new LongExtender(0, 1, "right", true));
-		super.content.add(new Extender(1, 1, "up", false));
-		super.content.add(new Retractor(2, 0, "left", false));
-		super.content.add(new Retractor(4, 3, "up", false));
-		super.content.add(new Player(2, 2));
-		super.content.add(new Goal(2, 3));
-		super.content.add(new Wall(6, 3));
-		super.content.add(new Wall(0, 2));
+		super.content.add(new LongExtender(0, 2, "right", true));
+		super.content.add(new Extender(1, 2, "up", false));
+		super.content.add(new Retractor(2, 1, "left", false));
+		super.content.add(new Retractor(4, 4, "up", false));
+		super.content.add(new Player(2, 3));
+		super.content.add(new Goal(2, 4));
+		super.content.add(new Wall(6, 4));
 		super.content.add(new Wall(0, 3));
+		super.content.add(new Wall(0, 4));
+		super.content.add(new Wall(5, 4));
 		super.content.add(new Wall(5, 3));
-		super.content.add(new Wall(5, 2));
-		super.content.add(new Wall(6, 2));
+		super.content.add(new Wall(6, 3));
+		super.content.add(new Wall(4, 0));
+		super.content.add(new Wall(5, 0));
+		super.content.add(new Wall(6, 0));
 	}
 }
