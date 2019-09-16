@@ -347,7 +347,7 @@ public class LongExtender extends Thing {
 		int y = (int) Math.round(super.y * Game.tileSize);
 		int w = (int) Math.round(Game.tileSize);
 		int h = (int) Math.round(Game.tileSize);
-		System.out.println("X: " + super.x + ", Extension: " + super.extension);
+		// System.out.println("X: " + super.x + ", Extension: " + super.extension);
 		/* Translate to position */
 		Graphics2D g2 = (Graphics2D) g;
 		AffineTransform beforeRotation = g2.getTransform();

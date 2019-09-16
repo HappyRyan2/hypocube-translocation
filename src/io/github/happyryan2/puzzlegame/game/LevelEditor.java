@@ -379,14 +379,3 @@ public class LevelEditor {
 		}
 	}
 }
-/*
-super.content.add(new LongExtender(0, 1, "right"));
-super.content.add(new LongExtender(5, 1, "left"));
-super.content.add(new Extender(2, 2, "up", false));
-super.content.add(new Extender(4, 1, "right", false));
-super.content.add(new Player(3, 0));
-super.content.add(new Goal(4, 0));
-super.content.add(new Wall(5, 2));
-super.content.add(new Wall(0, 0));
-super.content.add(new Wall(1, 0));
-*/

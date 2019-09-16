@@ -18,5 +18,7 @@ public class Level19 extends Level  {
 		super.content.add(new Retractor(6, 0, "down", false));
 		super.content.add(new Goal(0, 2));
 		super.content.add(new Player(3, 2));
+		super.content.add(new Wall(0, 0));
+		super.content.add(new Wall(7, 2));
 	}
 }

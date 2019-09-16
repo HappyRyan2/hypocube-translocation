@@ -15,7 +15,7 @@ import io.github.happyryan2.puzzlegame.utilities.*;
 import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Game {
-	public static String state = "level-editor";
+	public static String state = "start";
 	public static int levelOpen = 20;
 
 	public static List levels = new ArrayList();
@@ -62,12 +62,15 @@ public class Game {
 		levels.add(new Level18());
 		levels.add(new Level19());
 		levels.add(new Level20());
+		levels.add(new Level21());
+		levels.add(new Level22());
+		levels.add(new Level23());
+		/* Load user progress */
+		loadProgress();
 		for(short i = 0; i < levels.size(); i ++) {
 			Level level = (Level) levels.get(i);
 			level.completedBefore = true;
 		}
-		/* Load user progress */
-		loadProgress();
 	}
 	public static void startGame() {
 		/* Move to the level select screen */
@@ -190,7 +193,6 @@ public class Game {
 	}
 
 	public static void update() {
-		// System.out.println("chain undo? " + chainUndo);
 		if(!initialized) {
 			initialized = true;
 			init();

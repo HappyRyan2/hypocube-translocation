@@ -307,6 +307,7 @@ public class Level {
 			// System.out.println("Doing a chain undo");
 			UndoStack.undoAction();
 		}
+		this.fastForward();
 	}
 	public void display(Graphics g) {
 		/* walls + background */
@@ -694,6 +695,25 @@ public class Level {
 				thing.extension = 0;
 				thing.retracting = false;
 			}
+			if(thing instanceof LongExtender) {
+				if(thing.extending) {
+					thing.extension = Math.round(thing.extension + 1);
+				}
+				else if(thing.retracting) {
+					thing.extension = Math.round(thing.extension - 1);
+				}
+				if(thing.extending || thing.retracting) {
+					LongExtender le = (LongExtender) thing;
+					le.timeExtending = (int) (1 / Game.animationSpeed);
+					le.timeRetracting = (int) (1 / Game.animationSpeed);
+					thing.move();
+					if(thing.extension != 0) {
+						System.out.println("Extension during fastForward(): " + thing.extension + ", Time moving: " + thing.timeMoving);
+					}
+					// thing.extending = false;
+					// thing.retracting = false;
+				}
+			}
 			if(thing.moveDir == "up") {
 				thing.y = Math.round(thing.y - 1);
 			}
@@ -707,6 +727,15 @@ public class Level {
 				thing.x = Math.round(thing.x - 1);
 			}
 			thing.moveDir = "none";
+		}
+		if(this.transitioning()) {
+			if(Game.chainUndo) {
+				UndoStack.undoAction();
+				if(Game.lastAction) {
+					Game.chainUndo = false;
+				}
+			}
+			this.fastForward();
 		}
 	}
 	public boolean transitioning(boolean ignoreChainUndos) {
