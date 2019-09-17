@@ -749,6 +749,10 @@ public class Level {
 	// 	}
 	// }
 	public void fastForward() {
+		while(this.transitioning()) {
+			this.update();
+		}
+		if(true) { return; }
 		if(Game.chainUndo) {
 			for(short i = 0; i < this.content.size(); i ++) {
 				Thing thing = (Thing) this.content.get(i);
@@ -766,6 +770,7 @@ public class Level {
 						System.out.println("Moving something left (inside fastForward())");
 						thing.x = Math.round(thing.x - 1);
 					}
+					thing.moveDir = "none";
 				}
 				if(thing instanceof LongExtender) {
 					if(thing.extending) {
@@ -785,14 +790,14 @@ public class Level {
 						thing.extending = false;
 					}
 					else if(thing.retracting) {
-						thing.extension = 1;
+						thing.extension = 0;
 						thing.retracting = false;
 					}
 				}
 			}
 			this.snapToGrid();
 			if(!Game.lastAction) {
-				UndoStack.undoAction();
+				UndoStack.undoAction(true);
 				this.fastForward();
 			}
 		}
@@ -813,6 +818,7 @@ public class Level {
 						System.out.println("Moving something left (inside fastForward())");
 						thing.x = Math.round(thing.x - 1);
 					}
+					thing.moveDir = "none";
 				}
 				if(thing instanceof LongExtender) {
 					if(thing.extending) {
@@ -834,7 +840,7 @@ public class Level {
 						thing.extending = false;
 					}
 					else if(thing.retracting) {
-						thing.extension = 1;
+						thing.extension = 0;
 						thing.retracting = false;
 					}
 				}

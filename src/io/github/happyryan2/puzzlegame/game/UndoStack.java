@@ -61,6 +61,9 @@ public class UndoStack {
 		// printStack();
 	}
 	public static void undoAction() {
+		undoAction(false);
+	}
+	public static void undoAction(boolean ignoreTransition) {
 		Game.currentLevel.snapToGrid();
 		printStack();
 		// System.out.println("Stack size: " + stack.size());
@@ -71,8 +74,12 @@ public class UndoStack {
 		}
 		// Game.currentLevel.printContent();
 		// System.out.println("UNDOING");
-		if(Game.currentLevel.transitioning(true)) {
+		if(Game.currentLevel.transitioning(true) && !ignoreTransition) {
+			System.out.println("Game is transitioning");
 			return;
+		}
+		if(Game.currentLevel.transitioning(true) && ignoreTransition) {
+			Game.currentLevel.snapToGrid();
 		}
 		// System.out.println("undoing an action!");
 		UndoStack actions = (UndoStack) stack.get(stack.size() - 1);
@@ -103,7 +110,7 @@ public class UndoStack {
 						else if(thing instanceof Retractor) {
 							// System.out.println("retracting the retractor");
 						}
-						// System.out.println("retracting the thing at position (" + thing.x + ", " + thing.y + ")");
+						System.out.println("retracting the thing at position (" + thing.x + ", " + thing.y + ")");
 						if(thing instanceof LongExtender) {
 							Game.animationSpeed = Game.fastAnimationSpeed;
 							((LongExtender) (thing)).timeRetracting = 0;

@@ -109,6 +109,7 @@ public class Retractor extends Thing {
 		else if(super.retracting) {
 			super.extension -= Game.animationSpeed;
 			if(super.extension <= 0) {
+				System.out.println("Finished retracting");
 				super.retracting = false;
 				super.extension = 0;
 			}
