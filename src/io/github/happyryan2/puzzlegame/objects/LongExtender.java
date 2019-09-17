@@ -108,14 +108,11 @@ public class LongExtender extends Thing {
 		if(super.extending) {
 			this.timeExtending ++;
 			super.extension += Game.animationSpeed;
-			System.out.println(" - increasing extension");
+			// System.out.println(" - increasing extension");
 			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
 			/* Pause every integer extension to see if it should continue extending */
 			if(this.timeExtending >= (1 / Game.animationSpeed)) {
 				Game.currentLevel.snapToGrid();
-				System.out.println("After snapping: ");
-				System.out.println("    - Extension: " + super.extension + ", Time: " + this.timeExtending);
-				System.out.println("    - X: " + super.x + ", Time: " + super.timeMoving);
 				if(Game.chainUndo) {
 					super.extending = false;
 					this.timeExtending = 0;
@@ -162,7 +159,7 @@ public class LongExtender extends Thing {
 			this.timeRetracting ++;
 			super.extension -= Game.animationSpeed;
 			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
-			System.out.println(" - decreasing extension");
+			// System.out.println(" - decreasing extension");
 			/* Pause every integer extension to see if it should continue retracting */
 			if(this.timeRetracting >= 1 / Game.animationSpeed) {
 				Game.currentLevel.snapToGrid();
@@ -209,11 +206,11 @@ public class LongExtender extends Thing {
 				super.y += Game.animationSpeed;
 			}
 			else if(super.moveDir == "left") {
-				System.out.println(" - decreasing x");
+				// System.out.println(" - decreasing x");
 				super.x -= Game.animationSpeed;
 			}
 			else if(super.moveDir == "right") {
-				System.out.println(" - increasing x");
+				// System.out.println(" - increasing x");
 				super.x += Game.animationSpeed;
 			}
 		}

@@ -45,14 +45,9 @@ public class Extender extends Thing {
 	}
 
 	public void update() {
-		/* Calculate position on screen */
-		int x = (int) (super.x * Game.tileSize) + Game.currentLevel.left;
-		int y = (int) (super.y * Game.tileSize) + Game.currentLevel.top;
-		int w = (int) (Game.tileSize);
-		int h = (int) (Game.tileSize);
 		/* detect hovering + clicks */
 		if(!Game.currentLevel.transitioning() && this.cursorHovered() && !Game.currentLevel.isComplete() && !Game.currentLevel.paused && super.dir != "none") {
-			if(MouseClick.mouseIsPressed) {
+			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
 				this.onClick();
 			}
 			if(this.canDoSomething()) {

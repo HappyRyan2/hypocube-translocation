@@ -20,7 +20,7 @@ public class UndoStack {
 		addAction(false);
 	}
 	public static void addAction(boolean chainAction) {
-		// System.out.println("adding an action!");
+		System.out.println("adding an action!");
 		UndoStack action = new UndoStack();
 		for(byte i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -58,6 +58,7 @@ public class UndoStack {
 		}
 		action.chainAction = chainAction;
 		stack.add(action);
+		// printStack();
 	}
 	public static void undoAction() {
 		Game.currentLevel.snapToGrid();
@@ -91,7 +92,7 @@ public class UndoStack {
 						else {
 							// System.out.println("moving the retractor " + action.dir);
 						}
-						// System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
+						System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
 						thing.moveDir = action.dir;
 						thing.timeMoving = 0;
 					}

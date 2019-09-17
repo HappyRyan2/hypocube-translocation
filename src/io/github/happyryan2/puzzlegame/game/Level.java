@@ -224,7 +224,7 @@ public class Level {
 		else if(this.undo.hoverY > 0) {
 			this.undo.hoverY --;
 		}
-		if(this.undo.pressed && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && UndoStack.stack.size() > 0) {
+		if(this.undo.pressed && !this.undo.pressedBefore && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && UndoStack.stack.size() > 0) {
 			UndoStack.undoAction();
 		}
 		if(this.exit.pressed) {
@@ -681,61 +681,167 @@ public class Level {
 		return true;
 	}
 
+	// public void fastForward() {
+	// 	for(short i = 0; i < this.content.size(); i ++) {
+	// 		Thing thing = (Thing) this.content.get(i);
+	// 		if(thing instanceof Goal) {
+	// 			continue;
+	// 		}
+	// 		if((thing instanceof Extender || thing instanceof Retractor) && thing.extending) {
+	// 			thing.extension = 1;
+	// 			thing.extending = false;
+	// 		}
+	// 		if((thing instanceof Extender || thing instanceof Retractor) && thing.retracting) {
+	// 			thing.extension = 0;
+	// 			thing.retracting = false;
+	// 		}
+	// 		if(thing instanceof LongExtender) {
+	// 			if(thing.extending) {
+	// 				thing.extension = Math.round(thing.extension + 1);
+	// 			}
+	// 			else if(thing.retracting) {
+	// 				thing.extension = Math.round(thing.extension - 1);
+	// 			}
+	// 			if((thing.extending || thing.retracting) && !Game.chainUndo) {
+	// 				LongExtender le = (LongExtender) thing;
+	// 				le.timeExtending = (int) (1 / Game.animationSpeed);
+	// 				le.timeRetracting = (int) (1 / Game.animationSpeed);
+	// 				thing.move();
+	// 				if(thing.extension != 0) {
+	// 					System.out.println("Extension during fastForward(): " + thing.extension + ", Time moving: " + thing.timeMoving);
+	// 				}
+	// 				// thing.extending = false;
+	// 				// thing.retracting = false;
+	// 			}
+	// 		}
+	// 		if(thing instanceof Retractor) {
+	// 			System.out.println("It's direction is: " + thing.moveDir);
+	// 		}
+	// 		if(thing.moveDir == "up") {
+	// 			thing.y = Math.round(thing.y - 1);
+	// 		}
+	// 		else if(thing.moveDir == "down") {
+	// 			thing.y = Math.round(thing.y + 1);
+	// 		}
+	// 		else if(thing.moveDir == "right") {
+	// 			thing.x = Math.round(thing.x + 1);
+	// 		}
+	// 		else if(thing.moveDir == "left") {
+	// 			System.out.println("Moving something left (inside fastForward())");
+	// 			thing.x = Math.round(thing.x - 1);
+	// 		}
+	// 		thing.moveDir = "none";
+	// 	}
+	// 	if(this.transitioning()) {
+	// 		if(Game.chainUndo) {
+	// 			UndoStack.undoAction();
+	// 			if(Game.lastAction) {
+	// 				Game.chainUndo = false;
+	// 			}
+	// 		}
+	// 		for(short i = 0; i < this.content.size(); i ++) {
+	// 			Thing thing = (Thing) this.content.get(i);
+	// 			if(thing.moveDir == "left") {
+	// 				System.out.println("Something is moving left (right before fastForward() recurses)");
+	// 			}
+	// 		}
+	// 		this.fastForward();
+	// 	}
+	// }
 	public void fastForward() {
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			if(thing instanceof Goal) {
-				continue;
-			}
-			if((thing instanceof Extender || thing instanceof Retractor) && thing.extending) {
-				thing.extension = 1;
-				thing.extending = false;
-			}
-			if((thing instanceof Extender || thing instanceof Retractor) && thing.retracting) {
-				thing.extension = 0;
-				thing.retracting = false;
-			}
-			if(thing instanceof LongExtender) {
-				if(thing.extending) {
-					thing.extension = Math.round(thing.extension + 1);
-				}
-				else if(thing.retracting) {
-					thing.extension = Math.round(thing.extension - 1);
-				}
-				if(thing.extending || thing.retracting) {
-					LongExtender le = (LongExtender) thing;
-					le.timeExtending = (int) (1 / Game.animationSpeed);
-					le.timeRetracting = (int) (1 / Game.animationSpeed);
-					thing.move();
-					if(thing.extension != 0) {
-						System.out.println("Extension during fastForward(): " + thing.extension + ", Time moving: " + thing.timeMoving);
+		if(Game.chainUndo) {
+			for(short i = 0; i < this.content.size(); i ++) {
+				Thing thing = (Thing) this.content.get(i);
+				if(thing.moveDir != "none") {
+					if(thing.moveDir == "up") {
+						thing.y = Math.round(thing.y - 1);
 					}
-					// thing.extending = false;
-					// thing.retracting = false;
+					else if(thing.moveDir == "down") {
+						thing.y = Math.round(thing.y + 1);
+					}
+					else if(thing.moveDir == "right") {
+						thing.x = Math.round(thing.x + 1);
+					}
+					else if(thing.moveDir == "left") {
+						System.out.println("Moving something left (inside fastForward())");
+						thing.x = Math.round(thing.x - 1);
+					}
+				}
+				if(thing instanceof LongExtender) {
+					if(thing.extending) {
+						thing.extension = Math.round(thing.extension + 1) - Game.animationSpeed;
+						LongExtender le = (LongExtender) thing;
+						le.timeExtending = (int) (1 / Game.animationSpeed);
+					}
+					else if(thing.retracting) {
+						thing.extension = Math.round(thing.extension - 1) - Game.animationSpeed;
+						LongExtender le = (LongExtender) thing;
+						le.timeRetracting = (int) (1 / Game.animationSpeed);
+					}
+				}
+				else if(thing instanceof Extender || thing instanceof Retractor) {
+					if(thing.extending) {
+						thing.extension = 1;
+						thing.extending = false;
+					}
+					else if(thing.retracting) {
+						thing.extension = 1;
+						thing.retracting = false;
+					}
 				}
 			}
-			if(thing.moveDir == "up") {
-				thing.y = Math.round(thing.y - 1);
-			}
-			else if(thing.moveDir == "down") {
-				thing.y = Math.round(thing.y + 1);
-			}
-			else if(thing.moveDir == "right") {
-				thing.x = Math.round(thing.x + 1);
-			}
-			else if(thing.moveDir == "left") {
-				thing.x = Math.round(thing.x - 1);
-			}
-			thing.moveDir = "none";
-		}
-		if(this.transitioning()) {
-			if(Game.chainUndo) {
+			this.snapToGrid();
+			if(!Game.lastAction) {
 				UndoStack.undoAction();
-				if(Game.lastAction) {
-					Game.chainUndo = false;
+				this.fastForward();
+			}
+		}
+		else {
+			for(short i = 0; i < this.content.size(); i ++) {
+				Thing thing = (Thing) this.content.get(i);
+				if(thing.moveDir != "none") {
+					if(thing.moveDir == "up") {
+						thing.y = Math.round(thing.y - 1);
+					}
+					else if(thing.moveDir == "down") {
+						thing.y = Math.round(thing.y + 1);
+					}
+					else if(thing.moveDir == "right") {
+						thing.x = Math.round(thing.x + 1);
+					}
+					else if(thing.moveDir == "left") {
+						System.out.println("Moving something left (inside fastForward())");
+						thing.x = Math.round(thing.x - 1);
+					}
+				}
+				if(thing instanceof LongExtender) {
+					if(thing.extending) {
+						thing.extension = Math.round(thing.extension + 1) - Game.animationSpeed;
+						LongExtender le = (LongExtender) thing;
+						le.timeExtending = (int) (1 / Game.animationSpeed);
+						le.move();
+					}
+					else if(thing.retracting) {
+						thing.extension = Math.round(thing.extension - 1) - Game.animationSpeed;
+						LongExtender le = (LongExtender) thing;
+						le.timeRetracting = (int) (1 / Game.animationSpeed);
+						le.move();
+					}
+				}
+				else if(thing instanceof Extender || thing instanceof Retractor) {
+					if(thing.extending) {
+						thing.extension = 1;
+						thing.extending = false;
+					}
+					else if(thing.retracting) {
+						thing.extension = 1;
+						thing.retracting = false;
+					}
 				}
 			}
-			this.fastForward();
+			if(this.transitioning()) {
+				this.fastForward();
+			}
 		}
 	}
 	public boolean transitioning(boolean ignoreChainUndos) {
