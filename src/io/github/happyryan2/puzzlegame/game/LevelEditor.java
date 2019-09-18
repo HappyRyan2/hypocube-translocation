@@ -251,6 +251,10 @@ public class LevelEditor {
 				Retractor retractor = (Retractor) thing;
 				retractor.onClick();
 			}
+			else if(thing instanceof LongExtender) {
+				LongExtender longExtender = (LongExtender) thing;
+				longExtender.onClick();
+			}
 			solutionStep --;
 		}
 	}
@@ -278,6 +282,7 @@ public class LevelEditor {
 		Level depth0 = new Level(level);
 		depth0.depth = 0;
 		tree.add(depth0);
+		System.out.println("depth0's content size is " + depth0.content.size());
 
 		for(int i = 0; i < tree.size(); i ++) {
 			Level currentLevel = (Level) tree.get(i);
@@ -286,9 +291,17 @@ public class LevelEditor {
 				yLoop: for(short y = 0; y < currentLevel.height; y ++) {
 					/* Get the item at this position and verify that it exists and can do something when clicked */
 					Thing thing = (Thing) currentLevel.getAtPos(x, y);
+					System.out.println("Found something! (solving algorithm)");
+					if(thing == null) {
+						System.out.println("The thing at (" + x + ", " + y + ") is null");
+					}
+					if(thing instanceof LongExtender) {
+						System.out.println("Found the long extender (solving algorithm)");
+					}
 					if(thing == null || !thing.canDoSomething()) {
 						continue yLoop;
 					}
+					System.out.println("Found something that can do something (solving algorithm)");
 					/* Pretend that the user clicked on that item */
 					if(thing instanceof Extender) {
 						Extender extender = (Extender) thing;
@@ -297,6 +310,10 @@ public class LevelEditor {
 					else if(thing instanceof Retractor) {
 						Retractor retractor = (Retractor) thing;
 						retractor.onClick();
+					}
+					else if(thing instanceof LongExtender) {
+						LongExtender le = (LongExtender) thing;
+						le.onClick();
 					}
 					UndoStack.addAction();
 					currentLevel.fastForward();
@@ -307,14 +324,6 @@ public class LevelEditor {
 					nextDepth.parentIndex = i;
 					nextDepth.preX = x;
 					nextDepth.preY = y;
-
-					/* Remove unnecessary properties (mostly buttons) to save memory */
-					nextDepth.exit2 = null;
-					nextDepth.restart2 = null;
-					nextDepth.exit = null;
-					nextDepth.restart = null;
-					nextDepth.exit = null;
-					nextDepth.undo = null;
 
 					/* But first, check to make sure it isn't a duplicate */
 					for(int j = 0; j < tree.size(); j ++) {

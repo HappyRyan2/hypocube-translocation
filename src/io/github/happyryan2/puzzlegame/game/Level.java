@@ -70,11 +70,15 @@ public class Level {
 			Thing thing = (Thing) level.content.get(i);
 			if(thing instanceof Extender) {
 				Extender extender = new Extender((Extender) thing);
-				this.content.add(extender);
+				this.content.add(new Extender(extender));
 			}
 			else if(thing instanceof Retractor) {
 				Retractor retractor = new Retractor((Retractor) thing);
-				this.content.add(retractor);
+				this.content.add(new Retractor(retractor));
+			}
+			else if(thing instanceof LongExtender) {
+				LongExtender longExtender = new LongExtender((LongExtender) thing);
+				this.content.add(new LongExtender(longExtender));
 			}
 			else if(thing instanceof Player) {
 				this.content.add(new Player((Player) thing));
@@ -307,7 +311,7 @@ public class Level {
 			// System.out.println("Doing a chain undo");
 			UndoStack.undoAction();
 		}
-		this.fastForward();
+		// this.fastForward();
 	}
 	public void display(Graphics g) {
 		/* walls + background */
