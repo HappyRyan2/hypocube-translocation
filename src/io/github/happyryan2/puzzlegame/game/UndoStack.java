@@ -20,7 +20,7 @@ public class UndoStack {
 		addAction(false);
 	}
 	public static void addAction(boolean chainAction) {
-		System.out.println("adding an action!");
+		// System.out.println("adding an action!");
 		UndoStack action = new UndoStack();
 		for(byte i = 0; i < Game.currentLevel.content.size(); i ++) {
 			Thing thing = (Thing) Game.currentLevel.content.get(i);
@@ -93,24 +93,12 @@ public class UndoStack {
 				if(thing.x == action.x && thing.y == action.y) {
 					// System.out.println("found something at the right position");
 					if(action.moving) {
-						if(thing instanceof LongExtender) {
-							// System.out.println("moving the long extender " + action.dir);
-						}
-						else {
-							// System.out.println("moving the retractor " + action.dir);
-						}
-						System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
+						// System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
 						thing.moveDir = action.dir;
 						thing.timeMoving = 0;
 					}
 					if(action.dir == "retract") {
-						if(thing instanceof LongExtender) {
-							// System.out.println("retracting the long extender");
-						}
-						else if(thing instanceof Retractor) {
-							// System.out.println("retracting the retractor");
-						}
-						System.out.println("retracting the thing at position (" + thing.x + ", " + thing.y + ")");
+						// System.out.println("retracting the thing at position (" + thing.x + ", " + thing.y + ")");
 						if(thing instanceof LongExtender) {
 							Game.animationSpeed = Game.fastAnimationSpeed;
 							((LongExtender) (thing)).timeRetracting = 0;
@@ -118,12 +106,6 @@ public class UndoStack {
 						thing.retracting = true;
 					}
 					if(action.dir == "extend") {
-						if(thing instanceof LongExtender) {
-							// System.out.println("extending the long extender. Extension: " + thing.extension);
-						}
-						else if(thing instanceof Retractor) {
-							// System.out.println("extending the retractor");
-						}
 						// System.out.println("extending the thing at position (" + thing.x + ", " + thing.y + ")");
 						if(thing instanceof LongExtender) {
 							((LongExtender) (thing)).timeExtending = 0;

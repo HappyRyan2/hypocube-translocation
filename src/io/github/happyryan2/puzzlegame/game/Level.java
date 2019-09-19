@@ -137,6 +137,24 @@ public class Level {
 					}
 				}
 			}
+			else if(thing instanceof LongExtender) {
+				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
+					Thing thing2 = (Thing) level.content.get(j);
+					if(thing2 instanceof LongExtender && thing2.x == thing.x && thing2.y == thing.y && thing2.dir == thing.dir && thing2.extension == thing.extension) {
+						hasCopy = true;
+						break copyLoop;
+					}
+				}
+			}
+			else if(thing instanceof Wall) {
+				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
+					Thing thing2 = (Thing) level.content.get(j);
+					if(thing2 instanceof Wall && thing2.x == thing.x && thing2.y == thing.y) {
+						hasCopy = true;
+						break copyLoop;
+					}
+				}
+			}
 			if(!hasCopy) {
 				return false;
 			}
@@ -243,6 +261,8 @@ public class Level {
 			this.reset();
 			UndoStack.resetStack();
 		}
+		/* Update objects in level */
+		this.updateContent();
 		/* Win menu buttons */
 		if(this.isComplete()) {
 			if(!this.completedBefore) {
@@ -272,6 +292,18 @@ public class Level {
 				UndoStack.resetStack();
 			}
 		}
+		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
+			Game.timeSinceLastAction ++;
+		}
+		// System.out.println("transitioning(true) ? " + this.transitioning(true));
+		// System.out.println("last action? " + Game.lastAction);
+		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
+			// System.out.println("Doing a chain undo");
+			UndoStack.undoAction();
+		}
+		this.fastForward();
+	}
+	public void updateContent() {
 		/* Load content */
 		this.clearSelected();
 		for(short i = 0; i < this.content.size(); i ++) {
@@ -302,16 +334,6 @@ public class Level {
 			Thing thing = (Thing) this.content.get(i);
 			thing.move();
 		}
-		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
-			Game.timeSinceLastAction ++;
-		}
-		// System.out.println("transitioning(true) ? " + this.transitioning(true));
-		// System.out.println("last action? " + Game.lastAction);
-		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
-			// System.out.println("Doing a chain undo");
-			UndoStack.undoAction();
-		}
-		// this.fastForward();
 	}
 	public void display(Graphics g) {
 		/* walls + background */
@@ -754,8 +776,10 @@ public class Level {
 	// }
 	public void fastForward() {
 		while(this.transitioning()) {
-			this.update();
+			System.out.println("Infinite while loop? (fastForward)");
+			this.updateContent();
 		}
+		System.out.println("While loop ended.");
 		if(true) { return; }
 		if(Game.chainUndo) {
 			for(short i = 0; i < this.content.size(); i ++) {
@@ -987,7 +1011,7 @@ public class Level {
 				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " extender at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended");
 			}
 			else if(thing instanceof LongExtender) {
-				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " long extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
+				System.out.println(" - A " + (thing.isWeak ? "weak " : "") + "long extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
 			}
 			else if(thing instanceof Wall) {
 				System.out.println(" - A wall at (" + thing.x + ", " + thing.y + ")");

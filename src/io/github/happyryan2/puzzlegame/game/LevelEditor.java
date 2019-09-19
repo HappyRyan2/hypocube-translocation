@@ -159,6 +159,9 @@ public class LevelEditor {
 				else if(thing instanceof Retractor) {
 					code += "super.content.add(new Retractor(" + (int) thing.x + ", " + (int) thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
 				}
+				else if(thing instanceof LongExtender) {
+					code += "super.content.add(new LongExtender(" + (int) thing.x + ", " + (int) thing.y + ", \"" + thing.dir + "\", " + thing.isWeak + "));";
+				}
 				else if(thing instanceof Wall) {
 					code += "super.content.add(new Wall(" + (int) thing.x + ", " + (int) thing.y + "));";
 				}
@@ -176,6 +179,9 @@ public class LevelEditor {
 					System.out.println("Ran out of memory while solving.");
 					System.out.println("----------------------------------------");
 				}
+				System.out.println("level complexity: " + tree.size());
+				Level lastLevel = (Level) tree.get(tree.size() - 1);
+				System.out.println("Is it complete? " + lastLevel.isComplete());
 			}
 			solutionStep = solutionTree.size() - 1;
 		}
@@ -282,7 +288,6 @@ public class LevelEditor {
 		Level depth0 = new Level(level);
 		depth0.depth = 0;
 		tree.add(depth0);
-		System.out.println("depth0's content size is " + depth0.content.size());
 
 		for(int i = 0; i < tree.size(); i ++) {
 			Level currentLevel = (Level) tree.get(i);
@@ -291,18 +296,11 @@ public class LevelEditor {
 				yLoop: for(short y = 0; y < currentLevel.height; y ++) {
 					/* Get the item at this position and verify that it exists and can do something when clicked */
 					Thing thing = (Thing) currentLevel.getAtPos(x, y);
-					System.out.println("Found something! (solving algorithm)");
-					if(thing == null) {
-						System.out.println("The thing at (" + x + ", " + y + ") is null");
-					}
-					if(thing instanceof LongExtender) {
-						System.out.println("Found the long extender (solving algorithm)");
-					}
 					if(thing == null || !thing.canDoSomething()) {
 						continue yLoop;
 					}
-					System.out.println("Found something that can do something (solving algorithm)");
 					/* Pretend that the user clicked on that item */
+					System.out.println("Found something!");
 					if(thing instanceof Extender) {
 						Extender extender = (Extender) thing;
 						extender.onClick();
@@ -325,6 +323,14 @@ public class LevelEditor {
 					nextDepth.preX = x;
 					nextDepth.preY = y;
 
+					/* Remove unnecessary properties (mostly buttons) to save memory */
+					nextDepth.exit2 = null;
+					nextDepth.restart2 = null;
+					nextDepth.exit = null;
+					nextDepth.restart = null;
+					nextDepth.exit = null;
+					nextDepth.undo = null;
+
 					/* But first, check to make sure it isn't a duplicate */
 					for(int j = 0; j < tree.size(); j ++) {
 						Level duplicate = (Level) tree.get(j);
@@ -334,6 +340,7 @@ public class LevelEditor {
 							continue yLoop;
 						}
 					}
+					// nextDepth.printContent();
 					tree.add(nextDepth);
 
 					UndoStack.undoAction();
@@ -346,7 +353,6 @@ public class LevelEditor {
 						System.out.println("FOUND THE SOLUTION (read the list backwards)");
 						displayLevelMovePath(nextDepth);
 						System.out.println("------------------------------------------");
-						System.out.println("level complexity: " + tree.size());
 						return;
 					}
 				}
@@ -366,6 +372,11 @@ public class LevelEditor {
 		displayLevelMovePath(parent);
 	}
 	public static void printTree() {
+		for(int i = 0; i < tree.size(); i ++) {
+			Level currentLevel = (Level) tree.get(i);
+			System.out.println("Level at index " + i + ", depth: " + currentLevel.depth + ", parent: " + currentLevel.parentIndex);
+			currentLevel.printContent();
+		}
 		if(true) { return; }
 		for(int j = 0; j < tree.size(); j ++) {
 			Level currentLevel = (Level) tree.get(j);
