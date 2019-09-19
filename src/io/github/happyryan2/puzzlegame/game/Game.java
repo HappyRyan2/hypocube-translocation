@@ -65,6 +65,10 @@ public class Game {
 		levels.add(new Level21());
 		levels.add(new Level22());
 		levels.add(new Level23());
+		for(short i = 0; i < levels.size(); i ++) {
+			Level level = (Level) levels.get(i);
+			level.completedBefore = true;
+		}
 		/* Load user progress */
 		loadProgress();
 	}

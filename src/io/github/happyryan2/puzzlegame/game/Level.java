@@ -297,10 +297,6 @@ public class Level {
 		}
 		// System.out.println("transitioning(true) ? " + this.transitioning(true));
 		// System.out.println("last action? " + Game.lastAction);
-		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
-			// System.out.println("Doing a chain undo");
-			UndoStack.undoAction();
-		}
 		this.fastForward();
 	}
 	public void updateContent() {
@@ -333,6 +329,10 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.move();
+		}
+		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
+			// System.out.println("Doing a chain undo");
+			UndoStack.undoAction();
 		}
 	}
 	public void display(Graphics g) {
@@ -778,6 +778,8 @@ public class Level {
 		while(this.transitioning()) {
 			System.out.println("Infinite while loop? (fastForward)");
 			this.updateContent();
+			this.printContent();
+			// this.update();
 		}
 		System.out.println("While loop ended.");
 		if(true) { return; }
