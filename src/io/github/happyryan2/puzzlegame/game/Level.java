@@ -297,7 +297,11 @@ public class Level {
 		}
 		// System.out.println("transitioning(true) ? " + this.transitioning(true));
 		// System.out.println("last action? " + Game.lastAction);
-		this.fastForward();
+		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
+			// System.out.println("Doing a chain undo");
+			UndoStack.undoAction();
+		}
+		// this.fastForward();
 	}
 	public void updateContent() {
 		/* Load content */
@@ -329,10 +333,6 @@ public class Level {
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			thing.move();
-		}
-		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
-			// System.out.println("Doing a chain undo");
-			UndoStack.undoAction();
 		}
 	}
 	public void display(Graphics g) {
@@ -541,6 +541,9 @@ public class Level {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing instanceof Goal) {
 				continue;
+			}
+			if(thing instanceof LongExtender && Game.debugging) {
+				// System.out.println("Found a long extener at (" + thing.x + ", " + thing.y + ")");
 			}
 			if(thing.x == x && thing.y == y) {
 				return thing;
@@ -775,13 +778,12 @@ public class Level {
 	// 	}
 	// }
 	public void fastForward() {
-		while(this.transitioning()) {
-			System.out.println("Infinite while loop? (fastForward)");
+		while(this.transitioning(true)) {
+			// System.out.println("Infinite while loop? (fastForward)");
 			this.updateContent();
-			this.printContent();
-			// this.update();
+			// this.printContent();
 		}
-		System.out.println("While loop ended.");
+		// System.out.println("While loop ended.");
 		if(true) { return; }
 		if(Game.chainUndo) {
 			for(short i = 0; i < this.content.size(); i ++) {

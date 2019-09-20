@@ -325,6 +325,8 @@ public class LongExtender extends Thing {
 	public boolean canDoSomething() {
 		Game.currentLevel.clearSelected();
 		if(super.dir == "none" || Game.currentLevel.transitioning()) {
+			System.out.println("Level is transitioning, can't do anything");
+			System.out.println("Is it doing a chain undo? " + Game.chainUndo);
 			return false;
 		}
 		if(super.extension == 0) {

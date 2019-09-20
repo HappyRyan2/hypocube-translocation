@@ -19,7 +19,7 @@ public class LevelEditor {
 	public static TextButton crop = new TextButton(350, 50, 100, 30, "crop", new Color(150, 150, 150), new Color(100, 100, 100));
 	public static TextButton uncrop = new TextButton(460, 50, 100, 30, "uncrop", new Color(150, 150, 150), new Color(100, 100, 100));
 
-	public static Level level = new Level18();
+	public static Level level = new Level();
 
 	public static boolean initialized = false;
 
@@ -170,6 +170,7 @@ public class LevelEditor {
 		}
 		if(checkSolvable.pressed && !checkSolvable.pressedBefore) {
 			if(solutionTree.size() == 0) {
+				Game.debugging = true;
 				try {
 					checkSolution();
 				}
@@ -182,6 +183,7 @@ public class LevelEditor {
 				System.out.println("level complexity: " + tree.size());
 				Level lastLevel = (Level) tree.get(tree.size() - 1);
 				System.out.println("Is it complete? " + lastLevel.isComplete());
+				Game.debugging = false;
 			}
 			solutionStep = solutionTree.size() - 1;
 		}
@@ -294,13 +296,25 @@ public class LevelEditor {
 			Game.currentLevel = currentLevel;
 			for(short x = 0; x < currentLevel.width; x ++) {
 				yLoop: for(short y = 0; y < currentLevel.height; y ++) {
+					Game.chainUndo = false;
 					/* Get the item at this position and verify that it exists and can do something when clicked */
 					Thing thing = (Thing) currentLevel.getAtPos(x, y);
+					System.out.println("Checking (" + x + ", " + y + ") at index " + i);
+					if(thing != null) {
+						System.out.println("Not empty!");
+						if(thing.canDoSomething()) {
+							// System.out.println("It can do something!");
+						}
+					}
 					if(thing == null || !thing.canDoSomething()) {
+						if(x == 2 && y == 0) {
+							// System.out.println("(At index " + i + ")");
+							// currentLevel.printContent();
+						}
 						continue yLoop;
 					}
 					/* Pretend that the user clicked on that item */
-					System.out.println("Found something!");
+					// System.out.println("Found something!");
 					if(thing instanceof Extender) {
 						Extender extender = (Extender) thing;
 						extender.onClick();
@@ -324,12 +338,12 @@ public class LevelEditor {
 					nextDepth.preY = y;
 
 					/* Remove unnecessary properties (mostly buttons) to save memory */
-					// nextDepth.exit2 = null;
-					// nextDepth.restart2 = null;
-					// nextDepth.exit = null;
-					// nextDepth.restart = null;
-					// nextDepth.exit = null;
-					// nextDepth.undo = null;
+					nextDepth.exit2 = null;
+					nextDepth.restart2 = null;
+					nextDepth.exit = null;
+					nextDepth.restart = null;
+					nextDepth.exit = null;
+					nextDepth.undo = null;
 
 					/* But first, check to make sure it isn't a duplicate */
 					for(int j = 0; j < tree.size(); j ++) {
@@ -345,10 +359,14 @@ public class LevelEditor {
 
 					UndoStack.undoAction();
 					currentLevel.fastForward();
+					System.out.println("After doing undo:");
+					currentLevel.printContent();
 
 					/* If the level has been won, terminate the algorithm and print the solution. */
 					if(nextDepth.isComplete()) {
-						printTree();
+						System.out.println("Solved level state:");
+						// printTree();
+						nextDepth.printContent();
 						System.out.println("------------------------------------------");
 						System.out.println("FOUND THE SOLUTION (read the list backwards)");
 						displayLevelMovePath(nextDepth);
