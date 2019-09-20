@@ -778,10 +778,22 @@ public class Level {
 	// 	}
 	// }
 	public void fastForward() {
+		boolean transitioningBefore = true;
+		int numIterations = 0;
 		while(this.transitioning(true)) {
-			// System.out.println("Infinite while loop? (fastForward)");
+			numIterations ++;
 			this.updateContent();
 			// this.printContent();
+			if(!this.transitioning(true) && !transitioningBefore) {
+				return;
+			}
+			if(numIterations > 1000) {
+				System.out.println("Possible infinte loop?");
+				Game.currentLevel.printContent();
+				System.out.println("Is it doing a chain undo? " + Game.chainUndo);
+			}
+			transitioningBefore = this.transitioning();
+			System.out.println("In the while loop");
 		}
 		// System.out.println("While loop ended.");
 		if(true) { return; }

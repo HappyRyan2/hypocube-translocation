@@ -179,6 +179,7 @@ public class LevelEditor {
 					System.out.println("----------------------------------------");
 					System.out.println("Ran out of memory while solving.");
 					System.out.println("----------------------------------------");
+					printTree();
 				}
 				System.out.println("level complexity: " + tree.size());
 				Level lastLevel = (Level) tree.get(tree.size() - 1);
@@ -284,101 +285,156 @@ public class LevelEditor {
 		}
 	}
 
+	// public static void checkSolution() throws OutOfMemoryError {
+		// /* First, clear the tree and set the root to be the current state */
+		// tree.clear();
+		// Level depth0 = new Level(level);
+		// depth0.depth = 0;
+		// tree.add(depth0);
+
+		// for(int i = 0; i < tree.size(); i ++) {
+			// Level currentLevel = (Level) tree.get(i);
+			// Game.currentLevel = currentLevel;
+			// for(short x = 0; x < currentLevel.width; x ++) {
+				// yLoop: for(short y = 0; y < currentLevel.height; y ++) {
+					// Game.chainUndo = false;
+					// /* Get the item at this position and verify that it exists and can do something when clicked */
+					// Thing thing = (Thing) currentLevel.getAtPos(x, y);
+					// System.out.println("Checking (" + x + ", " + y + ") at index " + i);
+					// if(thing != null) {
+						// System.out.println("Not empty!");
+						// if(thing.canDoSomething()) {
+							// System.out.println("It can do something!");
+						// }
+					// }
+					// if(thing == null || !thing.canDoSomething()) {
+						// if(x == 2 && y == 0) {
+							// System.out.println("(At index " + i + ")");
+							// currentLevel.printContent();
+						// }
+						// continue yLoop;
+					// }
+					// /* Pretend that the user clicked on that item */
+					// Level beforeAction = new Level(currentLevel);
+					// if(thing instanceof Extender) {
+						// Extender extender = (Extender) thing;
+						// extender.onClick();
+					// }
+					// else if(thing instanceof Retractor) {
+						// Retractor retractor = (Retractor) thing;
+						// retractor.onClick();
+					// }
+					// else if(thing instanceof LongExtender) {
+						// LongExtender le = (LongExtender) thing;
+						// le.onClick();
+					// }
+					// UndoStack.addAction();
+					// currentLevel.fastForward();
+					// tree.set(i, beforeAction);
+
+					// /* Add the modified state to the tree */
+					// Level nextDepth = new Level(currentLevel);
+					// nextDepth.depth = currentLevel.depth + 1;
+					// nextDepth.parentIndex = i;
+					// nextDepth.preX = x;
+					// nextDepth.preY = y;
+
+					// /* Remove unnecessary properties (mostly buttons) to save memory */
+					// nextDepth.exit2 = null;
+					// nextDepth.restart2 = null;
+					// nextDepth.exit = null;
+					// nextDepth.restart = null;
+					// nextDepth.exit = null;
+					// nextDepth.undo = null;
+
+					// /* But first, check to make sure it isn't a duplicate */
+					// for(int j = 0; j < tree.size(); j ++) {
+						// Level duplicate = (Level) tree.get(j);
+						// if(nextDepth.equals(duplicate) && i != j) {
+							// UndoStack.undoAction();
+							// currentLevel.fastForward();
+							// continue yLoop;
+						// }
+					// }
+					// nextDepth.printContent();
+					// tree.add(nextDepth);
+
+					// UndoStack.undoAction();
+					// currentLevel.fastForward();
+					// System.out.println("After doing undo:");
+					// currentLevel.printContent();
+
+					// /* If the level has been won, terminate the algorithm and print the solution. */
+					// if(nextDepth.isComplete()) {
+						// System.out.println("Solved level state:");
+						// printTree();
+						// nextDepth.printContent();
+						// System.out.println("------------------------------------------");
+						// System.out.println("FOUND THE SOLUTION (read the list backwards)");
+						// displayLevelMovePath(nextDepth);
+						// System.out.println("------------------------------------------");
+						// return;
+					// }
+				// }
+			// }
+		// }
+		// System.out.println("---------------------");
+		// System.out.println("the level cannot be solved.");
+		// System.out.println("---------------------");
+	// }
 	public static void checkSolution() throws OutOfMemoryError {
-		/* First, clear the tree and set the root to be the current state */
+		/* Clear "tree" + set root to current state */
 		tree.clear();
 		Level depth0 = new Level(level);
 		depth0.depth = 0;
 		tree.add(depth0);
-
 		for(int i = 0; i < tree.size(); i ++) {
-			Level currentLevel = (Level) tree.get(i);
-			Game.currentLevel = currentLevel;
-			for(short x = 0; x < currentLevel.width; x ++) {
-				yLoop: for(short y = 0; y < currentLevel.height; y ++) {
-					Game.chainUndo = false;
-					/* Get the item at this position and verify that it exists and can do something when clicked */
-					Thing thing = (Thing) currentLevel.getAtPos(x, y);
-					System.out.println("Checking (" + x + ", " + y + ") at index " + i);
-					if(thing != null) {
-						System.out.println("Not empty!");
-						if(thing.canDoSomething()) {
-							// System.out.println("It can do something!");
-						}
+			Level level = (Level) tree.get(i);
+			moveLoop: for(int j = 0; j < level.content.size(); j ++) {
+				Level nextLevel = new Level(level);
+				Game.currentLevel = level;
+				/* Get the thing at this index */
+				Thing thing = (Thing) nextLevel.content.get(j);
+				if(!thing.canDoSomething()) {
+					continue;
+				}
+				System.out.println("Found something at (" + thing.x + ", " + thing.y + "). Index " + j + " at level " + i);
+				/* Simulate a click on that object */
+				if(thing instanceof Extender) {
+					Extender e = (Extender) thing;
+					e.onClick();
+				}
+				else if(thing instanceof Retractor) {
+					Retractor r = (Retractor) thing;
+					r.onClick();
+				}
+				else if(thing instanceof LongExtender) {
+					LongExtender le = (LongExtender) thing;
+					le.onClick();
+				}
+				nextLevel.fastForward();
+				/* Make sure it isn't a duplicate state + add to tree */
+				for(int k = 0; k < tree.size(); k ++) {
+					Level duplicate = (Level) tree.get(k);
+					if(duplicate.equals(nextLevel)) {
+						continue moveLoop;
 					}
-					if(thing == null || !thing.canDoSomething()) {
-						if(x == 2 && y == 0) {
-							// System.out.println("(At index " + i + ")");
-							// currentLevel.printContent();
-						}
-						continue yLoop;
-					}
-					/* Pretend that the user clicked on that item */
-					// System.out.println("Found something!");
-					if(thing instanceof Extender) {
-						Extender extender = (Extender) thing;
-						extender.onClick();
-					}
-					else if(thing instanceof Retractor) {
-						Retractor retractor = (Retractor) thing;
-						retractor.onClick();
-					}
-					else if(thing instanceof LongExtender) {
-						LongExtender le = (LongExtender) thing;
-						le.onClick();
-					}
-					UndoStack.addAction();
-					currentLevel.fastForward();
-
-					/* Add the modified state to the tree */
-					Level nextDepth = new Level(currentLevel);
-					nextDepth.depth = currentLevel.depth + 1;
-					nextDepth.parentIndex = i;
-					nextDepth.preX = x;
-					nextDepth.preY = y;
-
-					/* Remove unnecessary properties (mostly buttons) to save memory */
-					nextDepth.exit2 = null;
-					nextDepth.restart2 = null;
-					nextDepth.exit = null;
-					nextDepth.restart = null;
-					nextDepth.exit = null;
-					nextDepth.undo = null;
-
-					/* But first, check to make sure it isn't a duplicate */
-					for(int j = 0; j < tree.size(); j ++) {
-						Level duplicate = (Level) tree.get(j);
-						if(nextDepth.equals(duplicate) && i != j) {
-							UndoStack.undoAction();
-							currentLevel.fastForward();
-							continue yLoop;
-						}
-					}
-					// nextDepth.printContent();
-					tree.add(nextDepth);
-
-					UndoStack.undoAction();
-					currentLevel.fastForward();
-					System.out.println("After doing undo:");
-					currentLevel.printContent();
-
-					/* If the level has been won, terminate the algorithm and print the solution. */
-					if(nextDepth.isComplete()) {
-						System.out.println("Solved level state:");
-						// printTree();
-						nextDepth.printContent();
-						System.out.println("------------------------------------------");
-						System.out.println("FOUND THE SOLUTION (read the list backwards)");
-						displayLevelMovePath(nextDepth);
-						System.out.println("------------------------------------------");
-						return;
-					}
+				}
+				tree.add(nextLevel);
+				/* Check if the level is complete */
+				if(nextLevel.isComplete()) {
+					System.out.println("------------------------------------------");
+					System.out.println("FOUND THE SOLUTION (read the list backwards)");
+					displayLevelMovePath(nextLevel);
+					System.out.println("------------------------------------------");
+					return;
 				}
 			}
 		}
-		System.out.println("---------------------");
-		System.out.println("the level cannot be solved.");
-		System.out.println("---------------------");
+		System.out.println("------------------------------------------");
+		System.out.println("The level cannot be solved.");
+		System.out.println("------------------------------------------");
+		printTree();
 	}
 	public static void displayLevelMovePath(Level solution) {
 		if(solution.depth == 0) {
