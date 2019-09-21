@@ -129,10 +129,10 @@ public class Game {
 			File file = new File(saveDest);
 			file.setWritable(true);
 			if(file.createNewFile()) {
-				System.out.println("File created");
+				// System.out.println("File created");
 			}
 			else {
-				System.out.println("File already exists");
+				// System.out.println("File already exists");
 			}
 			/* Write progress to file */
 			BufferedWriter writer = new BufferedWriter(new FileWriter(saveDest));

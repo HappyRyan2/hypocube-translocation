@@ -54,7 +54,7 @@ public class Retractor extends Thing {
 			if(this.canDoSomething() && !Game.currentLevel.paused) {
 				Screen.cursor = "hand";
 			}
-			if(MouseClick.mouseIsPressed) {
+			if(MouseClick.mouseIsPressed && !MouseClick.pressedBefore) {
 				this.onClick();
 			}
 		}

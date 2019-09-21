@@ -70,11 +70,15 @@ public class Level {
 			Thing thing = (Thing) level.content.get(i);
 			if(thing instanceof Extender) {
 				Extender extender = new Extender((Extender) thing);
-				this.content.add(extender);
+				this.content.add(new Extender(extender));
 			}
 			else if(thing instanceof Retractor) {
 				Retractor retractor = new Retractor((Retractor) thing);
-				this.content.add(retractor);
+				this.content.add(new Retractor(retractor));
+			}
+			else if(thing instanceof LongExtender) {
+				LongExtender longExtender = new LongExtender((LongExtender) thing);
+				this.content.add(new LongExtender(longExtender));
 			}
 			else if(thing instanceof Player) {
 				this.content.add(new Player((Player) thing));
@@ -128,6 +132,24 @@ public class Level {
 				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
 					Thing thing2 = (Thing) level.content.get(j);
 					if(thing2 instanceof Retractor && thing2.x == thing.x && thing2.y == thing.y && thing2.dir == thing.dir && thing2.extension == thing.extension) {
+						hasCopy = true;
+						break copyLoop;
+					}
+				}
+			}
+			else if(thing instanceof LongExtender) {
+				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
+					Thing thing2 = (Thing) level.content.get(j);
+					if(thing2 instanceof LongExtender && thing2.x == thing.x && thing2.y == thing.y && thing2.dir == thing.dir && thing2.extension == thing.extension) {
+						hasCopy = true;
+						break copyLoop;
+					}
+				}
+			}
+			else if(thing instanceof Wall) {
+				copyLoop: for(short j = 0; j < level.content.size(); j ++) {
+					Thing thing2 = (Thing) level.content.get(j);
+					if(thing2 instanceof Wall && thing2.x == thing.x && thing2.y == thing.y) {
 						hasCopy = true;
 						break copyLoop;
 					}
@@ -224,7 +246,7 @@ public class Level {
 		else if(this.undo.hoverY > 0) {
 			this.undo.hoverY --;
 		}
-		if(this.undo.pressed && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && UndoStack.stack.size() > 0) {
+		if(this.undo.pressed && !this.undo.pressedBefore && !Game.chainUndo && !Game.chainUndoLastFrame && !this.transitioning() && UndoStack.stack.size() > 0) {
 			UndoStack.undoAction();
 		}
 		if(this.exit.pressed) {
@@ -239,6 +261,8 @@ public class Level {
 			this.reset();
 			UndoStack.resetStack();
 		}
+		/* Update objects in level */
+		this.updateContent();
 		/* Win menu buttons */
 		if(this.isComplete()) {
 			if(!this.completedBefore) {
@@ -268,6 +292,14 @@ public class Level {
 				UndoStack.resetStack();
 			}
 		}
+		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
+			Game.timeSinceLastAction ++;
+		}
+		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
+			UndoStack.undoAction();
+		}
+	}
+	public void updateContent() {
 		/* Load content */
 		this.clearSelected();
 		for(short i = 0; i < this.content.size(); i ++) {
@@ -298,15 +330,7 @@ public class Level {
 			Thing thing = (Thing) this.content.get(i);
 			thing.move();
 		}
-		if(Game.timeSinceLastAction < 1 / Game.animationSpeed) {
-			Game.timeSinceLastAction ++;
-		}
-		// System.out.println("transitioning(true) ? " + this.transitioning(true));
-		// System.out.println("last action? " + Game.lastAction);
-		if(Game.chainUndo && !this.transitioning(true) && !Game.lastAction) {
-			// System.out.println("Doing a chain undo");
-			UndoStack.undoAction();
-		}
+		// this.fastForward();
 	}
 	public void display(Graphics g) {
 		/* walls + background */
@@ -681,32 +705,18 @@ public class Level {
 	}
 
 	public void fastForward() {
-		for(short i = 0; i < this.content.size(); i ++) {
-			Thing thing = (Thing) this.content.get(i);
-			if(thing instanceof Goal) {
-				continue;
+		boolean transitioningBefore = true;
+		int numIterations = 0;
+		while(true) {
+			numIterations ++;
+			this.update();
+			if(!this.transitioning(true) && !transitioningBefore) {
+				return;
 			}
-			if((thing instanceof Extender || thing instanceof Retractor) && thing.extending) {
-				thing.extension = 1;
-				thing.extending = false;
+			if(numIterations > 1000) {
+				throw new RuntimeException("Infinite while loop");
 			}
-			if((thing instanceof Extender || thing instanceof Retractor) && thing.retracting) {
-				thing.extension = 0;
-				thing.retracting = false;
-			}
-			if(thing.moveDir == "up") {
-				thing.y = Math.round(thing.y - 1);
-			}
-			else if(thing.moveDir == "down") {
-				thing.y = Math.round(thing.y + 1);
-			}
-			else if(thing.moveDir == "right") {
-				thing.x = Math.round(thing.x + 1);
-			}
-			else if(thing.moveDir == "left") {
-				thing.x = Math.round(thing.x - 1);
-			}
-			thing.moveDir = "none";
+			transitioningBefore = this.transitioning();
 		}
 	}
 	public boolean transitioning(boolean ignoreChainUndos) {
@@ -715,17 +725,7 @@ public class Level {
 		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
-			if(thing.moveDir != "none" || thing.extending || thing.retracting && !(thing instanceof Goal)) {
-				// System.out.println("Found an object at (" + thing.x + ", " + thing.y + ") that is transitioning");
-				// if(thing.moveDir != "none") {
-				// 	System.out.println(" - it is moving " + thing.moveDir);
-				// }
-				// else if(thing.extending) {
-				// 	System.out.println(" - it is extending");
-				// }
-				// else if(thing.retracting) {
-				// 	System.out.println(" - it is retracting");
-				// }
+			if(thing.x != Math.round(thing.x) || thing.y != Math.round(thing.y) || thing.extension != Math.round(thing.extension)) {
 				return true;
 			}
 		}
@@ -842,7 +842,7 @@ public class Level {
 				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " extender at (" + thing.x + ", " + thing.y + ") that " + (thing.extension == 1 ? " is " : " is not ") + " extended");
 			}
 			else if(thing instanceof LongExtender) {
-				System.out.println(" - A " + (thing.isWeak ? " weak" : "") + " long extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
+				System.out.println(" - A " + (thing.isWeak ? "weak " : "") + "long extender at (" + thing.x + ", " + thing.y + ") with an extension of " + thing.extension);
 			}
 			else if(thing instanceof Wall) {
 				System.out.println(" - A wall at (" + thing.x + ", " + thing.y + ")");

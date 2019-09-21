@@ -60,20 +60,20 @@ public class UndoStack {
 		stack.add(action);
 	}
 	public static void undoAction() {
+		undoAction(false);
+	}
+	public static void undoAction(boolean ignoreTransition) {
 		Game.currentLevel.snapToGrid();
-		printStack();
-		// System.out.println("Stack size: " + stack.size());
 		if(stack.size() == 0) {
-			// System.out.println("Stack size is 0");
 			Game.chainUndo = false;
 			return;
 		}
-		// Game.currentLevel.printContent();
-		// System.out.println("UNDOING");
-		if(Game.currentLevel.transitioning(true)) {
+		if(Game.currentLevel.transitioning(true) && !ignoreTransition) {
 			return;
 		}
-		// System.out.println("undoing an action!");
+		if(Game.currentLevel.transitioning(true) && ignoreTransition) {
+			Game.currentLevel.snapToGrid();
+		}
 		UndoStack actions = (UndoStack) stack.get(stack.size() - 1);
 		for(byte i = 0; i < actions.movement.size(); i ++) {
 			UndoStackItem action = (UndoStackItem) actions.movement.get(i);
@@ -85,23 +85,11 @@ public class UndoStack {
 				if(thing.x == action.x && thing.y == action.y) {
 					// System.out.println("found something at the right position");
 					if(action.moving) {
-						if(thing instanceof LongExtender) {
-							// System.out.println("moving the long extender " + action.dir);
-						}
-						else {
-							// System.out.println("moving the retractor " + action.dir);
-						}
 						// System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
 						thing.moveDir = action.dir;
 						thing.timeMoving = 0;
 					}
 					if(action.dir == "retract") {
-						if(thing instanceof LongExtender) {
-							// System.out.println("retracting the long extender");
-						}
-						else if(thing instanceof Retractor) {
-							// System.out.println("retracting the retractor");
-						}
 						// System.out.println("retracting the thing at position (" + thing.x + ", " + thing.y + ")");
 						if(thing instanceof LongExtender) {
 							Game.animationSpeed = Game.fastAnimationSpeed;
@@ -110,12 +98,6 @@ public class UndoStack {
 						thing.retracting = true;
 					}
 					if(action.dir == "extend") {
-						if(thing instanceof LongExtender) {
-							// System.out.println("extending the long extender. Extension: " + thing.extension);
-						}
-						else if(thing instanceof Retractor) {
-							// System.out.println("extending the retractor");
-						}
 						// System.out.println("extending the thing at position (" + thing.x + ", " + thing.y + ")");
 						if(thing instanceof LongExtender) {
 							((LongExtender) (thing)).timeExtending = 0;
