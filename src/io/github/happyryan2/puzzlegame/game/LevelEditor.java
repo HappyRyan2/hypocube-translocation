@@ -288,6 +288,7 @@ public class LevelEditor {
 		tree.add(depth0);
 		/* Go through the "tree", trying all possible moves */
 		for(int i = 0; i < tree.size(); i ++) {
+			System.out.println("Checking index " + i + " / " + tree.size());
 			Level level = (Level) tree.get(i);
 			moveLoop: for(int j = 0; j < level.content.size(); j ++) {
 				/* Copy the level */
@@ -331,7 +332,7 @@ public class LevelEditor {
 						// System.out.println("Duplicate state:");
 						// duplicate.printContent();
 						// System.out.println("Potential new state:");
-						nextLevel.printContent();
+						// nextLevel.printContent();
 						continue moveLoop;
 					}
 				}
