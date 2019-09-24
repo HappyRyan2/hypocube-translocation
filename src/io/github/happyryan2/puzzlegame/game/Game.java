@@ -15,8 +15,7 @@ import io.github.happyryan2.puzzlegame.utilities.*;
 import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Game {
-	public static boolean debugging = false;
-	public static String state = "level-editor";
+	public static String state = "start";
 	public static int levelOpen = 20;
 
 	public static List levels = new ArrayList();
@@ -66,8 +65,13 @@ public class Game {
 		levels.add(new Level21());
 		levels.add(new Level22());
 		levels.add(new Level23());
+		levels.add(new Level24());
 		/* Load user progress */
 		loadProgress();
+		for(short i = 0; i < levels.size(); i ++) {
+			Level level = (Level) levels.get(i);
+			level.completedBefore = true;
+		}
 	}
 	public static void startGame() {
 		/* Move to the level select screen */
@@ -130,10 +134,10 @@ public class Game {
 			File file = new File(saveDest);
 			file.setWritable(true);
 			if(file.createNewFile()) {
-				System.out.println("File created");
+				// System.out.println("File created");
 			}
 			else {
-				System.out.println("File already exists");
+				// System.out.println("File already exists");
 			}
 			/* Write progress to file */
 			BufferedWriter writer = new BufferedWriter(new FileWriter(saveDest));

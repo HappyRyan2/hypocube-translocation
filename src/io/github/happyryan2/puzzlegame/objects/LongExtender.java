@@ -108,7 +108,6 @@ public class LongExtender extends Thing {
 		if(super.extending) {
 			this.timeExtending ++;
 			super.extension += Game.animationSpeed;
-			// System.out.println(" - increasing extension");
 			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
 			/* Pause every integer extension to see if it should continue extending */
 			if(this.timeExtending >= (1 / Game.animationSpeed)) {
@@ -159,7 +158,6 @@ public class LongExtender extends Thing {
 			this.timeRetracting ++;
 			super.extension -= Game.animationSpeed;
 			super.extension = Math.round(super.extension / (float) (Game.animationSpeed)) * Game.animationSpeed;
-			// System.out.println(" - decreasing extension");
 			/* Pause every integer extension to see if it should continue retracting */
 			if(this.timeRetracting >= 1 / Game.animationSpeed) {
 				Game.currentLevel.snapToGrid();
@@ -206,11 +204,9 @@ public class LongExtender extends Thing {
 				super.y += Game.animationSpeed;
 			}
 			else if(super.moveDir == "left") {
-				// System.out.println(" - decreasing x");
 				super.x -= Game.animationSpeed;
 			}
 			else if(super.moveDir == "right") {
-				// System.out.println(" - increasing x");
 				super.x += Game.animationSpeed;
 			}
 		}
@@ -325,8 +321,6 @@ public class LongExtender extends Thing {
 	public boolean canDoSomething() {
 		Game.currentLevel.clearSelected();
 		if(super.dir == "none" || Game.currentLevel.transitioning()) {
-			System.out.println("Level is transitioning, can't do anything");
-			System.out.println("Is it doing a chain undo? " + Game.chainUndo);
 			return false;
 		}
 		if(super.extension == 0) {
@@ -346,7 +340,6 @@ public class LongExtender extends Thing {
 		int y = (int) Math.round(super.y * Game.tileSize);
 		int w = (int) Math.round(Game.tileSize);
 		int h = (int) Math.round(Game.tileSize);
-		// System.out.println("X: " + super.x + ", Extension: " + super.extension);
 		/* Translate to position */
 		Graphics2D g2 = (Graphics2D) g;
 		AffineTransform beforeRotation = g2.getTransform();

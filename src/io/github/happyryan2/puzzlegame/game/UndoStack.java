@@ -58,30 +58,22 @@ public class UndoStack {
 		}
 		action.chainAction = chainAction;
 		stack.add(action);
-		// printStack();
 	}
 	public static void undoAction() {
 		undoAction(false);
 	}
 	public static void undoAction(boolean ignoreTransition) {
 		Game.currentLevel.snapToGrid();
-		// printStack();
-		// System.out.println("Stack size: " + stack.size());
 		if(stack.size() == 0) {
-			// System.out.println("Stack size is 0");
 			Game.chainUndo = false;
 			return;
 		}
-		// Game.currentLevel.printContent();
-		// System.out.println("UNDOING");
 		if(Game.currentLevel.transitioning(true) && !ignoreTransition) {
-			System.out.println("Game is transitioning");
 			return;
 		}
 		if(Game.currentLevel.transitioning(true) && ignoreTransition) {
 			Game.currentLevel.snapToGrid();
 		}
-		// System.out.println("undoing an action!");
 		UndoStack actions = (UndoStack) stack.get(stack.size() - 1);
 		for(byte i = 0; i < actions.movement.size(); i ++) {
 			UndoStackItem action = (UndoStackItem) actions.movement.get(i);

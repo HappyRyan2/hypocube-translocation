@@ -28,6 +28,7 @@ io/github/happyryan2/puzzlegame/levels/Level20.java
 io/github/happyryan2/puzzlegame/levels/Level21.java
 io/github/happyryan2/puzzlegame/levels/Level22.java
 io/github/happyryan2/puzzlegame/levels/Level23.java
+io/github/happyryan2/puzzlegame/levels/Level24.java
 io/github/happyryan2/puzzlegame/objects/Thing.java
 io/github/happyryan2/puzzlegame/objects/Extender.java
 io/github/happyryan2/puzzlegame/objects/Retractor.java
