@@ -16,15 +16,43 @@ public class LevelConnector {
 	public int size = 0;
 	public boolean initialized = false;
 	public String color = "white"; // "white" or "gray"
+	public LevelConnector(int previousLevel, int nextLevel) {
+		this.previousLevel = previousLevel;
+		this.nextLevel = nextLevel;
+		for(short i = 0; i < Game.levels.size(); i ++) {
+			Level previous = (Level) Game.levels.get(i);
+			if(previous.id == this.previousLevel) {
+				for(short j = 0; j < Game.levels.size(); j ++) {
+					Level next = (Level) Game.levels.get(j);
+					if(next.id == this.nextLevel) {
+						if(next.x == previous.x && next.y == previous.y + 200) {
+							this.coords = new Point[] {new Point(next.x + 50, next.y - 90), new Point(next.x + 50, next.y - 10)};
+						}
+						else if(next.x == previous.x && next.y == previous.y - 200) {
+							this.coords = new Point[] {new Point(next.x + 50, next.y + 190), new Point(next.x + 50, next.y + 110)};
+						}
+						else if(next.y == previous.y && next.x == previous.x + 200) {
+							this.coords = new Point[] {new Point(next.x - 90, next.y + 50), new Point(next.x - 10, next.y + 50)};
+						}
+						else if(next.y == previous.y && next.x == previous.x - 200) {
+							this.coords = new Point[] {new Point(next.x + 190, next.y + 50), new Point(next.x + 110, next.y + 50)};
+						}
+					}
+				}
+			}
+		}
+	}
+	public LevelConnector(int previousLevel, int nextLevel, String color) {
+		this(previousLevel, nextLevel);
+		this.color = color;
+	}
 	public LevelConnector(Point[] coords, int previousLevel, int nextLevel) {
 		this.coords = coords;
 		this.previousLevel = previousLevel;
 		this.nextLevel = nextLevel;
 	}
 	public LevelConnector(Point[] coords, int previousLevel, int nextLevel, String color) {
-		this.coords = coords;
-		this.previousLevel = previousLevel;
-		this.nextLevel = nextLevel;
+		this(coords, previousLevel, nextLevel);
 		this.color = color;
 	}
 	public void init() {

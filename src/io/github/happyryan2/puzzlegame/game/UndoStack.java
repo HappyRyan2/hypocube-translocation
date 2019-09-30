@@ -82,7 +82,7 @@ public class UndoStack {
 			itemLoop: for(byte j = 0; j < Game.currentLevel.content.size(); j ++) {
 				Thing thing = (Thing) Game.currentLevel.content.get(j);
 				// System.out.println("found something at (" + thing.x + ", " + thing.y);
-				if(thing.x == action.x && thing.y == action.y) {
+				if(thing.x == action.x && thing.y == action.y && !(thing instanceof Goal)) {
 					// System.out.println("found something at the right position");
 					if(action.moving) {
 						// System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);

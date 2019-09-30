@@ -23,7 +23,5 @@ public class Level24 extends Level {
 		super.content.add(new Wall(0, 2));
 		super.content.add(new Wall(0, 0));
 		super.content.add(new Wall(6, 0));
-		// super.content.add(new Wall(2, 1));
-		// super.content.add(new Wall(1, 1));
 	}
 }

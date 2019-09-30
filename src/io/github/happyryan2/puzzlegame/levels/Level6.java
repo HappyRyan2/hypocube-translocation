@@ -10,28 +10,16 @@ public class Level6 extends Level {
 		super.x = 800;
 		super.y = -200;
 
-		super.content.add(new Wall(1, 3));
-		super.content.add(new Wall(2, 1));
-		super.content.add(new Wall(3, 3));
-		super.content.add(new Wall(4, 1));
-		super.content.add(new Wall(5, 3));
-		super.content.add(new Wall(6, 1));
-		super.content.add(new Player(7, 0));
-		super.content.add(new Goal(7, 1));
-		super.content.add(new Retractor(2, 4, "up", false));
-		super.content.add(new Retractor(2, 2, "right", false));
-		super.content.add(new Wall(0, 4));
-		super.content.add(new Wall(1, 4));
+		super.content.add(new Retractor(1, 3, "right", false));
+		super.content.add(new Retractor(3, 3, "left", false));
+		super.content.add(new Retractor(2, 2, "down", false));
 		super.content.add(new Wall(3, 4));
 		super.content.add(new Wall(4, 4));
-		super.content.add(new Wall(5, 4));
-		super.content.add(new Wall(6, 4));
-		super.content.add(new Wall(7, 4));
-		super.content.add(new Wall(7, 3));
+		super.content.add(new Player(3, 1));
+		super.content.add(new Goal(2, 1));
 		super.content.add(new Wall(0, 0));
-		super.content.add(new Wall(1, 0));
-		super.content.add(new Wall(2, 0));
-		super.content.add(new Extender(4, 3, "down", false));
+		super.content.add(new Wall(0, 1));
 		super.content.add(new Wall(4, 0));
+		super.content.add(new Wall(4, 1));
 	}
 }
