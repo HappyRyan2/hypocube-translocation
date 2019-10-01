@@ -51,7 +51,7 @@ public class LevelSelect {
 		levelConnectors.add(new LevelConnector(17, 18));
 		levelConnectors.add(new LevelConnector(17, 19, "gray"));
 		levelConnectors.add(new LevelConnector(18, 23));
-		levelConnectors.add(new LevelConnector(23, 24));
+		// levelConnectors.add(new LevelConnector(23, 24));
 		levelConnectors.add(new LevelConnector(19, 20));
 		levelConnectors.add(new LevelConnector(19, 25));
 	}

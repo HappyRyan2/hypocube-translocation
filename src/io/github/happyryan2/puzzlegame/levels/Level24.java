@@ -7,7 +7,7 @@ public class Level24 extends Level {
 	public Level24() {
 		super.id = 24;
 		super.requirements.add(10);
-		super.x = 400;
+		super.x = 600;
 		super.y = 600;
 
 		super.content.add(new Retractor(3, 1, "right", false));
