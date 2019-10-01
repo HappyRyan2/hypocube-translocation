@@ -66,6 +66,7 @@ public class Extender extends Thing {
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
 				UndoStack.addAction();
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 			}
 			else if(this.canExtendBackward()) {
 				/* Push itself backward */
@@ -74,6 +75,7 @@ public class Extender extends Thing {
 				super.moveDir = backwards;
 				Game.currentLevel.moveSelected(backwards);
 				UndoStack.addAction();
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 			}
 		}
 		else if(super.extension == 1 && this.canRetractForward()) {
@@ -81,6 +83,7 @@ public class Extender extends Thing {
 			super.retracting = true;
 			Game.currentLevel.moveSelected(backwards);
 			UndoStack.addAction();
+			Game.animationSpeed = Game.defaultAnimationSpeed;
 		}
 		super.ignoring = false;
 	}

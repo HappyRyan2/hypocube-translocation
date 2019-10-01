@@ -64,13 +64,13 @@ public class Game {
 		levels.add(new Level20());
 		levels.add(new Level21());
 		levels.add(new Level22());
-		// levels.add(new Level23());
+		levels.add(new Level23());
 		levels.add(new Level24());
 		levels.add(new Level25());
 		/* Load user progress */
 		loadProgress();
-		for(short i = 0; i < Game.levels.size(); i ++) {
-			Level level = (Level) Game.levels.get(i);
+		for(short i = 0; i < levels.size(); i ++) {
+			Level level = (Level) levels.get(i);
 			level.completedBefore = true;
 		}
 	}
