@@ -7,8 +7,8 @@ public class Level3 extends Level {
 	public Level3() {
 		super.requirements.add(2);
 		super.id = 3;
-		super.x = 400;
-		super.y = -200;
+		super.x = 0;
+		super.y = 200;
 
 		super.manualSize = true;
 		super.width = 3;

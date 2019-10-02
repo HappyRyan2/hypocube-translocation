@@ -71,7 +71,6 @@ public class Retractor extends Thing {
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
 				UndoStack.addAction();
-				Game.animationSpeed = Game.defaultAnimationSpeed;
 			}
 			else if(this.canExtendBackward()) {
 				/* push itself backward */
@@ -79,7 +78,6 @@ public class Retractor extends Thing {
 				super.moveDir = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
 				Game.currentLevel.moveSelected(super.moveDir);
 				UndoStack.addAction();
-				Game.animationSpeed = Game.defaultAnimationSpeed;
 			}
 		}
 		/* Is extended */
@@ -89,7 +87,6 @@ public class Retractor extends Thing {
 				super.retracting = true;
 				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
 				UndoStack.addAction();
-				Game.animationSpeed = Game.defaultAnimationSpeed;
 			}
 			else if(this.canRetractBackward()) {
 				/* pull itself towards something */
@@ -97,7 +94,6 @@ public class Retractor extends Thing {
 				super.moveDir = super.dir;
 				Game.currentLevel.moveSelected(super.dir);
 				UndoStack.addAction();
-				Game.animationSpeed = Game.defaultAnimationSpeed;
 			}
 		}
 	}

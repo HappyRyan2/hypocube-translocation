@@ -11,8 +11,8 @@ public class Level4 extends Level {
 	public Level4() {
 		super.id = 4;
 		super.requirements.add(3);
-		super.x = 600;
-		super.y = -200;
+		super.x = 200;
+		super.y = 200;
 
 		super.content.add(new Retractor(2, 3, "up", false));
 		super.content.add(new Wall(0, 0));

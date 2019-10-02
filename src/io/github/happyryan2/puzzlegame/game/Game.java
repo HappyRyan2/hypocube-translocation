@@ -15,7 +15,7 @@ import io.github.happyryan2.puzzlegame.utilities.*;
 import io.github.happyryan2.puzzlegame.levels.*;
 
 public class Game {
-	public static String state = "level-editor";
+	public static String state = "start";
 	public static int levelOpen = 20;
 
 	public static List levels = new ArrayList();
@@ -48,27 +48,27 @@ public class Game {
 		levels.add(new Level4());
 		levels.add(new Level5());
 		levels.add(new Level6());
-		levels.add(new Level7());
-		levels.add(new Level8());
-		levels.add(new Level9());
-		levels.add(new Level10());
-		levels.add(new Level11());
-		levels.add(new Level12());
-		levels.add(new Level13());
-		levels.add(new Level14());
-		levels.add(new Level15());
-		levels.add(new Level16());
-		levels.add(new Level17());
-		levels.add(new Level18());
-		levels.add(new Level19());
-		levels.add(new Level20());
-		levels.add(new Level21());
-		levels.add(new Level22());
-		levels.add(new Level23());
-		levels.add(new Level24());
-		levels.add(new Level25());
+		// levels.add(new Level7());
+		// levels.add(new Level8());
+		// levels.add(new Level9());
+		// levels.add(new Level10());
+		// levels.add(new Level11());
+		// levels.add(new Level12());
+		// levels.add(new Level13());
+		// levels.add(new Level14());
+		// levels.add(new Level15());
+		// levels.add(new Level16());
+		// levels.add(new Level17());
+		// levels.add(new Level18());
+		// levels.add(new Level19());
+		// levels.add(new Level20());
+		// levels.add(new Level21());
+		// levels.add(new Level22());
+		// levels.add(new Level23());
+		// levels.add(new Level24());
+		// levels.add(new Level25());
 		/* Load user progress */
-		loadProgress();
+		// loadProgress();
 		for(short i = 0; i < levels.size(); i ++) {
 			Level level = (Level) levels.get(i);
 			level.completedBefore = true;
