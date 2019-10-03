@@ -8,16 +8,19 @@ public class Level7 extends Level {
 		super.id = 7;
 		super.requirements.add(5);
 		super.requirements.add(6);
-		super.x = 800;
-		super.y = 0;
+		super.x = 400;
+		super.y = 400;
 
+		super.content.add(new Retractor(1, 3, "right", false));
+		super.content.add(new Retractor(3, 3, "left", false));
+		super.content.add(new Retractor(2, 2, "down", false));
+		super.content.add(new Wall(3, 4));
+		super.content.add(new Wall(4, 4));
+		super.content.add(new Player(3, 1));
+		super.content.add(new Goal(2, 1));
 		super.content.add(new Wall(0, 0));
 		super.content.add(new Wall(0, 1));
-		super.content.add(new Wall(4, 2));
-		super.content.add(new Extender(1, 0, "none"));
-		super.content.add(new Retractor(0, 2, "right"));
-		super.content.add(new Retractor(2, 1, "up"));
-		super.content.add(new Player(2, 0));
-		super.content.add(new Goal(4, 1));
+		super.content.add(new Wall(4, 0));
+		super.content.add(new Wall(4, 1));
 	}
 }

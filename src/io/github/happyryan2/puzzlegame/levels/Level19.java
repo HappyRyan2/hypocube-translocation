@@ -6,20 +6,22 @@ import io.github.happyryan2.puzzlegame.objects.*;
 public class Level19 extends Level  {
 	public Level19() {
 		super.id = 19;
-		super.x = 1000;
-		super.y = 400;
+		super.x = 600;
+		super.y = 0;
 		super.requireAll = true;
 		super.requirements.add(18);
 		super.requirements.add(10);
 
-		super.content.add(new LongExtender(0, 1, "right", true));
-		super.content.add(new Retractor(6, 2, "left", true));
-		super.content.add(new Retractor(7, 1, "left", true));
-		super.content.add(new Retractor(5, 0, "down", false));
-		super.content.add(new Goal(0, 2));
-		super.content.add(new Player(3, 2));
+		super.content.add(new Retractor(0, 1, "right", true));
+		super.content.add(new Retractor(0, 2, "right", true));
+		super.content.add(new Retractor(1, 1, "down", false));
 		super.content.add(new Wall(0, 0));
-		super.content.add(new Wall(7, 2));
-		super.content.add(new Wall(7, 0));
+		super.content.add(new Wall(1, 0));
+		super.content.add(new Wall(2, 0));
+		super.content.add(new Wall(3, 0));
+		super.content.add(new Wall(4, 3));
+		super.content.add(new Wall(6, 2));
+		super.content.add(new Player(6, 1));
+		super.content.add(new Goal(7, 1));
 	}
 }
