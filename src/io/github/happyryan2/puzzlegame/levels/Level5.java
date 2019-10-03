@@ -6,9 +6,9 @@ import io.github.happyryan2.puzzlegame.game.Level;
 public class Level5 extends Level {
 	public Level5() {
 		super.id = 5;
-		super.requirements.add(4);
-		super.x = 600;
-		super.y = 0;
+		super.requirements.add(3);
+		super.x = 0;
+		super.y = 400;
 
 		super.content.add(new Retractor(4, 2, "left", false));
 		super.content.add(new Extender(2, 2, "up", false));

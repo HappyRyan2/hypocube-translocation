@@ -11,8 +11,8 @@ public class Level1 extends Level {
 	public Level1() {
 		super.discovered = true;
 		super.id = 1;
-		super.x = 0;
-		super.y = -200;
+		super.x = 200;
+		super.y = 0;
 
 		super.manualSize = true;
 		super.width = 3;

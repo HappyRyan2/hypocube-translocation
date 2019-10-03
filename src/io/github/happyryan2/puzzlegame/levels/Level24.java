@@ -6,22 +6,29 @@ import io.github.happyryan2.puzzlegame.objects.*;
 public class Level24 extends Level {
 	public Level24() {
 		super.id = 24;
-		super.requirements.add(10);
-		super.x = 600;
+		super.requirements.add(22);
+		super.x = 800;
 		super.y = 600;
 
-		super.content.add(new Retractor(3, 1, "right", false));
-		super.content.add(new Retractor(4, 1, "down", false));
-		super.content.add(new LongExtender(2, 2, "right", false));
-		super.content.add(new LongExtender(4, 2, "left", false));
-		super.content.add(new Player(1, 3));
-		super.content.add(new Goal(0, 3));
+		super.content.add(new Wall(3, 4));
 		super.content.add(new Wall(4, 3));
+		super.content.add(new Wall(4, 4));
+		super.content.add(new Wall(5, 4));
 		super.content.add(new Wall(5, 3));
+		super.content.add(new Wall(5, 2));
+		super.content.add(new Player(4, 0));
+		super.content.add(new Goal(6, 0));
+		super.content.add(new Wall(6, 1));
+		super.content.add(new Wall(6, 2));
 		super.content.add(new Wall(6, 3));
-		super.content.add(new Wall(1, 2));
-		super.content.add(new Wall(0, 2));
-		super.content.add(new Wall(0, 0));
-		super.content.add(new Wall(6, 0));
+		super.content.add(new Wall(6, 4));
+		super.content.add(new Wall(6, 5));
+		super.content.add(new Wall(5, 5));
+		super.content.add(new Wall(4, 5));
+		super.content.add(new Wall(3, 5));
+		super.content.add(new Wall(2, 5));
+		super.content.add(new Retractor(1, 3, "down", false));
+		super.content.add(new Retractor(1, 5, "up", false));
+		super.content.add(new LongExtender(0, 4, "right", true));
 	}
 }

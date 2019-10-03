@@ -6,9 +6,10 @@ import io.github.happyryan2.puzzlegame.objects.*;
 public class Level25 extends Level  {
 	public Level25() {
 		super.id = 25;
-		super.x = 1200;
-		super.y = 400;
-		super.requirements.add(19);
+		super.x = 800;
+		super.y = 800;
+		super.requirements.add(24);
+		super.requirements.add(23);
 
 		super.content.add(new LongExtender(0, 2, "right", false));
 		super.content.add(new Player(1, 2));

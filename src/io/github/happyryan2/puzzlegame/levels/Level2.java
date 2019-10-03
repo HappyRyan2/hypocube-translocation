@@ -11,8 +11,8 @@ public class Level2 extends Level {
 	public Level2() {
 		super.requirements.add(1);
 		super.id = 2;
-		super.x = 200;
-		super.y = -200;
+		super.x = 0;
+		super.y = 0;
 
 		super.content.add(new Retractor(0, 1, "right"));
 		super.content.add(new Retractor(2, 0, "down"));
