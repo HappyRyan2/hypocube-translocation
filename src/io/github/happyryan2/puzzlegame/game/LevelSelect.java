@@ -62,23 +62,11 @@ public class LevelSelect {
 		levelConnectors.add(new LevelConnector(24, 25));
 	}
 	public static void display(Graphics g) {
-		/* animated noise background */
-		try {
-			double noiseZ = Screen.frameCount / 80.0f + 0.5;
-			for(float x = 0; x < Screen.width(); x += Screen.width() / 200) {
-				for(float y = 0; y < Screen.height(); y += Screen.height() / 200) {
-					double noise = PerlinNoise.noise0To1((x - (scrollX + (Screen.screenW / 2))) / 40.0f + 0.5, (y - (scrollY + (Screen.screenH / 2))) / 40.0f + 0.5, noiseZ) * 30 + 120;
-					int roundedNoise = (int) Math.round((double) noise);
-					Color col = new Color(roundedNoise, roundedNoise, roundedNoise);
-					g.setColor(col);
-					g.fillRect((int) x, (int) y, Screen.width() / 200, Screen.height() / 200);
-				}
-			}
-		}
-		catch(Exception e) { }
-		/* display levels */
 		Graphics2D g2 = (Graphics2D) g;
 		g2.translate(scrollX + (Screen.screenW / 2), scrollY + (Screen.screenH / 2));
+		/* animated background */
+		LevelSelectBackground.displayAll(g2);
+		/* display levels */
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
 			level.displayLevelSelect(g);
@@ -101,6 +89,7 @@ public class LevelSelect {
 		if(!initialized) {
 			init();
 		}
+		LevelSelectBackground.updateAll();
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
 			level.updateLevelSelect();
