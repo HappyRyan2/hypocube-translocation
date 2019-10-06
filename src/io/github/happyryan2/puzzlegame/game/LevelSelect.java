@@ -1,11 +1,12 @@
 package io.github.happyryan2.puzzlegame.game;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 import java.util.ArrayList;
 
 import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
-import io.github.happyryan2.puzzlegame.utilities.PerlinNoise;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
 import io.github.happyryan2.puzzlegame.utilities.MouseClick;
 import io.github.happyryan2.puzzlegame.utilities.MousePos;
@@ -62,22 +63,22 @@ public class LevelSelect {
 		levelConnectors.add(new LevelConnector(24, 25));
 	}
 	public static void display(Graphics g) {
-		/* animated noise background */
-		try {
-			double noiseZ = Screen.frameCount / 80.0f + 0.5;
-			for(float x = 0; x < Screen.width(); x += Screen.width() / 200) {
-				for(float y = 0; y < Screen.height(); y += Screen.height() / 200) {
-					double noise = PerlinNoise.noise0To1((x - (scrollX + (Screen.screenW / 2))) / 40.0f + 0.5, (y - (scrollY + (Screen.screenH / 2))) / 40.0f + 0.5, noiseZ) * 30 + 120;
-					int roundedNoise = (int) Math.round((double) noise);
-					Color col = new Color(roundedNoise, roundedNoise, roundedNoise);
-					g.setColor(col);
-					g.fillRect((int) x, (int) y, Screen.width() / 200, Screen.height() / 200);
-				}
-			}
-		}
-		catch(Exception e) { }
-		/* display levels */
 		Graphics2D g2 = (Graphics2D) g;
+		/* level select border */
+		g2.setColor(new Color(59, 67, 70));
+		g2.setColor(new Color(150, 150, 150));
+		g2.fillRect(0, 0, Screen.screenW, Screen.screenH);
+		// RoundRectangle2D r = new RoundRectangle2D.Float(scrollX + (Screen.screenW / 2) - 100, scrollY + (Screen.screenH / 2) - 100, 1100, 1100, 25, 25);
+		// g2.setClip(r);
+		g2.setColor(new Color(200, 200, 200));
+		g2.fillRect(scrollX + (Screen.screenW / 2) - 100, scrollY + (Screen.screenH / 2) - 100, 1100, 1100);
+		AffineTransform beforeTranslation = g2.getTransform();
+		g2.translate((scrollX * 1) + (Screen.screenW / 2), (scrollY * 1) + (Screen.screenH / 2));
+		/* animated background */
+		LevelSelectBackground.displayAll(g2);
+		/* display levels */
+		g2.setTransform(beforeTranslation);
+		beforeTranslation = g2.getTransform();
 		g2.translate(scrollX + (Screen.screenW / 2), scrollY + (Screen.screenH / 2));
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
@@ -89,25 +90,28 @@ public class LevelSelect {
 			connector.display(g);
 		}
 		g2.translate(-scrollX - (Screen.screenW / 2), -scrollY - (Screen.screenH / 2));
-		/* make all levels completed for dev */
-		for(short i = 0; i < Game.levels.size(); i ++) {
-			Level level = (Level) Game.levels.get(i);
-			if(level.id <= 15 && false) {
-				level.completedBefore = true;
-			}
-		}
+		g2.setClip(null);
 	}
 	public static void update() {
 		if(!initialized) {
 			init();
 		}
+		LevelSelectBackground.updateAll();
 		for(short i = 0; i < Game.levels.size(); i ++) {
 			Level level = (Level) Game.levels.get(i);
 			level.updateLevelSelect();
 		}
 		if(MouseClick.mouseIsPressed) {
-			scrollX += (MousePos.x - MousePos.preX);
-			scrollY += (MousePos.y - MousePos.preY);
+			int distX = MousePos.x - MousePos.preX;
+			int distY = MousePos.y - MousePos.preY;
+			int translateX = scrollX + (Screen.screenW / 2);
+			int translateY = scrollY + (Screen.screenH / 2);
+			scrollX += distX;
+			scrollY += distY;
+			scrollX = Math.min(scrollX, 100);
+			scrollX = Math.max(scrollX, -1000);
+			scrollY = Math.min(scrollY, 100);
+			scrollY = Math.max(scrollY, -1000);
 		}
 	}
 

@@ -111,6 +111,14 @@ public class Game {
 			LevelSelect.scrollX = -lowestIncomplete.x - 50;
 			LevelSelect.scrollY = -lowestIncomplete.y - 50;
 		}
+		/* Prepare level select */
+		LevelSelectBackground.init();
+		for(short i = 0; i < levels.size(); i ++) {
+			Level level = (Level) levels.get(i);
+			if(level.completedBefore) {
+				LevelSelectBackground.removeUnderLevel(level);
+			}
+		}
 	}
 
 	public static void saveProgress() {

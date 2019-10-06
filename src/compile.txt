@@ -2,6 +2,7 @@ io/github/happyryan2/puzzlegame/game/Game.java
 io/github/happyryan2/puzzlegame/game/Level.java
 io/github/happyryan2/puzzlegame/game/LevelEditor.java
 io/github/happyryan2/puzzlegame/game/LevelSelect.java
+io/github/happyryan2/puzzlegame/game/LevelSelectBackground.java
 io/github/happyryan2/puzzlegame/game/LevelConnector.java
 io/github/happyryan2/puzzlegame/game/UndoStack.java
 io/github/happyryan2/puzzlegame/game/UndoStackItem.java
@@ -44,4 +45,3 @@ io/github/happyryan2/puzzlegame/utilities/MouseClick.java
 io/github/happyryan2/puzzlegame/utilities/KeyInputs.java
 io/github/happyryan2/puzzlegame/utilities/ResourceLoader.java
 io/github/happyryan2/puzzlegame/utilities/Utils.java
-io/github/happyryan2/puzzlegame/utilities/PerlinNoise.java
