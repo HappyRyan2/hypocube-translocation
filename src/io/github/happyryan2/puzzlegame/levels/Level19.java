@@ -8,9 +8,7 @@ public class Level19 extends Level  {
 		super.id = 19;
 		super.x = 600;
 		super.y = 0;
-		super.requireAll = true;
 		super.requirements.add(18);
-		super.requirements.add(10);
 
 		super.content.add(new Retractor(0, 1, "right", true));
 		super.content.add(new Retractor(0, 2, "right", true));
