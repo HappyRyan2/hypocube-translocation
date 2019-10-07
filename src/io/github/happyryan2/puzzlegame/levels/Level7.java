@@ -6,7 +6,6 @@ import io.github.happyryan2.puzzlegame.objects.*;
 public class Level7 extends Level {
 	public Level7() {
 		super.id = 7;
-		super.requirements.add(5);
 		super.requirements.add(6);
 		super.x = 400;
 		super.y = 400;

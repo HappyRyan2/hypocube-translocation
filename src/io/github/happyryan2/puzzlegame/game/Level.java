@@ -268,6 +268,7 @@ public class Level {
 			if(!this.completedBefore) {
 				this.completedBefore = true;
 				Game.saveProgress();
+				LevelSelectBackground.removeUnderLevel(this);
 			}
 			this.completeNow = true;
 			this.restart2.update();

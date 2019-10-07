@@ -7,6 +7,7 @@ public class Level6 extends Level {
 	public Level6() {
 		super.id = 6;
 		super.requirements.add(4);
+		super.requirements.add(5);
 		super.x = 200;
 		super.y = 400;
 
