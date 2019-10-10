@@ -17,7 +17,6 @@ public class Level14 extends Level {
 		super.content.add(new Retractor(2, 3, "up", false));
 		super.content.add(new Player(1, 1));
 		super.content.add(new Retractor(2, 0, "down", false));
-		super.content.add(new Wall(3, 0));
 		super.content.add(new Wall(3, 2));
 		super.content.add(new Wall(3, 3));
 	}
