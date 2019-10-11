@@ -565,7 +565,7 @@ public class Level {
 	public void select(float x, float y) {
 		/* Selects the object at (x, y) */
 		Thing thing = this.getAtPos(x, y);
-		if(thing != null && !thing.ignoring) {
+		if(thing != null && !thing.ignoring && !(thing instanceof Goal)) {
 			thing.selected = true;
 		}
 	}
