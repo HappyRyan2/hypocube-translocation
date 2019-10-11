@@ -664,6 +664,9 @@ public class Level {
 		/*
 		Returns true if each goal has a player on it.
 		*/
+		if(this.transitioning()) {
+			return false;
+		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing instanceof Goal) {
