@@ -412,13 +412,13 @@ public class Retractor extends Thing {
 		if(dir == "right" && super.dir == "left" && super.x - super.extension == 0) {
 			return false;
 		}
-		if(dir == "left" && super.dir == "right" && super.x + super.extension == Game.levelSize - 1) {
+		if(dir == "left" && super.dir == "right" && super.x + super.extension == Game.currentLevel.width - 1) {
 			return false;
 		}
 		if(dir == "down" && super.dir == "up" && super.y - super.extension == 0) {
 			return false;
 		}
-		if(dir == "up" && super.dir == "down" && super.y + super.extension == Game.levelSize - 1) {
+		if(dir == "up" && super.dir == "down" && super.y + super.extension == Game.currentLevel.height - 1) {
 			return false;
 		}
 		return true;

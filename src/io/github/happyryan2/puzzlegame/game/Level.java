@@ -565,7 +565,7 @@ public class Level {
 	public void select(float x, float y) {
 		/* Selects the object at (x, y) */
 		Thing thing = this.getAtPos(x, y);
-		if(thing != null && !thing.ignoring) {
+		if(thing != null && !thing.ignoring && !(thing instanceof Goal)) {
 			thing.selected = true;
 		}
 	}
@@ -664,6 +664,9 @@ public class Level {
 		/*
 		Returns true if each goal has a player on it.
 		*/
+		if(this.transitioning()) {
+			return false;
+		}
 		for(short i = 0; i < this.content.size(); i ++) {
 			Thing thing = (Thing) this.content.get(i);
 			if(thing instanceof Goal) {

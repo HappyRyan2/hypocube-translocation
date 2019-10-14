@@ -17,7 +17,7 @@ public class Level8 extends Level {
 		super.content.add(new Player(2, 4));
 		super.content.add(new Goal(1, 3));
 		super.content.add(new Retractor(0, 1, "right", false));
-		super.content.add(new Wall(1, 4));
+		super.content.add(new Wall(0, 4));
 		super.content.add(new Wall(0, 2));
 		super.content.add(new Wall(0, 0));
 		super.content.add(new Wall(1, 0));
