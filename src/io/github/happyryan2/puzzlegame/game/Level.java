@@ -570,6 +570,7 @@ public class Level {
 		}
 	}
 	public void moveTile(float x, float y, String dir) {
+		System.out.println("moving tile at (" + x + ", " + y + ") " + dir);
 		/*
 		Selects the tile, as well as any other tiles that:
 		 - would be pushed by it moving
@@ -613,6 +614,11 @@ public class Level {
 				Thing retractor = this.getAtPos(x, y - 1);
 				if(retractor != null && !retractor.selected && retractor instanceof Retractor && retractor.y + retractor.extension == y - 1 && retractor.dir == "down") {
 					this.moveObject(x, y - 1, "down");
+				}
+			}
+			if(thing instanceof Retractor) {
+				if(thing.dir == "left" && dir == "right") {
+					this.moveObject(thing.x - thing.extension - 1, thing.y, "right");
 				}
 			}
 		}

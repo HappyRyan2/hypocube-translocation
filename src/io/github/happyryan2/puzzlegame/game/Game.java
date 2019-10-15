@@ -69,6 +69,10 @@ public class Game {
 		levels.add(new Level25());
 		/* Load user progress */
 		loadProgress();
+		for(short i = 0; i < levels.size(); i ++) {
+			Level level = (Level) levels.get(i);
+			level.completedBefore = true;
+		}
 	}
 	public static void startGame() {
 		/* Move to the level select screen */

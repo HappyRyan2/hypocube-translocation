@@ -264,6 +264,7 @@ public class Retractor extends Thing {
 		) {
 			return false;
 		}
+		System.out.println("Tiles selected: " + Game.currentLevel.numSelected());
 		return true;
 	}
 	public boolean canExtendBackward() {
@@ -375,16 +376,16 @@ public class Retractor extends Thing {
 		String backwards = (super.dir == "right" || super.dir == "left") ? (super.dir == "right" ? "left" : "right") : (super.dir == "up" ? "down" : "up");
 		if(dir == backwards) {
 			if(dir == "left") {
-				Game.currentLevel.moveObject(super.x + super.extension + 1, super.y, "right");
+				Game.currentLevel.moveObject(super.x + super.extension + 1, super.y, "left");
 			}
 			else if(dir == "right") {
-				Game.currentLevel.moveObject(super.x - super.extension - 1, super.y, "left");
+				Game.currentLevel.moveObject(super.x - super.extension - 1, super.y, "right");
 			}
 			else if(dir == "up") {
-				Game.currentLevel.moveObject(super.x, super.y + super.extension + 1, "down");
+				Game.currentLevel.moveObject(super.x, super.y + super.extension + 1, "up");
 			}
 			else if(dir == "down") {
-				Game.currentLevel.moveObject(super.x, super.y - super.extension - 1, "up");
+				Game.currentLevel.moveObject(super.x, super.y - super.extension - 1, "down");
 			}
 		}
 	}
