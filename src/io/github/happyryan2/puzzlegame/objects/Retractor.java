@@ -264,7 +264,6 @@ public class Retractor extends Thing {
 		) {
 			return false;
 		}
-		System.out.println("Tiles selected: " + Game.currentLevel.numSelected());
 		return true;
 	}
 	public boolean canExtendBackward() {
