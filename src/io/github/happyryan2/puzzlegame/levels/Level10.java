@@ -10,15 +10,26 @@ public class Level10 extends Level {
 		super.requirements.add(7);
 		super.id = 10;
 
-		super.content.add(new Wall(4, 0));
-		super.content.add(new Wall(2, 0));
-		super.content.add(new Wall(0, 3));
-		super.content.add(new Wall(5, 2));
-		super.content.add(new Wall(5, 3));
-		super.content.add(new Player(2, 2));
-		super.content.add(new Goal(2, 3));
-		super.content.add(new Extender(5, 0, "down", false));
-		super.content.add(new Extender(3, 0, "down", false, true));
+		// super.content.add(new Wall(4, 0));
+		// super.content.add(new Wall(2, 0));
+		// super.content.add(new Wall(0, 3));
+		// super.content.add(new Wall(5, 2));
+		// super.content.add(new Wall(5, 3));
+		// super.content.add(new Player(2, 2));
+		// super.content.add(new Goal(2, 3));
+		// super.content.add(new Extender(5, 0, "down", false));
+		// super.content.add(new Extender(3, 0, "down", false, true));
+		// super.content.add(new LongExtender(0, 1, "right", false));
+
 		super.content.add(new LongExtender(0, 1, "right", false));
+		super.content.add(new Player(1, 1));
+		super.content.add(new Wall(0, 0));
+		super.content.add(new Wall(3, 2));
+		super.content.add(new Extender(4, 0, "down", false, true));
+		super.content.add(new Extender(7, 0, "down", false));
+		super.content.add(new Goal(6, 1));
+		super.content.add(new Wall(4, 2));
+		super.content.add(new Wall(7, 2));
+		super.content.add(new Wall(5, 0));
 	}
 }

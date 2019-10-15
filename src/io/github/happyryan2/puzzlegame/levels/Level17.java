@@ -12,7 +12,7 @@ public class Level17 extends Level {
 
 		super.content.add(new Extender(0, 1, "right", true));
 		super.content.add(new Retractor(1, 1, "right", false));
-		super.content.add(new Extender(3, 0, "down", false, true));
+		super.content.add(new Retractor(3, 0, "down", false, true));
 		super.content.add(new Player(2, 1));
 		super.content.add(new Goal(4, 2));
 	}
