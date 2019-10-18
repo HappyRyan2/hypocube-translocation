@@ -19,7 +19,7 @@ public class LevelEditor {
 	public static TextButton crop = new TextButton(350, 50, 100, 30, "crop", new Color(150, 150, 150), new Color(100, 100, 100));
 	public static TextButton uncrop = new TextButton(460, 50, 100, 30, "uncrop", new Color(150, 150, 150), new Color(100, 100, 100));
 
-	public static Level level = new Level25();
+	public static Level level = new Level22();
 
 	public static boolean initialized = false;
 

@@ -15,12 +15,10 @@ public class Level11 extends Level {
 		super.content.add(new Wall(2, 0));
 		super.content.add(new Wall(2, 1));
 		super.content.add(new Wall(1, 0));
-		// super.content.add(new Wall(1, 1));
 		super.content.add(new Wall(0, 0));
-		// super.content.add(new Wall(0, 1));
 		super.content.add(new LongExtender(0, 2, "right"));
-		super.content.add(new LongExtender(4, 3, "left"));
-		super.content.add(new Retractor(4, 4, "up", false));
+		super.content.add(new LongExtender(5, 3, "left"));
+		super.content.add(new Retractor(5, 4, "up", false));
 		super.content.add(new Retractor(0, 4, "up", false));
 		super.content.add(new Wall(2, 5));
 		super.content.add(new Wall(2, 4));

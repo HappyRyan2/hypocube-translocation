@@ -21,7 +21,20 @@ public class Level22 extends Level  {
 		// super.content.add(new Wall(0, 0));
 		// super.content.add(new Wall(7, 2));
 		// super.content.add(new Wall(7, 0));
-		
-		
+
+		super.content.add(new Retractor(0, 2, "right", true));
+		super.content.add(new LongExtender(1, 0, "down", false));
+		super.content.add(new LongExtender(1, 4, "up", false, 2));
+		super.content.add(new Wall(6, 0));
+		super.content.add(new Wall(6, 1));
+		super.content.add(new Wall(7, 1));
+		super.content.add(new Wall(7, 0));
+		super.content.add(new Player(6, 3));
+		super.content.add(new Goal(7, 3));
+		super.content.add(new Retractor(7, 2, "left", false));
+		super.content.add(new Retractor(2, 0, "left", true));
+		super.content.add(new Retractor(2, 4, "left", true));
+		super.content.add(new Wall(0, 0));
+		super.content.add(new Wall(0, 4));
 	}
 }

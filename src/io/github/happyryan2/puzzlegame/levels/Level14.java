@@ -10,7 +10,16 @@ public class Level14 extends Level {
 		super.requirements.add(15);
 		super.x = 0;
 		super.y = 600;
-		
+
+		// super.content.add(new LongExtender(1, 2, "up", false));
+		// super.content.add(new Goal(1, 2));
+		// super.content.add(new Retractor(2, 1, "left", false));
+		// super.content.add(new Retractor(2, 3, "up", false));
+		// super.content.add(new Player(1, 1));
+		// super.content.add(new Retractor(2, 0, "down", false));
+		// super.content.add(new Wall(3, 2));
+		// super.content.add(new Wall(3, 3));
+
 		super.content.add(new LongExtender(2, 3, "up", false, 1));
 		super.content.add(new Retractor(1, 3, "right", false));
 		super.content.add(new Wall(0, 0));
