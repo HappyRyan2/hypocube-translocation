@@ -11,18 +11,19 @@ public class Level13 extends Level {
 		super.requirements.add(11);
 		super.requirements.add(12);
 
-		super.content.add(new Retractor(3, 1, "right", false));
-		super.content.add(new Retractor(4, 1, "down", false));
-		super.content.add(new LongExtender(2, 2, "right", false));
-		super.content.add(new LongExtender(4, 2, "left", false));
-		super.content.add(new Player(1, 3));
-		super.content.add(new Goal(0, 3));
-		super.content.add(new Wall(4, 3));
-		super.content.add(new Wall(5, 3));
-		super.content.add(new Wall(6, 3));
-		super.content.add(new Wall(1, 2));
-		super.content.add(new Wall(0, 2));
+		super.content.add(new Player(3, 2));
+		super.content.add(new Goal(3, 0));
+		super.content.add(new Wall(2, 0));
+		super.content.add(new Wall(2, 1));
+		super.content.add(new Wall(1, 0));
 		super.content.add(new Wall(0, 0));
-		super.content.add(new Wall(6, 0));
+		super.content.add(new LongExtender(0, 2, "right"));
+		super.content.add(new LongExtender(5, 3, "left"));
+		super.content.add(new Retractor(5, 4, "up", false));
+		super.content.add(new Retractor(0, 4, "up", false));
+		super.content.add(new Wall(2, 5));
+		super.content.add(new Wall(2, 4));
+		super.content.add(new Wall(1, 5));
+		super.content.add(new Wall(0, 5));
 	}
 }

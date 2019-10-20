@@ -11,26 +11,22 @@ public class Level25 extends Level  {
 		super.requirements.add(24);
 		super.requirements.add(23);
 
-		super.content.add(new Wall(4, 5));
-		super.content.add(new Wall(5, 5));
-		super.content.add(new Wall(5, 4));
-		super.content.add(new Player(4, 1));
-		super.content.add(new Goal(6, 1));
-		super.content.add(new Wall(6, 3));
-		super.content.add(new Wall(6, 4));
-		super.content.add(new Wall(6, 5));
-		super.content.add(new Wall(6, 6));
-		super.content.add(new Wall(5, 6));
-		super.content.add(new Wall(4, 6));
-		super.content.add(new Wall(3, 6));
-		super.content.add(new Wall(2, 6));
-		super.content.add(new Wall(2, 7));
-		super.content.add(new Wall(3, 7));
-		super.content.add(new Wall(4, 7));
-		super.content.add(new Wall(5, 7));
-		super.content.add(new Wall(6, 7));
-		super.content.add(new Retractor(1, 4, "down", false));
-		super.content.add(new Retractor(1, 7, "up", false));
-		super.content.add(new LongExtender(0, 5, "right", true));
+		super.content.add(new LongExtender(1, 0, "down", false));
+		super.content.add(new Wall(7, 1));
+		super.content.add(new Retractor(2, 0, "left", true));
+		super.content.add(new Wall(0, 0));
+		super.content.add(new Wall(0, 4));
+		super.content.add(new Retractor(2, 5, "left", true));
+		super.content.add(new Wall(0, 5));
+		super.content.add(new LongExtender(1, 5, "up", false));
+		super.content.add(new Retractor(7, 3, "left", false));
+		super.content.add(new Player(6, 4));
+		super.content.add(new Goal(7, 4));
+		super.content.add(new Wall(6, 2));
+		super.content.add(new Wall(7, 2));
+		super.content.add(new Wall(7, 0));
+		super.content.add(new Wall(6, 1));
+		super.content.add(new Wall(6, 0));
+		super.content.add(new Retractor(0, 3, "right", true));
 	}
 }
