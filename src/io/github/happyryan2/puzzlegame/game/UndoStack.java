@@ -88,12 +88,18 @@ public class UndoStack {
 						// System.out.println("moving the thing at position (" + thing.x + ", " + thing.y + ") " + action.dir);
 						thing.moveDir = action.dir;
 						thing.timeMoving = 0;
+						if(thing instanceof Extender || thing instanceof Retractor) {
+							Game.animationSpeed = Game.defaultAnimationSpeed;
+						}
 					}
 					if(action.dir == "retract") {
 						// System.out.println("retracting the thing at position (" + thing.x + ", " + thing.y + ")");
 						if(thing instanceof LongExtender) {
 							Game.animationSpeed = Game.fastAnimationSpeed;
 							((LongExtender) (thing)).timeRetracting = 0;
+						}
+						if(thing instanceof Extender || thing instanceof Retractor) {
+							Game.animationSpeed = Game.defaultAnimationSpeed;
 						}
 						thing.retracting = true;
 					}

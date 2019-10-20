@@ -68,12 +68,14 @@ public class Retractor extends Thing {
 		if(super.extension == 0) {
 			if(this.canExtendForward()) {
 				/* push something forward */
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
 				UndoStack.addAction();
 			}
 			else if(this.canExtendBackward()) {
 				/* push itself backward */
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 				super.extending = true;
 				super.moveDir = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
 				Game.currentLevel.moveSelected(super.moveDir);
@@ -84,12 +86,14 @@ public class Retractor extends Thing {
 		else if(super.extension == 1) {
 			if(this.canRetractForward()) {
 				/* pull something towards itself */
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 				super.retracting = true;
 				Game.currentLevel.moveSelected((super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left"));
 				UndoStack.addAction();
 			}
 			else if(this.canRetractBackward()) {
 				/* pull itself towards something */
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 				super.retracting = true;
 				super.moveDir = super.dir;
 				Game.currentLevel.moveSelected(super.dir);

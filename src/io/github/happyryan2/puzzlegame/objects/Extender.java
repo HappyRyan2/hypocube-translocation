@@ -63,12 +63,14 @@ public class Extender extends Thing {
 		if(super.extension == 0) {
 			if(this.canExtendForward()) {
 				/* Push tiles in front of it forward */
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 				super.extending = true;
 				Game.currentLevel.moveSelected(super.dir);
 				UndoStack.addAction();
 			}
 			else if(this.canExtendBackward()) {
 				/* Push itself backward */
+				Game.animationSpeed = Game.defaultAnimationSpeed;
 				String backwards = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
 				super.extending = true;
 				super.moveDir = backwards;
@@ -77,6 +79,7 @@ public class Extender extends Thing {
 			}
 		}
 		else if(super.extension == 1 && this.canRetractForward()) {
+			Game.animationSpeed = Game.defaultAnimationSpeed;
 			String backwards = (super.dir == "up" || super.dir == "down") ? (super.dir == "up" ? "down" : "up") : (super.dir == "left" ? "right" : "left");
 			super.retracting = true;
 			Game.currentLevel.moveSelected(backwards);
