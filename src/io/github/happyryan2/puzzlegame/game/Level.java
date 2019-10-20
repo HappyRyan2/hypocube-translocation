@@ -360,8 +360,6 @@ public class Level {
 		g.translate(-this.left, -this.top);
 		/* GUI box for winning */
 		if(this.isComplete()) {
-			this.restart2.display(g);
-			this.exit2.display(g);
 			if(this.completionY < 0) {
 				this.completionY += Math.max((0 - this.completionY) / 15, 1);
 			}
