@@ -15,7 +15,7 @@ import java.net.URL;
 import io.github.happyryan2.puzzlegame.game.*;
 
 public class Screen extends JPanel {
-	public static JFrame frame = new JFrame("HypoCube Translocation - version 0.1");
+	public static JFrame frame = new JFrame("Hypocube Translocation - version 1.0");
 	public static JPanel canvas = new Screen();
 	public static int screenW = 0;
 	public static int screenH = 0;
