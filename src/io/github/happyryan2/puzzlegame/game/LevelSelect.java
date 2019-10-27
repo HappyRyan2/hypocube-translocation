@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
 
 import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
@@ -15,9 +16,9 @@ public class LevelSelect {
 	public static int scrollX = 400;
 	public static int scrollY = 400;
 
-	public static Image completeLevel = ResourceLoader.loadImage("res/graphics/levelselect/completeLevel.png");
-	public static Image incompleteLevel = ResourceLoader.loadImage("res/graphics/levelselect/incompleteLevel.png");
-	public static Image inaccessibleLevel = ResourceLoader.loadImage("res/graphics/levelselect/inaccessibleLevel.png");
+	public static Image completeLevel = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "levelselect" + File.separator + "completeLevel.png");
+	public static Image incompleteLevel = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "levelselect" + File.separator + "incompleteLevel.png");
+	public static Image inaccessibleLevel = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "levelselect" + File.separator + "inaccessibleLevel.png");
 
 	public static List levelConnectors = new ArrayList();
 

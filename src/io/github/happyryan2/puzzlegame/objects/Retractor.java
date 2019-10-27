@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.io.File;
 
 import io.github.happyryan2.puzzlegame.game.Game;
 import io.github.happyryan2.puzzlegame.game.UndoStack;
@@ -17,10 +18,10 @@ import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Retractor extends Thing {
 
-	public static Image end = ResourceLoader.loadImage("res/graphics/objects/retractorEnd.png");
-	public static Image middle = ResourceLoader.loadImage("res/graphics/objects/retractorMiddle.png");
-	public static Image solidArrow = ResourceLoader.loadImage("res/graphics/objects/retractor2.png");
-	public static Image outlineArrow = ResourceLoader.loadImage("res/graphics/objects/retractor3.png");
+	public static Image end = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "retractorEnd.png");
+	public static Image middle = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "retractorMiddle.png");
+	public static Image solidArrow = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "retractor2.png");
+	public static Image outlineArrow = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "retractor3.png");
 
 	public Retractor(float x, float y, String dir) {
 		super.x = x;

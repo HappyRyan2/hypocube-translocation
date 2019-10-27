@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.io.File;
 
 import io.github.happyryan2.puzzlegame.game.Game;
 import io.github.happyryan2.puzzlegame.game.UndoStack;
@@ -16,11 +17,11 @@ import io.github.happyryan2.puzzlegame.utilities.Screen;
 import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Extender extends Thing {
-	public static Image block = ResourceLoader.loadImage("res/graphics/objects/emptyExtender.png");
-	public static Image end = ResourceLoader.loadImage("res/graphics/objects/extenderEnd.png");
-	public static Image middle = ResourceLoader.loadImage("res/graphics/objects/extenderMiddle.png");
-	public static Image solidArrow = ResourceLoader.loadImage("res/graphics/objects/extender2.png");
-	public static Image outlineArrow = ResourceLoader.loadImage("res/graphics/objects/extender3.png");
+	public static Image block = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "emptyExtender.png");
+	public static Image end = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "extenderEnd.png");
+	public static Image middle = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "extenderMiddle.png");
+	public static Image solidArrow = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "extender2.png");
+	public static Image outlineArrow = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "extender3.png");
 
 	public Extender(float x, float y, String dir) {
 		super.x = x;

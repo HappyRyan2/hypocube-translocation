@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.io.File;
 
 import io.github.happyryan2.puzzlegame.game.Game;
 import io.github.happyryan2.puzzlegame.game.Level;
@@ -13,7 +14,7 @@ import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Goal extends Thing {
 
-	public static Image img = ResourceLoader.loadImage("res/graphics/objects/goal.png");
+	public static Image img = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "goal.png");
 
 	public Goal(float x, float y) {
 		super.x = x;

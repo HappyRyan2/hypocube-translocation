@@ -20,8 +20,8 @@ public class Screen extends JPanel {
 	public static int screenW = 0;
 	public static int screenH = 0;
 	public static String cursor = "default";
-	public static Font fontRighteous = ResourceLoader.loadFont("res/fonts/righteous.ttf");
-	public static Font fontOxygen = ResourceLoader.loadFont("res/fonts/oxygen.ttf");
+	public static Font fontRighteous = ResourceLoader.loadFont("res" + File.separator + "fonts" + File.separator + "righteous.ttf");
+	public static Font fontOxygen = ResourceLoader.loadFont("res" + File.separator + "fonts" + File.separator + "oxygen.ttf");
 	public static int frameCount = 0;
 	public static boolean loading = true;
 

@@ -10,13 +10,14 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.io.File;
 
 import io.github.happyryan2.puzzlegame.game.Game;
 import io.github.happyryan2.puzzlegame.game.Level;
 import io.github.happyryan2.puzzlegame.utilities.ResourceLoader;
 
 public class Player extends Thing {
-	public Image img = ResourceLoader.loadImage("res/graphics/objects/player.png");
+	public Image img = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "player.png");
 
 	public Player(float x, float y) {
 		super.x = x;

@@ -2,29 +2,44 @@ package io.github.happyryan2.puzzlegame.utilities;
 
 import java.awt.*;
 import java.io.*;
-import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 public class ResourceLoader {
-	public static Image loadImage(String pathStr) {
+	public static Image loadImage(String path) {
 		try {
-			Image img = ImageIO.read(new File(pathStr));
-			return img;
-		}
-		catch(Exception e) { }
-		return null;
-	}
-	public static Font loadFont(String pathStr) {
-		try {
-			File dir = new File(System.getProperty("user.dir"));
-			File res = new File(dir.getPath() + "/res");
-			Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File(dir.getPath() + "\\" + pathStr)).deriveFont(40f);
-	    	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-			ge.registerFont(customFont);
-			return customFont;
+			InputStream stream = loadResource(path);
+			Image image = ImageIO.read(stream);
+			return image;
 		}
 		catch(Exception e) {
-			System.out.println("Could not find font file.");
+			System.out.println("Error while loading image:");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public static Font loadFont(String path) {
+		try {
+			InputStream stream = loadResource(path);
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
+			ge.registerFont(font);
+			return font;
+		}
+		catch(Exception e) {
+			System.out.println("Error while loading font:");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public static InputStream loadResource(String path) {
+		try {
+			path = path.replace(File.separatorChar, '/');
+			InputStream stream = ResourceLoader.class.getClassLoader().getResourceAsStream(path);
+			return stream;
+		}
+		catch(Exception e) {
+			System.out.println("Error while loading resource:");
+			e.printStackTrace();
 			return null;
 		}
 	}

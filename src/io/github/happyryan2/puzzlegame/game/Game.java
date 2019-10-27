@@ -26,10 +26,10 @@ public class Game {
 
 	public static int transition = 255;
 
-	public static String saveDest = System.getProperty("user.home") + "\\AppData\\Local\\HypocubeTranslocation\\progress.txt";
+	public static String saveDest = System.getProperty("user.home") + File.separator + "AppData" + File.separator + "Local" + File.separator + "HypocubeTranslocation" + File.separator + "progress.txt";
 	private static boolean initialized = false;
 
-	public static ImageButton playButton = new ImageButton(Screen.screenW / 2, Screen.screenH / 2, 100, "res/graphics/buttons/play.png", new Color(59, 67, 70), new Color(150, 150, 150));
+	public static ImageButton playButton = new ImageButton(Screen.screenW / 2, Screen.screenH / 2, 100, "res" + File.separator + "graphics" + File.separator + "buttons" + File.separator + "play.png", new Color(59, 67, 70), new Color(150, 150, 150));
 
 	public static float defaultAnimationSpeed = 0.05f;
 	public static float fastAnimationSpeed = 0.1f;

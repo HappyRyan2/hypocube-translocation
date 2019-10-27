@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.io.File;
 
 import io.github.happyryan2.puzzlegame.game.Game;
 import io.github.happyryan2.puzzlegame.game.UndoStack;
@@ -20,10 +21,10 @@ public class LongExtender extends Thing {
 	public int timeExtending = 0;
 	public int timeRetracting = 0;
 
-	public static Image end = ResourceLoader.loadImage("res/graphics/objects/longExtenderEnd.png");
-	public static Image middle = ResourceLoader.loadImage("res/graphics/objects/longExtenderMiddle.png");
-	public static Image solidArrow = ResourceLoader.loadImage("res/graphics/objects/longExtender2.png");
-	public static Image outlineArrow = ResourceLoader.loadImage("res/graphics/objects/longExtender3.png");
+	public static Image end = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "longExtenderEnd.png");
+	public static Image middle = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "longExtenderMiddle.png");
+	public static Image solidArrow = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "longExtender2.png");
+	public static Image outlineArrow = ResourceLoader.loadImage("res" + File.separator + "graphics" + File.separator + "objects" + File.separator + "longExtender3.png");
 
 	public LongExtender(float x, float y, String dir) {
 		super.x = x;

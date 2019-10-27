@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
 
 import io.github.happyryan2.puzzlegame.objects.*;
 import io.github.happyryan2.puzzlegame.utilities.Screen;
@@ -35,11 +36,11 @@ public class Level {
 	public float opacity = 0;
 
 	/* Buttons */
-	public ImageButton exit = new ImageButton(30, 30, 40, "res/graphics/buttons/pause2.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on play screen
-	public ImageButton exit2 = new ImageButton(0, 0, 50, "res/graphics/buttons/next.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on win screen
-	public ImageButton restart2 = new ImageButton(0, 0, 50, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on play screen
-	public ImageButton restart = new ImageButton(100, 30, 40, "res/graphics/buttons/restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on win screen
-	public ImageButton undo = new ImageButton(170, 30, 40, "res/graphics/buttons/undo.png", new Color(255, 255, 255), new Color(175, 175, 175));
+	public ImageButton exit = new ImageButton(30, 30, 40, "res" + File.separator + "graphics" + File.separator + "buttons" + File.separator + "pause2.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on play screen
+	public ImageButton exit2 = new ImageButton(0, 0, 50, "res" + File.separator +"graphics" + File.separator +"buttons" + File.separator +"next.png", new Color(255, 255, 255), new Color(175, 175, 175)); // exit button on win screen
+	public ImageButton restart2 = new ImageButton(0, 0, 50, "res" + File.separator +"graphics" + File.separator +"buttons" + File.separator +"restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on play screen
+	public ImageButton restart = new ImageButton(100, 30, 40, "res" + File.separator +"graphics" + File.separator +"buttons" + File.separator +"restart.png", new Color(255, 255, 255), new Color(175, 175, 175)); // restart button on win screen
+	public ImageButton undo = new ImageButton(170, 30, 40, "res" + File.separator +"graphics" + File.separator +"buttons" + File.separator +"undo.png", new Color(255, 255, 255), new Color(175, 175, 175));
 
 	public boolean paused = false;
 
@@ -365,7 +366,7 @@ public class Level {
 			}
 			g.setColor(new Color(100, 100, 100, 150));
 			g.fillRect(Screen.screenW / 2 - 200, this.completionY, 400, Screen.screenH);
-			g.setFont(Screen.fontRighteous);
+			g.setFont(Screen.fontRighteous.deriveFont(40f));
 			g.setColor(new Color(255, 255, 255));
 			Screen.centerText(g, Screen.screenW / 2, this.completionY + 266, "Level Complete");
 			this.restart2.y = this.completionY + Screen.screenH / 3 * 2;
